@@ -26,12 +26,28 @@ if (!basePath) {
   );
 }
 
+function usecaseRoutePlugin() {
+  return {
+    name: "usecase-route",
+    configureServer(server: import("vite").ViteDevServer) {
+      server.middlewares.use((req, _res, next) => {
+        const url = req.url ?? "";
+        if (url === "/usecase" || url.startsWith("/usecase/") || url.startsWith("/usecase?")) {
+          req.url = basePath;
+        }
+        next();
+      });
+    },
+  };
+}
+
 export default defineConfig({
   base: basePath,
   plugins: [
     react(),
     runtimeErrorOverlay(),
     tailwindcss(),
+    usecaseRoutePlugin(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [

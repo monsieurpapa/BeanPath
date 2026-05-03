@@ -11,7 +11,7 @@ version = "1.0.0"
 
 [[services]]
 name = "web"
-paths = [ "/beanpath-video/" ]
+paths = [ "/beanpath-video/", "/usecase" ]
 localPort = 23858
 
 [services.development]
