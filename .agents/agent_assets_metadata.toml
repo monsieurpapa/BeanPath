@@ -41,3 +41,9 @@ id = "YcakLJiprOMD9UJ9wCZl2"
 uri = "file://artifacts/beanpath-video/public/images/farmer.jpg"
 type = "image"
 title = "smiling African farmer in a coffee field, photorealistic, high quality"
+
+[[outputs]]
+id = "xviiwWogWr33cO2gNVC2Y"
+uri = "file://attached_assets/beanpath-launch-video.mp4"
+type = "video"
+title = "BeanPath Launch Video (54s, 1280×720 H.264 MP4)"
