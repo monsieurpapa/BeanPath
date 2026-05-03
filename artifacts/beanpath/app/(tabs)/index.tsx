@@ -9,6 +9,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
 import { useSync } from "@/context/SyncContext";
+import { ROLE_LABELS } from "@/lib/rbac";
+import { usePermission } from "@/hooks/usePermission";
 import { useColors } from "@/hooks/useColors";
 
 function timeAgo(iso: string) {
@@ -18,16 +20,19 @@ function timeAgo(iso: string) {
   return `il y a ${Math.floor(m / 60)}h`;
 }
 
-const QUICK_ACTIONS = [
-  { label: "Agriculteur", icon: "person-add-outline" as const, route: "/(tabs)/farmers/new" as const },
-  { label: "Livraison", icon: "cube-outline" as const, route: "/(tabs)/collect/" as const },
-  { label: "Mes lots", icon: "layers-outline" as const, route: "/(tabs)/lots/" as const },
+const ALL_QUICK_ACTIONS = [
+  { label: "Enregistrer agriculteur", icon: "person-add-outline" as const, route: "/(tabs)/farmers/new" as const, permission: "farmer.create" as const },
+  { label: "Enregistrer livraison",   icon: "cube-outline"        as const, route: "/(tabs)/collect/"     as const, permission: "delivery.create" as const },
+  { label: "Mes lots",                icon: "layers-outline"       as const, route: "/(tabs)/lots/"        as const, permission: "lot.view" as const },
 ];
 
 export default function TodayScreen() {
   const { user } = useAuth();
   const { deliveries } = useData();
   const { pendingCount, triggerSync, syncing } = useSync();
+  const canCreateFarmer   = usePermission("farmer.create");
+  const canCreateDelivery = usePermission("delivery.create");
+  const canViewLots       = usePermission("lot.view");
   const colors = useColors();
   const insets = useSafeAreaInsets();
 
@@ -58,13 +63,22 @@ export default function TodayScreen() {
     >
       {/* Greeting */}
       <View style={styles.greetRow}>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={[styles.greeting, { color: colors.mutedForeground }]}>{greeting()},</Text>
           <Text style={[styles.name, { color: colors.foreground }]}>{user?.name?.split(" ")[0] ?? "Agent"}</Text>
+          {user?.role && (
+            <Text style={[styles.rolePill, { color: colors.primary }]}>
+              {ROLE_LABELS[user.role]} · {user.orgName?.split(" ")[0]}
+            </Text>
+          )}
         </View>
-        <View style={[styles.orgPill, { backgroundColor: colors.amberLight }]}>
-          <Text style={[styles.orgText, { color: colors.amber }]} numberOfLines={1}>{user?.orgName?.split(" ")[0]}</Text>
-        </View>
+        <TouchableOpacity
+          onPress={() => router.push("/(console)/" as any)}
+          style={[styles.consoleBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        >
+          <Ionicons name="desktop-outline" size={14} color={colors.mutedForeground} />
+          <Text style={[styles.consoleBtnText, { color: colors.mutedForeground }]}>Console</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Today stats */}
@@ -99,10 +113,15 @@ export default function TodayScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Quick actions */}
+      {/* Quick actions — RBAC filtered */}
       <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Actions rapides</Text>
       <View style={styles.actions}>
-        {QUICK_ACTIONS.map((a) => (
+        {ALL_QUICK_ACTIONS.filter((a) => {
+          if (a.permission === "farmer.create")   return canCreateFarmer;
+          if (a.permission === "delivery.create") return canCreateDelivery;
+          if (a.permission === "lot.view")        return canViewLots;
+          return true;
+        }).map((a) => (
           <Pressable
             key={a.label}
             onPress={() => router.push(a.route as any)}
@@ -151,8 +170,9 @@ const styles = StyleSheet.create({
   greetRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 },
   greeting: { fontSize: 13, fontFamily: "Inter_400Regular" },
   name: { fontSize: 26, fontFamily: "Inter_700Bold", letterSpacing: -0.5, marginTop: 2 },
-  orgPill: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, maxWidth: 160 },
-  orgText: { fontSize: 12, fontFamily: "Inter_600SemiBold" },
+  rolePill: { fontSize: 11, fontFamily: "Inter_500Medium", marginTop: 4 },
+  consoleBtn: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1, marginTop: 4 },
+  consoleBtnText: { fontSize: 12, fontFamily: "Inter_500Medium" },
   statsRow: { flexDirection: "row", gap: 10, marginBottom: 12 },
   statCard: { flex: 1, padding: 12, borderRadius: 14, borderWidth: 1, alignItems: "center", gap: 4 },
   statValue: { fontSize: 20, fontFamily: "Inter_700Bold" },

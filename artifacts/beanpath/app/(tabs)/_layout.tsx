@@ -74,14 +74,14 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Today",
+          title: "Tableau de bord",
           tabBarIcon: ({ color }) => <Ionicons name="today-outline" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="farmers"
         options={{
-          title: "Farmers",
+          title: "Agriculteurs",
           headerShown: false,
           tabBarIcon: ({ color }) => <Ionicons name="people-outline" size={22} color={color} />,
         }}
@@ -89,7 +89,7 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="collect"
         options={{
-          title: "Collect",
+          title: "Collecte",
           headerShown: false,
           tabBarIcon: ({ color }) => <Ionicons name="scale-outline" size={22} color={color} />,
         }}
@@ -105,7 +105,7 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="me"
         options={{
-          title: "Me",
+          title: "Profil",
           headerShown: false,
           tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={22} color={color} />,
         }}

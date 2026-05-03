@@ -17,6 +17,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider } from "@/context/AuthContext";
 import { DataProvider } from "@/context/DataContext";
 import { SyncProvider } from "@/context/SyncContext";
+import { ToastProvider } from "@/context/ToastContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,11 +26,11 @@ const queryClient = new QueryClient();
 function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="index"     options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)"    options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)"    options={{ headerShown: false }} />
       <Stack.Screen name="(console)" options={{ headerShown: false }} />
-      <Stack.Screen name="trace" options={{ headerShown: false }} />
+      <Stack.Screen name="trace"     options={{ headerShown: false }} />
     </Stack>
   );
 }
@@ -43,9 +44,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
-    }
+    if (fontsLoaded || fontError) SplashScreen.hideAsync();
   }, [fontsLoaded, fontError]);
 
   if (!fontsLoaded && !fontError) return null;
@@ -59,7 +58,9 @@ export default function RootLayout() {
               <SyncProvider>
                 <GestureHandlerRootView style={{ flex: 1 }}>
                   <KeyboardProvider>
-                    <RootLayoutNav />
+                    <ToastProvider>
+                      <RootLayoutNav />
+                    </ToastProvider>
                   </KeyboardProvider>
                 </GestureHandlerRootView>
               </SyncProvider>

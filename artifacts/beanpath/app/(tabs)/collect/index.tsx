@@ -7,10 +7,13 @@ import {
   StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AccessDeniedBanner, RoleGate } from "@/components/RoleGate";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useAuth } from "@/context/AuthContext";
 import { useData, type Farmer } from "@/context/DataContext";
 import { useSync } from "@/context/SyncContext";
+import { useToast } from "@/context/ToastContext";
+import { usePermission } from "@/hooks/usePermission";
 import { useColors } from "@/hooks/useColors";
 
 /**
@@ -45,6 +48,8 @@ export default function CollectScreen() {
   const { user } = useAuth();
   const { farmers, stations, addDelivery, registers } = useData();
   const { addPending } = useSync();
+  const { showSuccess, showError } = useToast();
+  const canCreate = usePermission("delivery.create");
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ farmerId?: string; farmerName?: string; farmerBioId?: string }>();
@@ -99,33 +104,55 @@ export default function CollectScreen() {
   const handleSave = async () => {
     if (!selectedFarmer) return;
     setSaving(true);
-    if (Platform.OS !== "web") await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    const station = stations.find((s) => s.id === selectedFarmer.stationId) ?? stations[0];
-    await addDelivery({
-      farmerId: selectedFarmer.id,
-      farmerName: `${selectedFarmer.firstName} ${selectedFarmer.lastName}`,
-      farmerBioId: selectedFarmer.bioId,
-      stationId: station?.id ?? "st_kahisa",
-      stationName: station?.name ?? "Station",
-      groupement: selectedFarmer.groupement,
-      village: selectedFarmer.village,
-      purchaseDate,
-      receptionDate: today(),
-      receiptNo: receiptNo || nextReceiptNo,
-      cherryRegisterNo: cherryRegisterNo || nextRegisterNo,
-      deliveryReportNo: deliveryReportNo || currentReportNo,
-      quantityBidons: qty,
-      pricePerBidonFC: effectivePrice,
-      totalFC,
-      exchangeRateFC_USD: parseFloat(exchangeRate),
-      paymentMethod: payMethod,
-      synced: false,
-      recordedAt: new Date().toISOString(),
-    });
-    addPending();
-    setSaving(false);
-    router.back();
+    try {
+      if (Platform.OS !== "web") await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      const station = stations.find((s) => s.id === selectedFarmer.stationId) ?? stations[0];
+      const usedReceiptNo = receiptNo || nextReceiptNo;
+      await addDelivery({
+        farmerId: selectedFarmer.id,
+        farmerName: `${selectedFarmer.firstName} ${selectedFarmer.lastName}`,
+        farmerBioId: selectedFarmer.bioId,
+        stationId: station?.id ?? "st_kahisa",
+        stationName: station?.name ?? "Station",
+        groupement: selectedFarmer.groupement,
+        village: selectedFarmer.village,
+        purchaseDate,
+        receptionDate: today(),
+        receiptNo: usedReceiptNo,
+        cherryRegisterNo: cherryRegisterNo || nextRegisterNo,
+        deliveryReportNo: deliveryReportNo || currentReportNo,
+        quantityBidons: qty,
+        pricePerBidonFC: effectivePrice,
+        totalFC,
+        exchangeRateFC_USD: parseFloat(exchangeRate),
+        paymentMethod: payMethod,
+        synced: false,
+        recordedAt: new Date().toISOString(),
+      });
+      addPending();
+      showSuccess(
+        "Livraison enregistrée",
+        `Reçu #${usedReceiptNo} · ${qty} bidons · ${totalFC.toLocaleString()} FC`
+      );
+      router.back();
+    } catch (err: any) {
+      showError("Erreur d'enregistrement", err?.message ?? "Vérifiez les données et réessayez.");
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (!canCreate) {
+    return (
+      <View style={[styles.root, { backgroundColor: colors.background, padding: 20, paddingTop: 60 }]}>
+        <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 24 }}>
+          <Ionicons name="arrow-back" size={20} color={colors.foreground} />
+          <Text style={{ color: colors.mutedForeground, fontFamily: "Inter_400Regular", fontSize: 13 }}>Retour</Text>
+        </TouchableOpacity>
+        <AccessDeniedBanner message="Vous n'avez pas l'autorisation d'enregistrer des livraisons de cerises." />
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>

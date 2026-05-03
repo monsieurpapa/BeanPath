@@ -7,10 +7,13 @@ import {
   Text, TextInput, TouchableOpacity, View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AccessDeniedBanner } from "@/components/RoleGate";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
 import { useSync } from "@/context/SyncContext";
+import { useToast } from "@/context/ToastContext";
+import { usePermission } from "@/hooks/usePermission";
 import { useColors } from "@/hooks/useColors";
 
 // Auto-generate a BioID from cooperative prefix + groupement code + sequence
@@ -39,6 +42,8 @@ export default function NewFarmerScreen() {
   const { addFarmer, farmers, stations } = useData();
   const { addPending } = useSync();
   const { user } = useAuth();
+  const { showSuccess, showError } = useToast();
+  const canCreate = usePermission("farmer.create");
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const [saving, setSaving] = useState(false);
@@ -75,28 +80,50 @@ export default function NewFarmerScreen() {
   const handleSave = async () => {
     if (!isValid) return;
     setSaving(true);
-    if (Platform.OS !== "web") await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    const station = stations.find((s) => s.groupement.toLowerCase() === form.groupement.toLowerCase()) ?? stations[0];
-    await addFarmer({
-      bioId: form.bioId || generateBioId("TCC", form.groupement, form.village, farmers.length),
-      firstName: form.firstName.trim(),
-      lastName: form.lastName.trim().toUpperCase(),
-      phone: form.phone,
-      age: form.age ? parseInt(form.age) : undefined,
-      gender: form.gender,
-      territoire: form.territoire,
-      groupement: form.groupement,
-      village: form.village.trim(),
-      stationId: station?.id ?? "st_kahisa",
-      coopId: user?.orgId ?? "coop_tcc",
-      nbPieds: parseInt(form.nbPieds) || 0,
-      groupRole: form.groupRole,
-      crop: form.crop,
-    });
-    addPending();
-    setSaving(false);
-    router.back();
+    try {
+      if (Platform.OS !== "web") await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      const station = stations.find((s) => s.groupement.toLowerCase() === form.groupement.toLowerCase()) ?? stations[0];
+      const bioId = form.bioId || generateBioId("TCC", form.groupement, form.village, farmers.length);
+      await addFarmer({
+        bioId,
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim().toUpperCase(),
+        phone: form.phone,
+        age: form.age ? parseInt(form.age) : undefined,
+        gender: form.gender,
+        territoire: form.territoire,
+        groupement: form.groupement,
+        village: form.village.trim(),
+        stationId: station?.id ?? "st_kahisa",
+        coopId: user?.orgId ?? "coop_tcc",
+        nbPieds: parseInt(form.nbPieds) || 0,
+        groupRole: form.groupRole,
+        crop: form.crop,
+      });
+      addPending();
+      showSuccess(
+        "Agriculteur inscrit",
+        `${form.firstName} ${form.lastName.toUpperCase()} · Code Bio: ${bioId}`
+      );
+      router.back();
+    } catch (err: any) {
+      showError("Erreur d'inscription", err?.message ?? "Vérifiez les informations et réessayez.");
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (!canCreate) {
+    return (
+      <View style={[styles.root, { backgroundColor: colors.background, padding: 20, paddingTop: 60 }]}>
+        <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 24 }}>
+          <Ionicons name="arrow-back" size={20} color={colors.background === "#fafaf9" ? "#1c1917" : "#fafaf9"} />
+          <Text style={{ color: "#78716c", fontFamily: "Inter_400Regular", fontSize: 13 }}>Retour</Text>
+        </TouchableOpacity>
+        <AccessDeniedBanner message="Vous n'avez pas l'autorisation d'inscrire de nouveaux agriculteurs." />
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>

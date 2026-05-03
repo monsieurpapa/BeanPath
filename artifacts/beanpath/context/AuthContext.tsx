@@ -41,17 +41,40 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 const AUTH_KEY = "@beanpath:user";
 
-const MOCK_ORG_BY_ROLE: Record<UserRole, { orgName: string; orgCurrency: string; cropFocus: CropFocus; country: string }> = {
-  field_agent: { orgName: "Bukomero Coffee Cooperative", orgCurrency: "UGX", cropFocus: "coffee", country: "UG" },
-  lead_farmer: { orgName: "Bukomero Coffee Cooperative", orgCurrency: "UGX", cropFocus: "coffee", country: "UG" },
-  station_operator: { orgName: "Kigezi Washing Station", orgCurrency: "UGX", cropFocus: "coffee", country: "UG" },
-  transporter: { orgName: "Safari Logistics Ltd", orgCurrency: "KES", cropFocus: "both", country: "KE" },
-  mill_operator: { orgName: "Kampala Dry Mill", orgCurrency: "UGX", cropFocus: "coffee", country: "UG" },
-  qc_grader: { orgName: "EAFCA Quality Labs", orgCurrency: "USD", cropFocus: "coffee", country: "ET" },
-  exporter: { orgName: "Great Lakes Exports", orgCurrency: "USD", cropFocus: "both", country: "RW" },
-  buyer: { orgName: "Nordic Roasters AS", orgCurrency: "EUR", cropFocus: "coffee", country: "NO" },
-  coop_admin: { orgName: "Bukomero Coffee Cooperative", orgCurrency: "UGX", cropFocus: "coffee", country: "UG" },
-  certifier: { orgName: "FLO-CERT GmbH", orgCurrency: "EUR", cropFocus: "both", country: "DE" },
+/**
+ * Mock org data per role — all DRC-context organisations.
+ * In production this comes from the SaaS tenant API.
+ */
+const MOCK_ORG_BY_ROLE: Record<UserRole, {
+  orgName: string;
+  orgCurrency: string;
+  cropFocus: CropFocus;
+  country: string;
+}> = {
+  field_agent:      { orgName: "TCC — Tounga wa Café Congo",     orgCurrency: "FC",  cropFocus: "coffee", country: "CD" },
+  lead_farmer:      { orgName: "TCC — Tounga wa Café Congo",     orgCurrency: "FC",  cropFocus: "coffee", country: "CD" },
+  station_operator: { orgName: "Station de lavage KAHISA",       orgCurrency: "FC",  cropFocus: "coffee", country: "CD" },
+  transporter:      { orgName: "Transport Kivu SARL",            orgCurrency: "FC",  cropFocus: "both",   country: "CD" },
+  mill_operator:    { orgName: "Moulin de Bukavu SARL",          orgCurrency: "FC",  cropFocus: "coffee", country: "CD" },
+  qc_grader:        { orgName: "Coffee Quality Institute — DRC", orgCurrency: "USD", cropFocus: "coffee", country: "CD" },
+  exporter:         { orgName: "Great Lakes Export DRC",         orgCurrency: "USD", cropFocus: "both",   country: "CD" },
+  buyer:            { orgName: "Nordic Roasters AS",             orgCurrency: "EUR", cropFocus: "coffee", country: "NO" },
+  coop_admin:       { orgName: "NAKEZA SARL",                    orgCurrency: "FC",  cropFocus: "coffee", country: "CD" },
+  certifier:        { orgName: "FLO-CERT GmbH",                  orgCurrency: "EUR", cropFocus: "both",   country: "DE" },
+};
+
+/** Sample names per role for demo realism */
+const DEMO_NAMES: Record<UserRole, string> = {
+  field_agent:      "Bulonza MUDUMBI",
+  lead_farmer:      "Shamavu MIRUHO",
+  station_operator: "Jean-Baptiste KABILA",
+  transporter:      "Serge MUHINDO",
+  mill_operator:    "Alexis NGOIE",
+  qc_grader:        "Dr. Marie LUKUSA",
+  exporter:         "Patrick MWAMBA",
+  buyer:            "Lars ERIKSEN",
+  coop_admin:       "Bishops KAJEREGE",
+  certifier:        "Sophie MÜLLER",
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -68,17 +91,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = useCallback(async (role: UserRole, credentials: { phone?: string; email?: string }) => {
     const org = MOCK_ORG_BY_ROLE[role];
     const u: User = {
-      id: "usr_" + Math.random().toString(36).slice(2, 10),
-      name: credentials.phone ? "Amara Kone" : "Jean-Pierre Habimana",
-      phone: credentials.phone,
-      email: credentials.email,
+      id:          "usr_" + Math.random().toString(36).slice(2, 10),
+      name:        DEMO_NAMES[role],
+      phone:       credentials.phone,
+      email:       credentials.email,
       role,
-      orgId: "org_" + org.orgName.replace(/\s/g, "_").toLowerCase(),
-      orgName: org.orgName,
+      orgId:       "org_" + org.orgName.replace(/\W+/g, "_").toLowerCase(),
+      orgName:     org.orgName,
       orgCurrency: org.orgCurrency,
-      cropFocus: org.cropFocus,
-      locale: "en",
-      country: org.country,
+      cropFocus:   org.cropFocus,
+      locale:      "fr",
+      country:     org.country,
     };
     setUser(u);
     await AsyncStorage.setItem(AUTH_KEY, JSON.stringify(u));
