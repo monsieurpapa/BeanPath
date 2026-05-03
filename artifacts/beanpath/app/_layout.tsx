@@ -29,7 +29,7 @@ function RootLayoutNav() {
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="(console)" options={{ headerShown: false }} />
-      <Stack.Screen name="trace/[shortCode]" options={{ headerShown: false }} />
+      <Stack.Screen name="trace" options={{ headerShown: false }} />
     </Stack>
   );
 }

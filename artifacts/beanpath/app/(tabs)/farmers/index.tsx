@@ -21,8 +21,9 @@ export default function FarmersScreen() {
       (f) =>
         f.firstName.toLowerCase().includes(q) ||
         f.lastName.toLowerCase().includes(q) ||
-        f.householdCode.toLowerCase().includes(q) ||
-        f.village.toLowerCase().includes(q)
+        f.bioId.toLowerCase().includes(q) ||
+        f.village.toLowerCase().includes(q) ||
+        f.groupement.toLowerCase().includes(q)
     );
   }, [farmers, query]);
 
@@ -36,7 +37,7 @@ export default function FarmersScreen() {
             style={[styles.searchInput, { color: colors.foreground }]}
             value={query}
             onChangeText={setQuery}
-            placeholder="Search farmers, codes, villages…"
+            placeholder="Nom, Code Bio, groupement, village…"
             placeholderTextColor={colors.mutedForeground}
           />
           {!!query && (

@@ -8,11 +8,11 @@ import { type LotStage, useData } from "@/context/DataContext";
 import { useColors } from "@/hooks/useColors";
 
 const FILTERS: { label: string; stages: LotStage[] | null }[] = [
-  { label: "All", stages: null },
-  { label: "Cherry", stages: ["cherry"] },
-  { label: "Processing", stages: ["wet_parchment", "drying", "dry_parchment"] },
-  { label: "Green", stages: ["green"] },
-  { label: "Moving", stages: ["in_transit", "shipped"] },
+  { label: "Tous", stages: null },
+  { label: "Réception", stages: ["cherry_received"] },
+  { label: "Traitement", stages: ["pulping", "fermenting", "washing"] },
+  { label: "Séchage", stages: ["drying", "dry_parchment"] },
+  { label: "Export", stages: ["hulling", "graded", "bagged", "in_transit", "shipped"] },
 ];
 
 export default function LotsScreen() {
@@ -27,42 +27,44 @@ export default function LotsScreen() {
     return lots.filter((l) => stages.includes(l.stage));
   }, [lots, filterIdx]);
 
-  const totalKg = useMemo(() => lots.reduce((s, l) => s + l.weightGrams / 1000, 0), [lots]);
+  const totalKg = useMemo(() => lots.reduce((s, l) => s + l.weightKg, 0), [lots]);
+  const totalBidons = useMemo(() => lots.reduce((s, l) => s + l.bidonCount, 0), [lots]);
+  const eudrCount = lots.filter((l) => l.certifications.includes("eudr")).length;
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      {/* Header stats */}
+      {/* Stats */}
       <View style={[styles.statsBar, { backgroundColor: colors.surface, borderBottomColor: colors.border, paddingTop: Platform.OS === "web" ? 80 : 0 }]}>
         <View style={styles.stat}>
           <Text style={[styles.statVal, { color: colors.foreground }]}>{lots.length}</Text>
-          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>Active lots</Text>
+          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>Lots actifs</Text>
         </View>
-        <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+        <View style={[styles.div, { backgroundColor: colors.border }]} />
+        <View style={styles.stat}>
+          <Text style={[styles.statVal, { color: colors.foreground }]}>{totalBidons.toLocaleString()}</Text>
+          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>Bidons totaux</Text>
+        </View>
+        <View style={[styles.div, { backgroundColor: colors.border }]} />
         <View style={styles.stat}>
           <Text style={[styles.statVal, { color: colors.foreground }]}>{(totalKg / 1000).toFixed(2)} MT</Text>
-          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>Total weight</Text>
+          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>Poids total</Text>
         </View>
-        <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+        <View style={[styles.div, { backgroundColor: colors.border }]} />
         <View style={styles.stat}>
-          <Text style={[styles.statVal, { color: colors.foreground }]}>{lots.filter((l) => l.certifications.includes("eudr")).length}</Text>
-          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>EUDR ready</Text>
+          <Text style={[styles.statVal, { color: colors.foreground }]}>{eudrCount}</Text>
+          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>EUDR prêts</Text>
         </View>
       </View>
 
-      {/* Filter chips */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterRow}
-        style={{ borderBottomWidth: 1, borderBottomColor: colors.border }}
-      >
+      {/* Filters */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow} style={{ borderBottomWidth: 1, borderBottomColor: colors.border }}>
         {FILTERS.map((f, i) => (
           <Pressable
             key={f.label}
             onPress={() => setFilterIdx(i)}
-            style={[styles.filterChip, { backgroundColor: filterIdx === i ? colors.primary : colors.surface, borderColor: filterIdx === i ? colors.primary : colors.border }]}
+            style={[styles.chip, { backgroundColor: filterIdx === i ? colors.primary : colors.surface, borderColor: filterIdx === i ? colors.primary : colors.border }]}
           >
-            <Text style={[styles.filterText, { color: filterIdx === i ? "#fff" : colors.mutedForeground }]}>{f.label}</Text>
+            <Text style={[styles.chipText, { color: filterIdx === i ? "#fff" : colors.mutedForeground }]}>{f.label}</Text>
           </Pressable>
         ))}
       </ScrollView>
@@ -72,7 +74,7 @@ export default function LotsScreen() {
         keyExtractor={(l) => l.id}
         renderItem={({ item }) => <LotCard lot={item} />}
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 90 }]}
-        ListEmptyComponent={<EmptyState icon="layers-outline" title="No lots found" subtitle="Lots will appear here after collection and processing." />}
+        ListEmptyComponent={<EmptyState icon="layers-outline" title="Aucun lot trouvé" subtitle="Les lots apparaissent ici après réception des cerises à la station." />}
         showsVerticalScrollIndicator={false}
       />
     </View>
@@ -81,13 +83,13 @@ export default function LotsScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  statsBar: { flexDirection: "row", paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1 },
+  statsBar: { flexDirection: "row", paddingHorizontal: 12, paddingVertical: 12, borderBottomWidth: 1 },
   stat: { flex: 1, alignItems: "center" },
-  statVal: { fontSize: 18, fontFamily: "Inter_700Bold" },
-  statLabel: { fontSize: 10, fontFamily: "Inter_400Regular", marginTop: 2 },
-  statDivider: { width: 1, marginVertical: 4 },
+  statVal: { fontSize: 16, fontFamily: "Inter_700Bold" },
+  statLabel: { fontSize: 9, fontFamily: "Inter_400Regular", marginTop: 2, textAlign: "center" },
+  div: { width: 1, marginVertical: 4 },
   filterRow: { paddingHorizontal: 12, paddingVertical: 10, gap: 8 },
-  filterChip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1 },
-  filterText: { fontSize: 12, fontFamily: "Inter_500Medium" },
+  chip: { paddingHorizontal: 13, paddingVertical: 7, borderRadius: 20, borderWidth: 1 },
+  chipText: { fontSize: 12, fontFamily: "Inter_500Medium" },
   list: { padding: 16 },
 });

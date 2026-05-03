@@ -10,19 +10,17 @@ import { type LotStage, useData } from "@/context/DataContext";
 import { useColors } from "@/hooks/useColors";
 
 const STAGE_FILTERS: { label: string; stages: LotStage[] | null }[] = [
-  { label: "All", stages: null },
-  { label: "Cherry", stages: ["cherry"] },
-  { label: "Wet parchment", stages: ["wet_parchment"] },
-  { label: "Drying", stages: ["drying"] },
-  { label: "Dry parchment", stages: ["dry_parchment"] },
-  { label: "Green", stages: ["green"] },
-  { label: "In transit", stages: ["in_transit"] },
-  { label: "Shipped", stages: ["shipped"] },
+  { label: "Tous", stages: null },
+  { label: "Réception", stages: ["cherry_received"] },
+  { label: "Traitement", stages: ["pulping", "fermenting", "washing"] },
+  { label: "Séchage", stages: ["drying", "dry_parchment"] },
+  { label: "Export", stages: ["hulling", "graded", "bagged", "in_transit", "shipped"] },
+  { label: "Fermé", stages: ["closed"] },
 ];
 
-function formatWeight(g: number) {
-  if (g >= 1_000_000) return (g / 1_000_000).toFixed(2) + " MT";
-  return (g / 1000).toFixed(0) + " kg";
+function formatWeight(kg: number) {
+  if (kg >= 1000) return (kg / 1000).toFixed(2) + " MT";
+  return kg.toFixed(0) + " kg";
 }
 
 export default function LotExplorerScreen() {
@@ -79,7 +77,7 @@ export default function LotExplorerScreen() {
               <StageTag stage={lot.stage} size="sm" />
             </View>
             <View style={styles.rowMeta}>
-              <Text style={[styles.metaText, { color: colors.mutedForeground }]}>{lot.crop} · {formatWeight(lot.weightGrams)} · {lot.farmerCount} farmers</Text>
+              <Text style={[styles.metaText, { color: colors.mutedForeground }]}>{lot.crop === "coffee" ? "Café" : "Cacao"} · {formatWeight(lot.weightKg)} · {lot.farmerCount} agriculteurs</Text>
             </View>
             <View style={styles.certs}>
               {lot.certifications.map((c) => <CertBadge key={c} regime={c} />)}
