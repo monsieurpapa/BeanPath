@@ -160,12 +160,42 @@ export default function ConsoleDashboard() {
         ))}
       </View>
 
+      {/* Document register overview */}
+      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Documents de collecte</Text>
+      <View style={[styles.tableCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <View style={[styles.tableHeader, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+          {["Document", "Quantité", "Bidons", "Total FC"].map((h) => (
+            <Text key={h} style={[styles.tableHead, { color: colors.mutedForeground, flex: h === "Total FC" ? 1.4 : 1 }]}>{h}</Text>
+          ))}
+        </View>
+        <TouchableOpacity
+          onPress={() => router.push("/(console)/registers" as any)}
+          style={[styles.tableRow, { borderBottomWidth: 1, borderBottomColor: colors.border }]}
+        >
+          <Text style={[styles.tableCell, { color: colors.foreground, flex: 1, fontFamily: "Inter_500Medium" }]}>Registres</Text>
+          <Text style={[styles.tableCell, { color: colors.primary, flex: 1, fontFamily: "Inter_700Bold" }]}>{registers.length}</Text>
+          <Text style={[styles.tableCell, { color: colors.foreground, flex: 1 }]}>{totalBidons}</Text>
+          <Text style={[styles.tableCell, { color: colors.primary, flex: 1.4, fontFamily: "Inter_600SemiBold" }]}>{formatFC(totalFC)}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => router.push("/(console)/reports" as any)}
+          style={styles.tableRow}
+        >
+          <Text style={[styles.tableCell, { color: colors.foreground, flex: 1, fontFamily: "Inter_500Medium" }]}>Rapports</Text>
+          <Text style={[styles.tableCell, { color: colors.primary, flex: 1, fontFamily: "Inter_700Bold" }]}>{reports.length}</Text>
+          <Text style={[styles.tableCell, { color: colors.foreground, flex: 1 }]}>{totalBidons}</Text>
+          <Text style={[styles.tableCell, { color: colors.primary, flex: 1.4, fontFamily: "Inter_600SemiBold" }]}>{formatFC(totalFC)}</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Navigation */}
       <Text style={[styles.sectionTitle, { color: colors.foreground, marginTop: 4 }]}>Console</Text>
       <View style={styles.navGrid}>
         {[
-          { label: "Explorateur de lots", icon: "layers-outline" as const, route: "/(console)/lots/" as const },
-          { label: "Réconciliation", icon: "git-compare-outline" as const, route: "/(console)/reconciliation" as const },
+          { label: "Registres des cerises", icon: "list-outline" as const, route: "/(console)/registers", sub: `${registers.length} registres · ${totalBidons} bidons` },
+          { label: "Rapports de livraison", icon: "folder-outline" as const, route: "/(console)/reports", sub: `${reports.length} rapports de transport` },
+          { label: "Explorateur de lots", icon: "layers-outline" as const, route: "/(console)/lots/", sub: `${lots.length} lots en traitement` },
+          { label: "Réconciliation", icon: "git-compare-outline" as const, route: "/(console)/reconciliation", sub: `${conflictCount} conflit${conflictCount !== 1 ? "s" : ""} en attente` },
         ].map((n) => (
           <Pressable
             key={n.label}
@@ -173,7 +203,10 @@ export default function ConsoleDashboard() {
             style={({ pressed }) => [styles.navCard, { backgroundColor: colors.card, borderColor: colors.border, opacity: pressed ? 0.75 : 1 }]}
           >
             <View style={[styles.navIcon, { backgroundColor: colors.amberLight }]}><Ionicons name={n.icon} size={20} color={colors.primary} /></View>
-            <Text style={[styles.navLabel, { color: colors.foreground }]}>{n.label}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.navLabel, { color: colors.foreground }]}>{n.label}</Text>
+              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{n.sub}</Text>
+            </View>
             <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
           </Pressable>
         ))}
@@ -211,5 +244,6 @@ const styles = StyleSheet.create({
   navGrid: { gap: 10, marginBottom: 8 },
   navCard: { flexDirection: "row", alignItems: "center", gap: 14, padding: 16, borderRadius: 14, borderWidth: 1 },
   navIcon: { width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center" },
-  navLabel: { flex: 1, fontSize: 14, fontFamily: "Inter_500Medium" },
+  navLabel: { fontSize: 14, fontFamily: "Inter_500Medium" },
+  navSub: { fontSize: 11, fontFamily: "Inter_400Regular", marginTop: 1 },
 });

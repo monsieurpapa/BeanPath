@@ -19,6 +19,8 @@ export default function ConsoleLayout() {
       <Stack.Screen name="index" options={{ title: "Operator Console" }} />
       <Stack.Screen name="lots/index" options={{ title: "Lot Explorer" }} />
       <Stack.Screen name="lots/[id]" options={{ title: "Lot Dossier" }} />
+      <Stack.Screen name="registers" options={{ title: "Registres des cerises" }} />
+      <Stack.Screen name="reports" options={{ title: "Rapports de livraison" }} />
       <Stack.Screen name="reconciliation" options={{ title: "Reconciliation Inbox" }} />
     </Stack>
   );
