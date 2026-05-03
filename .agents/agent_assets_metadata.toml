@@ -18,8 +18,26 @@ uri = "file://artifacts/beanpath/assets/images/hero-farming.png"
 type = "image"
 title = "coffee farming hero"
 
+[[generated]]
+id = "q_Fn3OE78J5BZffU9-LAD"
+uri = "file://artifacts/beanpath-video/public/images/coffee-farm.png"
+type = "image"
+title = "DRC coffee farm with mist"
+
+[[generated]]
+id = "Ao5Yb7qAV2zzkcDVRM0aV"
+uri = "file://artifacts/beanpath-video/public/images/coffee-cherries.png"
+type = "image"
+title = "dark ripe coffee cherries"
+
 [[outputs]]
 id = "GtmYP5LmAR5PoFuOp1WWv"
 uri = "file://README.md"
 type = "text"
 title = "BeanPath README"
+
+[[outputs]]
+id = "YcakLJiprOMD9UJ9wCZl2"
+uri = "file://artifacts/beanpath-video/public/images/farmer.jpg"
+type = "image"
+title = "smiling African farmer in a coffee field, photorealistic, high quality"
