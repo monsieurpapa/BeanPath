@@ -1,0 +1,27 @@
+kind = "mobile"
+previewPath = "/"
+title = "BeanPath"
+version = "1.0.0"
+id = "artifacts/beanpath"
+router = "expo-domain"
+
+[[integratedSkills]]
+name = "expo"
+version = "1.0.0"
+
+[[services]]
+ensurePreviewReachable = "/status"
+name = "expo"
+paths = [ "/" ]
+localPort = 18777
+
+[services.development]
+run = "pnpm --filter @workspace/beanpath run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/beanpath", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/beanpath", "run", "serve" ]
+
+[services.env]
+PORT = "18777"
+BASE_PATH = "/"

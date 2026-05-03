@@ -1,0 +1,37 @@
+const colors = {
+  light: {
+    text: "#1c1917",
+    tint: "#b45309",
+    background: "#fafaf9",
+    foreground: "#1c1917",
+    card: "#ffffff",
+    cardForeground: "#1c1917",
+    primary: "#b45309",
+    primaryForeground: "#ffffff",
+    secondary: "#f5f5f4",
+    secondaryForeground: "#1c1917",
+    muted: "#e7e5e4",
+    mutedForeground: "#78716c",
+    accent: "#15803d",
+    accentForeground: "#ffffff",
+    destructive: "#b91c1c",
+    destructiveForeground: "#ffffff",
+    border: "#e7e5e4",
+    input: "#f5f5f4",
+    warning: "#d97706",
+    warningForeground: "#ffffff",
+    surface: "#f5f5f4",
+    // Named semantic tokens
+    amber: "#b45309",
+    amberLight: "#fef3c7",
+    green: "#15803d",
+    greenLight: "#dcfce7",
+    stone: "#78716c",
+    stoneLight: "#f5f5f4",
+    danger: "#b91c1c",
+    dangerLight: "#fee2e2",
+  },
+  radius: 12,
+};
+
+export default colors;
