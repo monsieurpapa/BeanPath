@@ -144,12 +144,7 @@ export default function TodayScreen() {
         </View>
       ) : (
         recent.map((d) => (
-          <TouchableOpacity
-            key={d.id}
-            onPress={() => router.push({ pathname: "/(tabs)/farmers/[id]", params: { id: d.farmerId } } as any)}
-            activeOpacity={0.75}
-            style={[styles.delivRow, { backgroundColor: colors.card, borderColor: colors.border }]}
-          >
+          <View key={d.id} style={[styles.delivRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <View style={[styles.delivIcon, { backgroundColor: colors.amberLight }]}>
               <Ionicons name="cube-outline" size={16} color={colors.primary} />
             </View>
@@ -162,7 +157,7 @@ export default function TodayScreen() {
               <Text style={[styles.delivTime, { color: colors.mutedForeground }]}>{timeAgo(d.recordedAt)}</Text>
               {!d.synced && <View style={[styles.pendingDot, { backgroundColor: colors.warning }]} />}
             </View>
-          </TouchableOpacity>
+          </View>
         ))
       )}
     </ScrollView>

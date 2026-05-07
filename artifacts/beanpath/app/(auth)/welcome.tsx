@@ -383,133 +383,69 @@ function WaitlistSection({ isDesktop }: { isDesktop: boolean }) {
   );
 }
 
-// ─── Access section ───────────────────────────────────────────────────────────
+// ─── Download / QR section ────────────────────────────────────────────────────
 
 const IOS_URL     = "https://apps.apple.com/app/expo-go/id982107779";
 const ANDROID_URL = "https://play.google.com/store/apps/details?id=host.exp.exponent";
 const EXPO_URL    = "https://bean-path-trace--monsieurpapa.replit.app/";
 
-function AccessSection({ isDesktop }: { isDesktop: boolean }) {
+function DownloadSection({ isDesktop }: { isDesktop: boolean }) {
   return (
     <View style={[dl.section, isDesktop && dl.sectionDesktop]}>
-      <Text style={dl.eyebrow}>Accéder à l'application</Text>
-      <Text style={dl.title}>Essayez BeanPath{"\n"}maintenant</Text>
+      <Text style={dl.eyebrow}>Application mobile</Text>
+      <Text style={dl.title}>Téléchargez{"\n"}BeanPath</Text>
       <Text style={dl.sub}>
-        BeanPath n'est pas encore sur l'App Store ou Google Play. Accédez immédiatement via le navigateur, ou installez Expo Go pour tester sur mobile.
+        Scannez le code QR avec votre téléphone pour télécharger Expo Go et accéder à l'application directement sur votre appareil.
       </Text>
 
       <View style={[dl.cards, isDesktop && dl.cardsDesktop]}>
+        {[
+          { label: "iPhone / iPad",    store: "App Store",    url: IOS_URL,     icon: "logo-apple"    as const, color: "#f5f5f5" },
+          { label: "Android",          store: "Google Play",  url: ANDROID_URL, icon: "logo-google"   as const, color: "#34a853" },
+        ].map((d) => (
+          <View key={d.label} style={dl.card}>
+            <View style={dl.cardTop}>
+              <Ionicons name={d.icon} size={20} color={d.color} />
+              <View>
+                <Text style={dl.deviceLabel}>{d.label}</Text>
+                <Text style={dl.storeLabel}>{d.store}</Text>
+              </View>
+            </View>
+            <View style={dl.qrWrap}>
+              <Image
+                source={{ uri: `https://api.qrserver.com/v1/create-qr-code/?size=130x130&bgcolor=0d1a0a&color=ffffff&data=${encodeURIComponent(d.url)}` }}
+                style={{ width: 130, height: 130, borderRadius: 4 }}
+              />
+            </View>
+            <TouchableOpacity
+              onPress={() => { if (Platform.OS === "web") { (globalThis as any).open?.(d.url, "_blank"); } }}
+              style={dl.storeBtn}
+            >
+              <Ionicons name={d.icon} size={14} color="#fff" />
+              <Text style={dl.storeBtnText}>Ouvrir dans {d.store}</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
 
-        {/* ── Web — primary, highlighted ── */}
-        <View style={[dl.card, dl.cardHighlight]}>
-          <View style={dl.recommendedBadge}>
-            <Ionicons name="star" size={10} color="#fff" />
-            <Text style={dl.recommendedText}>Recommandé</Text>
-          </View>
+        {/* Web / Expo Go */}
+        <View style={[dl.card, { borderColor: "rgba(180,83,9,0.35)" }]}>
           <View style={dl.cardTop}>
-            <Ionicons name="globe-outline" size={20} color="#b45309" />
+            <Ionicons name="qr-code-outline" size={20} color="#b45309" />
             <View>
-              <Text style={dl.deviceLabel}>Accès Web direct</Text>
-              <Text style={dl.storeLabel}>Aucune installation · Tous navigateurs</Text>
-            </View>
-          </View>
-          <View style={dl.checkList}>
-            {[
-              "Toutes les fonctionnalités de l'app",
-              "Ordinateur, tablette et mobile",
-              "Disponible immédiatement",
-            ].map((f) => (
-              <View key={f} style={dl.checkRow}>
-                <Ionicons name="checkmark-circle" size={13} color="#15803d" />
-                <Text style={dl.checkText}>{f}</Text>
-              </View>
-            ))}
-          </View>
-          <TouchableOpacity
-            onPress={() => router.push("/(auth)/demo" as any)}
-            style={dl.primaryBtn}
-          >
-            <Ionicons name="flash" size={16} color="#fff" />
-            <Text style={dl.primaryBtnText}>Essayer la démo</Text>
-            <Ionicons name="arrow-forward" size={14} color="#fff" />
-          </TouchableOpacity>
-          <Text style={dl.primaryHint}>Accès immédiat · Aucune inscription · Gratuit</Text>
-        </View>
-
-        {/* ── iOS via Expo Go ── */}
-        <View style={dl.card}>
-          <View style={dl.cardTop}>
-            <Ionicons name="logo-apple" size={20} color="#f5f5f5" />
-            <View>
-              <Text style={dl.deviceLabel}>iPhone / iPad</Text>
-              <Text style={dl.storeLabel}>Via Expo Go · 2 étapes</Text>
-            </View>
-          </View>
-          <View style={dl.stepsBlock}>
-            <View style={dl.stepItem}>
-              <View style={dl.stepCircle}><Text style={dl.stepNum}>1</Text></View>
-              <View style={{ flex: 1 }}>
-                <Text style={dl.stepTitle}>Installer Expo Go</Text>
-                <TouchableOpacity
-                  onPress={() => { if (Platform.OS === "web") (globalThis as any).open?.(IOS_URL, "_blank"); }}
-                >
-                  <Text style={dl.stepLink}>App Store → gratuit</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={dl.stepItem}>
-              <View style={dl.stepCircle}><Text style={dl.stepNum}>2</Text></View>
-              <View style={{ flex: 1 }}>
-                <Text style={dl.stepTitle}>Scanner ce QR dans Expo Go</Text>
-                <Text style={dl.stepSub}>Lance BeanPath directement</Text>
-              </View>
+              <Text style={dl.deviceLabel}>Expo Go</Text>
+              <Text style={dl.storeLabel}>Accès développeur</Text>
             </View>
           </View>
           <View style={dl.qrWrap}>
             <Image
-              source={{ uri: `https://api.qrserver.com/v1/create-qr-code/?size=130x130&bgcolor=0d1a0a&color=ffffff&data=${encodeURIComponent(EXPO_URL)}` }}
+              source={{ uri: `https://api.qrserver.com/v1/create-qr-code/?size=130x130&bgcolor=0d1a0a&color=b45309&data=${encodeURIComponent(EXPO_URL)}` }}
               style={{ width: 130, height: 130, borderRadius: 4 }}
             />
           </View>
+          <Text style={dl.expoHint}>
+            Scannez avec Expo Go pour prévisualiser l'application
+          </Text>
         </View>
-
-        {/* ── Android via Expo Go ── */}
-        <View style={dl.card}>
-          <View style={dl.cardTop}>
-            <Ionicons name="logo-android" size={20} color="#34a853" />
-            <View>
-              <Text style={dl.deviceLabel}>Android</Text>
-              <Text style={dl.storeLabel}>Via Expo Go · 2 étapes</Text>
-            </View>
-          </View>
-          <View style={dl.stepsBlock}>
-            <View style={dl.stepItem}>
-              <View style={dl.stepCircle}><Text style={dl.stepNum}>1</Text></View>
-              <View style={{ flex: 1 }}>
-                <Text style={dl.stepTitle}>Installer Expo Go</Text>
-                <TouchableOpacity
-                  onPress={() => { if (Platform.OS === "web") (globalThis as any).open?.(ANDROID_URL, "_blank"); }}
-                >
-                  <Text style={dl.stepLink}>Google Play → gratuit</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={dl.stepItem}>
-              <View style={dl.stepCircle}><Text style={dl.stepNum}>2</Text></View>
-              <View style={{ flex: 1 }}>
-                <Text style={dl.stepTitle}>Scanner ce QR dans Expo Go</Text>
-                <Text style={dl.stepSub}>Lance BeanPath directement</Text>
-              </View>
-            </View>
-          </View>
-          <View style={dl.qrWrap}>
-            <Image
-              source={{ uri: `https://api.qrserver.com/v1/create-qr-code/?size=130x130&bgcolor=0d1a0a&color=34a853&data=${encodeURIComponent(EXPO_URL)}` }}
-              style={{ width: 130, height: 130, borderRadius: 4 }}
-            />
-          </View>
-        </View>
-
       </View>
     </View>
   );
@@ -635,11 +571,10 @@ export default function WelcomeScreen() {
                   {/* CTA buttons */}
                   <View style={[s.ctaGroup, isDesktop && s.ctaGroupDesktop]}>
                     <Pressable
-                      onPress={() => router.push("/(auth)/demo" as any)}
+                      onPress={() => router.push("/(auth)/personas" as any)}
                       style={({ pressed }) => [s.ctaPrimary, isDesktop && s.ctaPrimaryDesktop, pressed && { opacity: 0.88 }]}
                     >
-                      <Ionicons name="flash" size={17} color="#fff" />
-                      <Text style={s.ctaPrimaryText}>Essayer la démo</Text>
+                      <Text style={s.ctaPrimaryText}>Commencer maintenant</Text>
                       <Ionicons name="arrow-forward" size={17} color="#fff" />
                     </Pressable>
                     <TouchableOpacity
@@ -648,10 +583,6 @@ export default function WelcomeScreen() {
                     >
                       <Text style={s.ctaSecondaryText}>Déjà inscrit ? Se connecter</Text>
                     </TouchableOpacity>
-                  </View>
-                  <View style={s.accessNote}>
-                    <Ionicons name="checkmark-circle-outline" size={11} color="rgba(255,255,255,0.25)" />
-                    <Text style={s.accessNoteText}>Accès immédiat · Aucune inscription · Données fictives</Text>
                   </View>
                 </Animated.View>
               </View>
@@ -815,10 +746,10 @@ export default function WelcomeScreen() {
             </View>
           </View>
 
-          {/* ── Access / Download ── */}
+          {/* ── Download / QR ── */}
           <View style={{ paddingHorizontal: PX, marginBottom: 64 }}>
             <View style={CONTAINER}>
-              <AccessSection isDesktop={isDesktop} />
+              <DownloadSection isDesktop={isDesktop} />
             </View>
           </View>
 
@@ -846,11 +777,10 @@ export default function WelcomeScreen() {
                 </View>
                 <View style={[isDesktop && { flexShrink: 0 }, !isDesktop && { alignItems: "center" }]}>
                   <Pressable
-                    onPress={() => router.push("/(auth)/demo" as any)}
+                    onPress={() => router.push("/(auth)/personas" as any)}
                     style={({ pressed }) => [s.ctaBannerBtn, isDesktop && { paddingHorizontal: 32 }, pressed && { opacity: 0.88 }]}
                   >
-                    <Ionicons name="flash" size={16} color="#fff" />
-                    <Text style={s.ctaBannerBtnText}>Essayer la démo</Text>
+                    <Text style={s.ctaBannerBtnText}>Choisir mon profil</Text>
                     <Ionicons name="arrow-forward" size={16} color="#fff" />
                   </Pressable>
                 </View>
@@ -940,34 +870,21 @@ const mk = StyleSheet.create({
 // ─── Download styles ──────────────────────────────────────────────────────────
 
 const dl = StyleSheet.create({
-  section:          {},
-  sectionDesktop:   {},
-  eyebrow:          { fontSize: 10, fontFamily: "Inter_600SemiBold", color: "#b45309", textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 10 },
-  title:            { fontSize: 28, fontFamily: "Inter_700Bold", color: "#ffffff", letterSpacing: -0.8, lineHeight: 36, marginBottom: 14 },
-  sub:              { fontSize: 14, fontFamily: "Inter_400Regular", color: "rgba(255,255,255,0.50)", lineHeight: 22, marginBottom: 28 },
-  cards:            { flexDirection: "row", flexWrap: "wrap", gap: 14 },
-  cardsDesktop:     { flexWrap: "nowrap" },
-  card:             { flex: 1, minWidth: 160, backgroundColor: "rgba(255,255,255,0.04)", borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,255,255,0.09)", padding: 18, gap: 14 },
-  cardHighlight:    { borderColor: "rgba(180,83,9,0.45)", backgroundColor: "rgba(180,83,9,0.08)" },
-  cardTop:          { flexDirection: "row", alignItems: "center", gap: 10 },
-  deviceLabel:      { fontSize: 13, fontFamily: "Inter_600SemiBold", color: "#fff" },
-  storeLabel:       { fontSize: 10, color: "rgba(255,255,255,0.40)", fontFamily: "Inter_400Regular" },
-  recommendedBadge: { flexDirection: "row", alignItems: "center", gap: 4, alignSelf: "flex-start", backgroundColor: "#b45309", borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
-  recommendedText:  { fontSize: 9, fontFamily: "Inter_700Bold", color: "#fff", letterSpacing: 0.3 },
-  checkList:        { gap: 6 },
-  checkRow:         { flexDirection: "row", alignItems: "center", gap: 7 },
-  checkText:        { fontSize: 12, fontFamily: "Inter_400Regular", color: "rgba(255,255,255,0.65)", flex: 1 },
-  primaryBtn:       { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#b45309", borderRadius: 12, paddingVertical: 13, shadowColor: "#b45309", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 12 },
-  primaryBtnText:   { fontSize: 13, fontFamily: "Inter_700Bold", color: "#fff" },
-  primaryHint:      { fontSize: 10, color: "rgba(255,255,255,0.35)", textAlign: "center", fontFamily: "Inter_400Regular" },
-  stepsBlock:       { gap: 10 },
-  stepItem:         { flexDirection: "row", alignItems: "flex-start", gap: 10 },
-  stepCircle:       { width: 22, height: 22, borderRadius: 11, backgroundColor: "rgba(255,255,255,0.10)", borderWidth: 1, borderColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", flexShrink: 0 },
-  stepNum:          { fontSize: 10, fontFamily: "Inter_700Bold", color: "#fff" },
-  stepTitle:        { fontSize: 11, fontFamily: "Inter_600SemiBold", color: "rgba(255,255,255,0.75)", marginBottom: 2 },
-  stepLink:         { fontSize: 11, fontFamily: "Inter_500Medium", color: "#b45309" },
-  stepSub:          { fontSize: 10, fontFamily: "Inter_400Regular", color: "rgba(255,255,255,0.35)" },
-  qrWrap:           { backgroundColor: "#0d1a0a", borderRadius: 12, padding: 12, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)", alignSelf: "center" },
+  section:       {},
+  sectionDesktop:{},
+  eyebrow:       { fontSize: 10, fontFamily: "Inter_600SemiBold", color: "#b45309", textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 10 },
+  title:         { fontSize: 28, fontFamily: "Inter_700Bold", color: "#ffffff", letterSpacing: -0.8, lineHeight: 36, marginBottom: 14 },
+  sub:           { fontSize: 14, fontFamily: "Inter_400Regular", color: "rgba(255,255,255,0.50)", lineHeight: 22, marginBottom: 28 },
+  cards:         { flexDirection: "row", flexWrap: "wrap", gap: 14 },
+  cardsDesktop:  { flexWrap: "nowrap" },
+  card:          { flex: 1, minWidth: 160, backgroundColor: "rgba(255,255,255,0.04)", borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,255,255,0.09)", padding: 18, alignItems: "center", gap: 14 },
+  cardTop:       { flexDirection: "row", alignItems: "center", gap: 10, alignSelf: "flex-start" },
+  deviceLabel:   { fontSize: 13, fontFamily: "Inter_600SemiBold", color: "#fff" },
+  storeLabel:    { fontSize: 10, color: "rgba(255,255,255,0.40)", fontFamily: "Inter_400Regular" },
+  qrWrap:        { backgroundColor: "#0d1a0a", borderRadius: 12, padding: 12, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
+  storeBtn:      { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 10, paddingVertical: 8, paddingHorizontal: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)" },
+  storeBtnText:  { fontSize: 11, fontFamily: "Inter_600SemiBold", color: "#fff" },
+  expoHint:      { fontSize: 10, color: "rgba(255,255,255,0.35)", textAlign: "center", fontFamily: "Inter_400Regular", paddingHorizontal: 4 },
 });
 
 // ─── Waitlist styles ──────────────────────────────────────────────────────────
@@ -1050,8 +967,6 @@ const s = StyleSheet.create({
   ctaSecondary: { alignItems: "center", paddingVertical: 10 },
   ctaSecondaryDesktop: { paddingVertical: 18, paddingHorizontal: 0 },
   ctaSecondaryText: { color: "rgba(255,255,255,0.45)", fontSize: 13, fontFamily: "Inter_500Medium" },
-  accessNote: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 10 },
-  accessNoteText: { fontSize: 10, fontFamily: "Inter_400Regular", color: "rgba(255,255,255,0.22)", flex: 1 },
 
   // Stats
   statsStrip: { flexDirection: "row", alignItems: "center", backgroundColor: "rgba(255,255,255,0.04)", borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)", paddingVertical: 22 },

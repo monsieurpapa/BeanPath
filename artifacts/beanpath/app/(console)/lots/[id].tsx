@@ -1,12 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import React, { useMemo } from "react";
-import { Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CertBadge } from "@/components/CertBadge";
 import { StageTag } from "@/components/StageTag";
 import { useData } from "@/context/DataContext";
-import { useToast } from "@/context/ToastContext";
 import { useColors } from "@/hooks/useColors";
 
 function formatWeight(kg: number) {
@@ -34,24 +33,6 @@ export default function LotDossierScreen() {
   const { lots, deliveries, registers, farmers } = useData();
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { showInfo, showSuccess } = useToast();
-
-  const handleCopyRef = async (ref: string) => {
-    if (Platform.OS === "web" && (globalThis as any).navigator?.clipboard) {
-      try {
-        await (globalThis as any).navigator.clipboard.writeText(ref);
-        showSuccess("Référence copiée", ref);
-      } catch {
-        showInfo("Référence du lot", ref);
-      }
-    } else {
-      showInfo("Référence du lot", ref);
-    }
-  };
-
-  const handleDownloadDDS = () => {
-    showInfo("DDS PDF", "Le téléchargement du certificat DDS sera disponible dans la prochaine mise à jour.");
-  };
 
   const lot = useMemo(() => lots.find((l) => l.id === id), [lots, id]);
 
@@ -88,14 +69,8 @@ export default function LotDossierScreen() {
       {/* Hero */}
       <View style={[styles.hero, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={styles.heroTop}>
-          <View style={{ flex: 1 }}>
-            <Pressable
-              onPress={() => handleCopyRef(lot.ref)}
-              style={({ pressed }) => [styles.refRow, { opacity: pressed ? 0.7 : 1 }]}
-            >
-              <Text style={[styles.ref, { color: colors.foreground }]}>{lot.ref}</Text>
-              <Ionicons name="copy-outline" size={14} color={colors.mutedForeground} style={{ marginTop: 3 }} />
-            </Pressable>
+          <View>
+            <Text style={[styles.ref, { color: colors.foreground }]}>{lot.ref}</Text>
             <Text style={[styles.heroSub, { color: colors.mutedForeground }]}>
               {lot.crop === "coffee" ? "Café" : "Cacao"} · {lot.harvestSeason} · {lot.processingMethod ? lot.processingMethod.charAt(0).toUpperCase() + lot.processingMethod.slice(1) : ""}
             </Text>
@@ -140,10 +115,7 @@ export default function LotDossierScreen() {
               {lot.farmerCount} agriculteurs avec parcelles vérifiées. Aucun risque de déforestation détecté.
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={handleDownloadDDS}
-            style={[styles.eudrBtn, { backgroundColor: colors.accent }]}
-          >
+          <TouchableOpacity style={[styles.eudrBtn, { backgroundColor: colors.accent }]}>
             <Ionicons name="download-outline" size={14} color="#fff" />
             <Text style={styles.eudrBtnText}>DDS PDF</Text>
           </TouchableOpacity>
@@ -268,7 +240,6 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 16, paddingTop: 12 },
   hero: { borderRadius: 16, borderWidth: 1, padding: 16, marginBottom: 16 },
   heroTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 },
-  refRow: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 },
   ref: { fontSize: 20, fontFamily: "Inter_700Bold" },
   heroSub: { fontSize: 13, fontFamily: "Inter_400Regular", marginTop: 2 },
   heroStats: { flexDirection: "row", marginBottom: 12 },

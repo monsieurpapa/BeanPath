@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { FlatList, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -73,12 +72,7 @@ export default function LotsScreen() {
       <FlatList
         data={filtered}
         keyExtractor={(l) => l.id}
-        renderItem={({ item }) => (
-          <LotCard
-            lot={item}
-            onPress={() => router.push({ pathname: "/(console)/lots/[id]", params: { id: item.id } })}
-          />
-        )}
+        renderItem={({ item }) => <LotCard lot={item} />}
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 90 }]}
         ListEmptyComponent={<EmptyState icon="layers-outline" title="Aucun lot trouvé" subtitle="Les lots apparaissent ici après réception des cerises à la station." />}
         showsVerticalScrollIndicator={false}
