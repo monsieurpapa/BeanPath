@@ -505,59 +505,8 @@ function updateManifests(manifests, timestamp, baseUrl, assetsByHash) {
   console.log("Manifests updated");
 }
 
-async function buildWebExport(domain) {
-  console.log("Building Expo web export (for browser visitors)...");
-
-  const distDir = path.join(projectRoot, "dist");
-  if (fs.existsSync(distDir)) {
-    fs.rmSync(distDir, { recursive: true });
-  }
-
-  return new Promise((resolve, reject) => {
-    const env = {
-      ...process.env,
-      EXPO_PUBLIC_DOMAIN: domain,
-      NODE_ENV: "production",
-    };
-
-    const proc = spawn(
-      "pnpm",
-      ["exec", "expo", "export", "--platform", "web", "--output-dir", "dist"],
-      {
-        stdio: ["ignore", "pipe", "pipe"],
-        cwd: projectRoot,
-        env,
-      },
-    );
-
-    if (proc.stdout) {
-      proc.stdout.on("data", (d) => {
-        const line = d.toString().trim();
-        if (line) console.log(`[web-export] ${line}`);
-      });
-    }
-    if (proc.stderr) {
-      proc.stderr.on("data", (d) => {
-        const line = d.toString().trim();
-        if (line) console.error(`[web-export] ${line}`);
-      });
-    }
-
-    proc.on("close", (code) => {
-      if (code === 0) {
-        console.log("Web export complete → dist/");
-        resolve();
-      } else {
-        reject(new Error(`expo export exited with code ${code}`));
-      }
-    });
-
-    proc.on("error", reject);
-  });
-}
-
 async function main() {
-  console.log("Building BeanPath deployment (web + native)...");
+  console.log("Building static Expo Go deployment...");
 
   setupSignalHandlers();
 
@@ -569,10 +518,6 @@ async function main() {
   prepareDirectories(timestamp);
   clearMetroCache();
 
-  // Build the web (browser) version first — independent of Metro native build
-  await buildWebExport(domain);
-
-  // Now build native bundles (iOS + Android for Expo Go)
   await startMetro(domain, expoPublicReplId);
 
   const downloadTimeout = 600000;
@@ -608,7 +553,7 @@ async function main() {
     updateBundleUrls(timestamp, baseUrl);
   }
 
-  console.log("Updating manifests...");
+  console.log("Updating manifests and creating landing page...");
   updateManifests(manifests, timestamp, baseUrl, assetsByHash);
 
   console.log("Build complete! Deploy to:", baseUrl);
