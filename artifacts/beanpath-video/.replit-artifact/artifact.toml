@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/beanpath-video/"
+title = "BeanPath — 24h Launch Video"
+version = "1.0.0"
+id = "artifacts/beanpath-video"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/beanpath-video/", "/usecase" ]
+localPort = 23858
+
+[services.development]
+run = "pnpm --filter @workspace/beanpath-video run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/beanpath-video", "run", "build" ]
+publicDir = "artifacts/beanpath-video/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23858"
+BASE_PATH = "/beanpath-video/"

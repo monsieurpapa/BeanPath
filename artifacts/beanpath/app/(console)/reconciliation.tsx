@@ -4,6 +4,7 @@ import { Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, Vi
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmptyState } from "@/components/EmptyState";
 import { useSync } from "@/context/SyncContext";
+import { useToast } from "@/context/ToastContext";
 import { useColors } from "@/hooks/useColors";
 
 type ConflictItem = {
@@ -37,16 +38,29 @@ const SEED_CONFLICTS: ConflictItem[] = [
   },
 ];
 
+const KEEP_LABELS: Record<"mine" | "theirs" | "merge", string> = {
+  mine:   "Garder le mien",
+  theirs: "Garder le leur",
+  merge:  "Fusionner",
+};
+
 export default function ReconciliationScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { resolveConflict } = useSync();
+  const { showSuccess } = useToast();
   const [conflicts, setConflicts] = useState<ConflictItem[]>(SEED_CONFLICTS);
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const resolve = (id: string, keep: "mine" | "theirs" | "merge") => {
+    const conflict = conflicts.find((c) => c.id === id);
     setConflicts((prev) => prev.map((c) => c.id === id ? { ...c, resolved: true } : c));
+    setExpanded(null);
     resolveConflict();
+    showSuccess(
+      "Conflit résolu",
+      `${conflict?.aggregate ?? ""} — ${KEEP_LABELS[keep].toLowerCase()}`
+    );
   };
 
   const active = conflicts.filter((c) => !c.resolved);
@@ -62,11 +76,19 @@ export default function ReconciliationScreen() {
       <View style={[styles.summary, { backgroundColor: active.length > 0 ? colors.dangerLight : colors.greenLight, borderColor: active.length > 0 ? colors.danger + "30" : colors.accent + "30" }]}>
         <Ionicons name={active.length > 0 ? "warning-outline" : "checkmark-circle-outline"} size={20} color={active.length > 0 ? colors.danger : colors.accent} />
         <Text style={[styles.summaryText, { color: active.length > 0 ? colors.danger : colors.accent }]}>
-          {active.length > 0 ? `${active.length} conflict${active.length > 1 ? "s" : ""} require your attention` : "All conflicts resolved"}
+          {active.length > 0
+            ? `${active.length} conflit${active.length > 1 ? "s" : ""} nécessite${active.length > 1 ? "nt" : ""} votre attention`
+            : "Tous les conflits sont résolus"}
         </Text>
       </View>
 
-      {active.length === 0 && <EmptyState icon="checkmark-circle-outline" title="Inbox clear" subtitle="All conflicts have been resolved." />}
+      {active.length === 0 && (
+        <EmptyState
+          icon="checkmark-circle-outline"
+          title="Aucun conflit en attente"
+          subtitle="Tous les conflits de synchronisation ont été résolus."
+        />
+      )}
 
       {/* Active conflicts */}
       {active.map((c) => (
@@ -110,13 +132,13 @@ export default function ReconciliationScreen() {
               {/* Resolution buttons */}
               <View style={styles.resolutionRow}>
                 <Pressable onPress={() => resolve(c.id, "mine")} style={({ pressed }) => [styles.resolveBtn, { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 }]}>
-                  <Text style={styles.resolveBtnText}>Keep mine</Text>
+                  <Text style={styles.resolveBtnText}>Garder le mien</Text>
                 </Pressable>
                 <Pressable onPress={() => resolve(c.id, "theirs")} style={({ pressed }) => [styles.resolveBtn, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, opacity: pressed ? 0.8 : 1 }]}>
-                  <Text style={[styles.resolveBtnText, { color: colors.foreground }]}>Keep theirs</Text>
+                  <Text style={[styles.resolveBtnText, { color: colors.foreground }]}>Garder le leur</Text>
                 </Pressable>
                 <Pressable onPress={() => resolve(c.id, "merge")} style={({ pressed }) => [styles.resolveBtn, { backgroundColor: colors.greenLight, opacity: pressed ? 0.8 : 1 }]}>
-                  <Text style={[styles.resolveBtnText, { color: colors.accent }]}>Merge</Text>
+                  <Text style={[styles.resolveBtnText, { color: colors.accent }]}>Fusionner</Text>
                 </Pressable>
               </View>
             </View>
@@ -127,7 +149,7 @@ export default function ReconciliationScreen() {
       {/* Resolved */}
       {done.length > 0 && (
         <>
-          <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>Resolved</Text>
+          <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>Résolus</Text>
           {done.map((c) => (
             <View key={c.id} style={[styles.doneCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <Ionicons name="checkmark-circle-outline" size={18} color={colors.accent} />
