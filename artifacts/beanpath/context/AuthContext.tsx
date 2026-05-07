@@ -27,12 +27,15 @@ export type User = {
   cropFocus: CropFocus;
   locale: string;
   country: string;
+  isDemo?: boolean;
+  loggedInAt?: number;
 };
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   signIn: (role: UserRole, credentials: { phone?: string; email?: string }) => Promise<void>;
+  loginAsDemo: (role: UserRole) => Promise<void>;
   signOut: () => Promise<void>;
   updateUser: (updates: Partial<User>) => void;
 };
@@ -82,10 +85,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    AsyncStorage.getItem(AUTH_KEY).then((raw) => {
-      if (raw) setUser(JSON.parse(raw));
-      setLoading(false);
-    });
+    const TWO_HOURS = 2 * 60 * 60 * 1000;
+    AsyncStorage.getItem(AUTH_KEY)
+      .then((raw) => {
+        if (raw) {
+          try {
+            const parsed: User = JSON.parse(raw);
+            if (parsed.isDemo && parsed.loggedInAt && Date.now() - parsed.loggedInAt > TWO_HOURS) {
+              AsyncStorage.removeItem(AUTH_KEY);
+            } else {
+              setUser(parsed);
+            }
+          } catch {
+            AsyncStorage.removeItem(AUTH_KEY);
+          }
+        }
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const signIn = useCallback(async (role: UserRole, credentials: { phone?: string; email?: string }) => {
@@ -107,6 +123,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem(AUTH_KEY, JSON.stringify(u));
   }, []);
 
+  const loginAsDemo = useCallback(async (role: UserRole) => {
+    const org = MOCK_ORG_BY_ROLE[role];
+    const u: User = {
+      id:          "demo_" + Math.random().toString(36).slice(2, 10),
+      name:        DEMO_NAMES[role],
+      role,
+      orgId:       "org_" + org.orgName.replace(/\W+/g, "_").toLowerCase(),
+      orgName:     org.orgName,
+      orgCurrency: org.orgCurrency,
+      cropFocus:   org.cropFocus,
+      locale:      "fr",
+      country:     org.country,
+      isDemo:      true,
+      loggedInAt:  Date.now(),
+    };
+    setUser(u);
+    await AsyncStorage.setItem(AUTH_KEY, JSON.stringify(u));
+  }, []);
+
   const signOut = useCallback(async () => {
     setUser(null);
     await AsyncStorage.removeItem(AUTH_KEY);
@@ -122,7 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, signIn, loginAsDemo, signOut, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
