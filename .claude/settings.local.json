@@ -22,7 +22,8 @@
       "Bash(pnpm typecheck *)",
       "Bash(git commit -m ' *)",
       "Bash(pnpm list *)",
-      "Bash(findstr /v \"KEY\\\\|SECRET\\\\|key\\\\|secret\")"
+      "Bash(findstr /v \"KEY\\\\|SECRET\\\\|key\\\\|secret\")",
+      "Skill(investigate)"
     ]
   }
 }

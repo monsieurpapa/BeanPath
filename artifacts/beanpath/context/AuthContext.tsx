@@ -141,40 +141,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check Supabase session first, then fall back to AsyncStorage (for demo/phone users)
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        const profile = await fetchOrCreateProfile(
-          session.user.id,
-          "field_agent",
-          session.user.email ?? undefined,
-        );
-        if (profile) {
-          setUser(profile);
-          if (profile.locale) i18n.changeLanguage(profile.locale);
-          setLoading(false);
-          return;
+    const TWO_HOURS = 2 * 60 * 60 * 1000;
+
+    const loadFromStorage = async () => {
+      const raw = await AsyncStorage.getItem(AUTH_KEY);
+      if (raw) {
+        try {
+          const parsed: User = JSON.parse(raw);
+          if (parsed.isDemo && parsed.loggedInAt && Date.now() - parsed.loggedInAt > TWO_HOURS) {
+            await AsyncStorage.removeItem(AUTH_KEY);
+          } else {
+            setUser(parsed);
+            if (parsed.locale) i18n.changeLanguage(parsed.locale);
+          }
+        } catch {
+          await AsyncStorage.removeItem(AUTH_KEY);
         }
       }
+    };
 
-      // Fall back to AsyncStorage (demo sessions / phone sessions)
-      const TWO_HOURS = 2 * 60 * 60 * 1000;
-      AsyncStorage.getItem(AUTH_KEY).then((raw) => {
-        if (raw) {
-          try {
-            const parsed: User = JSON.parse(raw);
-            if (parsed.isDemo && parsed.loggedInAt && Date.now() - parsed.loggedInAt > TWO_HOURS) {
-              AsyncStorage.removeItem(AUTH_KEY);
-            } else {
-              setUser(parsed);
-              if (parsed.locale) i18n.changeLanguage(parsed.locale);
-            }
-          } catch {
-            AsyncStorage.removeItem(AUTH_KEY);
+    // Check Supabase session first, then fall back to AsyncStorage (for demo/phone users)
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const profile = await fetchOrCreateProfile(
+            session.user.id,
+            "field_agent",
+            session.user.email ?? undefined,
+          );
+          if (profile) {
+            setUser(profile);
+            if (profile.locale) i18n.changeLanguage(profile.locale);
+            return;
           }
         }
-      }).finally(() => setLoading(false));
-    });
+        await loadFromStorage();
+      } catch {
+        // Supabase unavailable — load from local storage
+        await loadFromStorage();
+      } finally {
+        setLoading(false);
+      }
+    })();
 
     // Keep in sync with Supabase auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
