@@ -7,6 +7,7 @@ import {
   StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { AccessDeniedBanner, RoleGate } from "@/components/RoleGate";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useAuth } from "@/context/AuthContext";
@@ -16,28 +17,10 @@ import { useToast } from "@/context/ToastContext";
 import { usePermission } from "@/hooks/usePermission";
 import { useColors } from "@/hooks/useColors";
 
-/**
- * Cherry delivery wizard — mirrors the real TCC "Formulaire de registre des cerises"
- *
- * Steps:
- *  1. Agriculteur — pick farmer by name or Bio ID
- *  2. Quantité & Date — bidons, purchase date
- *  3. Prix & Taux — FC/bidon, total FC auto-calc, FC/USD exchange rate
- *  4. Documents — receipt No, cherry register No, delivery report No, payment method
- *  5. Confirmation — full receipt view
- */
-
-const STEPS = ["Agriculteur", "Quantité", "Prix & Taux", "Documents", "Confirmer"];
-
 const PRICE_BANDS = [
   { label: "Cerise standard",   priceFC: 700,  note: "Zone Muganzo / Itara" },
   { label: "Cerise qualité A",  priceFC: 900,  note: "Sélectionné à la collecte" },
   { label: "Cerise qualité B",  priceFC: 1000, note: "Cinjava / Kahisa / Bio certifié" },
-];
-const PAY_METHODS = [
-  { id: "cash" as const,         label: "Espèces",       icon: "cash-outline" as const },
-  { id: "mobile_money" as const, label: "Mobile money",  icon: "phone-portrait-outline" as const },
-  { id: "bank" as const,         label: "Banque",        icon: "card-outline" as const },
 ];
 
 function today() {
@@ -45,6 +28,7 @@ function today() {
 }
 
 export default function CollectScreen() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { farmers, stations, addDelivery, registers } = useData();
   const { addPending } = useSync();
@@ -54,25 +38,26 @@ export default function CollectScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ farmerId?: string; farmerName?: string; farmerBioId?: string }>();
 
+  const STEPS = t("collect.steps", { returnObjects: true }) as string[];
+
+  const PAY_METHODS = [
+    { id: "cash" as const,         label: t("collect.step4.payMethods.cash"),        icon: "cash-outline" as const },
+    { id: "mobile_money" as const, label: t("collect.step4.payMethods.mobile_money"), icon: "phone-portrait-outline" as const },
+    { id: "bank" as const,         label: t("collect.step4.payMethods.bank"),         icon: "card-outline" as const },
+  ];
+
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
 
-  // Step 1
   const [selectedFarmer, setSelectedFarmer] = useState<Farmer | null>(
     params.farmerId ? farmers.find((f) => f.id === params.farmerId) ?? null : null
   );
   const [query, setQuery] = useState(params.farmerName ?? "");
-
-  // Step 2
   const [quantityBidons, setQuantityBidons] = useState("");
   const [purchaseDate, setPurchaseDate] = useState(today());
-
-  // Step 3
   const [priceBandIdx, setPriceBandIdx] = useState(1);
   const [customPrice, setCustomPrice] = useState("");
   const [exchangeRate, setExchangeRate] = useState("2700");
-
-  // Step 4
   const [receiptNo, setReceiptNo] = useState("");
   const [cherryRegisterNo, setCherryRegisterNo] = useState("");
   const [deliveryReportNo, setDeliveryReportNo] = useState("");
@@ -88,7 +73,6 @@ export default function CollectScreen() {
     return !q || f.firstName.toLowerCase().includes(q) || f.lastName.toLowerCase().includes(q) || f.bioId.toLowerCase().includes(q) || f.village.toLowerCase().includes(q);
   });
 
-  // Next register suggestion
   const nextRegisterNo = String(Math.max(0, ...registers.map((r) => parseInt(r.registerNo) || 0)) + 1).padStart(5, "0");
   const nextReceiptNo = String(Math.floor(Math.random() * 900 + 8100));
   const currentReportNo = registers.length > 0 ? registers[registers.length - 1].deliveryReportNo : "5254";
@@ -100,6 +84,12 @@ export default function CollectScreen() {
     !!receiptNo.trim(),
     true,
   ][step];
+
+  const methodLabel = (m: string) => {
+    if (m === "mobile_money") return t("collect.step4.payMethods.mobile_money");
+    if (m === "bank") return t("collect.step4.payMethods.bank");
+    return t("collect.step4.payMethods.cash");
+  };
 
   const handleSave = async () => {
     if (!selectedFarmer) return;
@@ -131,12 +121,12 @@ export default function CollectScreen() {
       });
       addPending();
       showSuccess(
-        "Livraison enregistrée",
-        `Reçu #${usedReceiptNo} · ${qty} bidons · ${totalFC.toLocaleString()} FC`
+        t("collect.saved"),
+        t("collect.savedMsg", { receipt: usedReceiptNo, qty, total: totalFC.toLocaleString() })
       );
       router.back();
     } catch (err: any) {
-      showError("Erreur d'enregistrement", err?.message ?? "Vérifiez les données et réessayez.");
+      showError(t("collect.errorTitle"), err?.message ?? t("collect.errorMsg"));
     } finally {
       setSaving(false);
     }
@@ -147,9 +137,9 @@ export default function CollectScreen() {
       <View style={[styles.root, { backgroundColor: colors.background, padding: 20, paddingTop: 60 }]}>
         <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 24 }}>
           <Ionicons name="arrow-back" size={20} color={colors.foreground} />
-          <Text style={{ color: colors.mutedForeground, fontFamily: "Inter_400Regular", fontSize: 13 }}>Retour</Text>
+          <Text style={{ color: colors.mutedForeground, fontFamily: "Inter_400Regular", fontSize: 13 }}>{t("collect.back")}</Text>
         </TouchableOpacity>
-        <AccessDeniedBanner message="Vous n'avez pas l'autorisation d'enregistrer des livraisons de cerises." />
+        <AccessDeniedBanner message={t("collect.accessDenied")} />
       </View>
     );
   }
@@ -161,7 +151,7 @@ export default function CollectScreen() {
         {/* Step bar */}
         <View style={[styles.stepBar, { borderBottomColor: colors.border, paddingTop: Platform.OS === "web" ? 16 : 0 }]}>
           {STEPS.map((s, i) => (
-            <View key={s} style={styles.stepItem}>
+            <View key={i} style={styles.stepItem}>
               <View style={[styles.stepCircle, { backgroundColor: i < step ? colors.accent : i === step ? colors.primary : colors.muted }]}>
                 {i < step
                   ? <Ionicons name="checkmark" size={11} color="#fff" />
@@ -182,10 +172,10 @@ export default function CollectScreen() {
           {/* ── Step 1: Farmer ── */}
           {step === 0 && (
             <View>
-              <Text style={[styles.stepTitle, { color: colors.foreground }]}>Sélectionner l'agriculteur</Text>
+              <Text style={[styles.stepTitle, { color: colors.foreground }]}>{t("collect.step1.title")}</Text>
               <View style={[styles.searchBox, { borderColor: colors.border, backgroundColor: colors.surface }]}>
                 <Ionicons name="search-outline" size={16} color={colors.mutedForeground} />
-                <TextInput style={[styles.searchInput, { color: colors.foreground }]} value={query} onChangeText={setQuery} placeholder="Nom, prénom ou Code Bio…" placeholderTextColor={colors.mutedForeground} />
+                <TextInput style={[styles.searchInput, { color: colors.foreground }]} value={query} onChangeText={setQuery} placeholder={t("collect.step1.searchPlaceholder")} placeholderTextColor={colors.mutedForeground} />
               </View>
               {filteredFarmers.slice(0, 7).map((f) => (
                 <TouchableOpacity
@@ -201,7 +191,7 @@ export default function CollectScreen() {
                     <Text style={[styles.fSub, { color: colors.mutedForeground }]}>{f.bioId} · {f.village}</Text>
                   </View>
                   <View style={{ alignItems: "flex-end", gap: 4 }}>
-                    <Text style={[styles.fPieds, { color: colors.accent }]}>{f.nbPieds} pieds</Text>
+                    <Text style={[styles.fPieds, { color: colors.accent }]}>{f.nbPieds} {t("collect.pieds")}</Text>
                     {selectedFarmer?.id === f.id && <Ionicons name="checkmark-circle" size={18} color={colors.primary} />}
                   </View>
                 </TouchableOpacity>
@@ -212,7 +202,7 @@ export default function CollectScreen() {
           {/* ── Step 2: Quantity & Date ── */}
           {step === 1 && (
             <View>
-              <Text style={[styles.stepTitle, { color: colors.foreground }]}>Quantité livrée</Text>
+              <Text style={[styles.stepTitle, { color: colors.foreground }]}>{t("collect.step2.title")}</Text>
               <View style={[styles.centreCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <Ionicons name="cube-outline" size={32} color={colors.primary} style={{ marginBottom: 8 }} />
                 <TextInput
@@ -224,17 +214,17 @@ export default function CollectScreen() {
                   placeholderTextColor={colors.mutedForeground}
                   autoFocus
                 />
-                <Text style={[styles.bigUnit, { color: colors.mutedForeground }]}>bidons de 5 litres</Text>
+                <Text style={[styles.bigUnit, { color: colors.mutedForeground }]}>{t("collect.step2.unit")}</Text>
                 {qty > 0 && (
                   <Text style={[styles.kgEstimate, { color: colors.primary }]}>
-                    ≈ {(qty * 3.5).toFixed(0)} kg cerises estimés
+                    {t("collect.step2.kgEstimate", { kg: (qty * 3.5).toFixed(0) })}
                   </Text>
                 )}
               </View>
-              <Text style={[styles.label, { color: colors.foreground }]}>Date d'achat</Text>
+              <Text style={[styles.label, { color: colors.foreground }]}>{t("collect.step2.purchaseDate")}</Text>
               <View style={[styles.inputRow, { borderColor: colors.border, backgroundColor: colors.surface }]}>
                 <Ionicons name="calendar-outline" size={16} color={colors.mutedForeground} />
-                <TextInput style={[styles.input, { color: colors.foreground }]} value={purchaseDate} onChangeText={setPurchaseDate} placeholder="AAAA-MM-JJ" placeholderTextColor={colors.mutedForeground} />
+                <TextInput style={[styles.input, { color: colors.foreground }]} value={purchaseDate} onChangeText={setPurchaseDate} placeholder={t("collect.step2.datePlaceholder")} placeholderTextColor={colors.mutedForeground} />
               </View>
             </View>
           )}
@@ -242,8 +232,8 @@ export default function CollectScreen() {
           {/* ── Step 3: Price & Exchange ── */}
           {step === 2 && (
             <View>
-              <Text style={[styles.stepTitle, { color: colors.foreground }]}>Prix et taux de change</Text>
-              <Text style={[styles.label, { color: colors.foreground }]}>Bande de prix (FC/bidon)</Text>
+              <Text style={[styles.stepTitle, { color: colors.foreground }]}>{t("collect.step3.title")}</Text>
+              <Text style={[styles.label, { color: colors.foreground }]}>{t("collect.step3.priceBand")}</Text>
               {PRICE_BANDS.map((b, i) => (
                 <TouchableOpacity
                   key={b.label}
@@ -259,21 +249,20 @@ export default function CollectScreen() {
                 </TouchableOpacity>
               ))}
 
-              <Text style={[styles.label, { color: colors.foreground, marginTop: 12 }]}>Prix personnalisé (facultatif)</Text>
+              <Text style={[styles.label, { color: colors.foreground, marginTop: 12 }]}>{t("collect.step3.customPrice")}</Text>
               <View style={[styles.inputRow, { borderColor: customPrice ? colors.primary : colors.border, backgroundColor: colors.surface }]}>
                 <Ionicons name="create-outline" size={16} color={colors.mutedForeground} />
-                <TextInput style={[styles.input, { color: colors.foreground }]} value={customPrice} onChangeText={setCustomPrice} keyboardType="numeric" placeholder="ex. 850" placeholderTextColor={colors.mutedForeground} />
+                <TextInput style={[styles.input, { color: colors.foreground }]} value={customPrice} onChangeText={setCustomPrice} keyboardType="numeric" placeholder={t("collect.step3.customPlaceholder")} placeholderTextColor={colors.mutedForeground} />
                 <Text style={[styles.unit, { color: colors.mutedForeground }]}>FC/bidon</Text>
               </View>
 
-              <Text style={[styles.label, { color: colors.foreground, marginTop: 12 }]}>Taux de change (FC/USD)</Text>
+              <Text style={[styles.label, { color: colors.foreground, marginTop: 12 }]}>{t("collect.step3.exchangeRate")}</Text>
               <View style={[styles.inputRow, { borderColor: colors.border, backgroundColor: colors.surface }]}>
                 <Ionicons name="swap-horizontal-outline" size={16} color={colors.mutedForeground} />
                 <TextInput style={[styles.input, { color: colors.foreground }]} value={exchangeRate} onChangeText={setExchangeRate} keyboardType="decimal-pad" placeholder="2700" placeholderTextColor={colors.mutedForeground} />
                 <Text style={[styles.unit, { color: colors.mutedForeground }]}>FC/USD</Text>
               </View>
 
-              {/* Live calculation */}
               {qty > 0 && (
                 <View style={[styles.calcCard, { backgroundColor: colors.amberLight, borderColor: colors.primary + "30" }]}>
                   <View style={styles.calcRow}>
@@ -281,7 +270,7 @@ export default function CollectScreen() {
                     <Text style={[styles.calcTotal, { color: colors.primary }]}>{totalFC.toLocaleString()} FC</Text>
                   </View>
                   <View style={styles.calcRow}>
-                    <Text style={[styles.calcLabel, { color: colors.amber }]}>Équivalent USD</Text>
+                    <Text style={[styles.calcLabel, { color: colors.amber }]}>{t("collect.step3.usdEquiv")}</Text>
                     <Text style={[styles.calcTotal, { color: colors.primary }]}>${totalUSD.toFixed(2)}</Text>
                   </View>
                 </View>
@@ -292,28 +281,28 @@ export default function CollectScreen() {
           {/* ── Step 4: Documents ── */}
           {step === 3 && (
             <View>
-              <Text style={[styles.stepTitle, { color: colors.foreground }]}>Numéros de documents</Text>
+              <Text style={[styles.stepTitle, { color: colors.foreground }]}>{t("collect.step4.title")}</Text>
 
-              <Text style={[styles.label, { color: colors.foreground }]}>No de reçu de paiement *</Text>
+              <Text style={[styles.label, { color: colors.foreground }]}>{t("collect.step4.receiptNo")}</Text>
               <View style={[styles.inputRow, { borderColor: colors.border, backgroundColor: colors.surface }]}>
                 <Ionicons name="document-text-outline" size={16} color={colors.mutedForeground} />
                 <TextInput style={[styles.input, { color: colors.foreground }]} value={receiptNo} onChangeText={setReceiptNo} keyboardType="numeric" placeholder={nextReceiptNo} placeholderTextColor={colors.mutedForeground} />
               </View>
 
-              <Text style={[styles.label, { color: colors.foreground }]}>No du registre des cerises</Text>
+              <Text style={[styles.label, { color: colors.foreground }]}>{t("collect.step4.registerNo")}</Text>
               <View style={[styles.inputRow, { borderColor: colors.border, backgroundColor: colors.surface }]}>
                 <Ionicons name="list-outline" size={16} color={colors.mutedForeground} />
                 <TextInput style={[styles.input, { color: colors.foreground }]} value={cherryRegisterNo} onChangeText={setCherryRegisterNo} keyboardType="numeric" placeholder={nextRegisterNo} placeholderTextColor={colors.mutedForeground} />
               </View>
-              <Text style={[styles.hint, { color: colors.mutedForeground }]}>Laissez vide pour créer un nouveau registre (No {nextRegisterNo})</Text>
+              <Text style={[styles.hint, { color: colors.mutedForeground }]}>{t("collect.step4.registerHint", { n: nextRegisterNo })}</Text>
 
-              <Text style={[styles.label, { color: colors.foreground, marginTop: 12 }]}>No du rapport de livraison</Text>
+              <Text style={[styles.label, { color: colors.foreground, marginTop: 12 }]}>{t("collect.step4.reportNo")}</Text>
               <View style={[styles.inputRow, { borderColor: colors.border, backgroundColor: colors.surface }]}>
                 <Ionicons name="folder-outline" size={16} color={colors.mutedForeground} />
                 <TextInput style={[styles.input, { color: colors.foreground }]} value={deliveryReportNo} onChangeText={setDeliveryReportNo} keyboardType="numeric" placeholder={currentReportNo} placeholderTextColor={colors.mutedForeground} />
               </View>
 
-              <Text style={[styles.label, { color: colors.foreground, marginTop: 12 }]}>Mode de paiement</Text>
+              <Text style={[styles.label, { color: colors.foreground, marginTop: 12 }]}>{t("collect.step4.payMethod")}</Text>
               <View style={styles.payRow}>
                 {PAY_METHODS.map((m) => (
                   <TouchableOpacity
@@ -332,28 +321,27 @@ export default function CollectScreen() {
           {/* ── Step 5: Confirm ── */}
           {step === 4 && selectedFarmer && (
             <View>
-              <Text style={[styles.stepTitle, { color: colors.foreground }]}>Confirmation de livraison</Text>
+              <Text style={[styles.stepTitle, { color: colors.foreground }]}>{t("collect.step5.title")}</Text>
               <View style={[styles.receiptCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                {/* Header */}
                 <View style={[styles.receiptHeader, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-                  <Text style={[styles.receiptTitle, { color: colors.foreground }]}>REÇU DE LIVRAISON DE CERISES</Text>
+                  <Text style={[styles.receiptTitle, { color: colors.foreground }]}>{t("collect.step5.receiptTitle")}</Text>
                   <Text style={[styles.receiptSub, { color: colors.mutedForeground }]}>{stations.find((s) => s.id === selectedFarmer.stationId)?.name ?? "Station"}</Text>
                 </View>
                 {[
-                  { label: "Agriculteur", value: `${selectedFarmer.firstName} ${selectedFarmer.lastName}` },
-                  { label: "Code Bio", value: selectedFarmer.bioId },
-                  { label: "Groupement", value: selectedFarmer.groupement },
-                  { label: "Village", value: selectedFarmer.village },
-                  { label: "Date d'achat", value: new Date(purchaseDate).toLocaleDateString("fr-FR") },
-                  { label: "Quantité (bidons)", value: `${qty} bidons` },
-                  { label: "Prix / bidon", value: `${effectivePrice.toLocaleString()} FC` },
-                  { label: "Total (FC)", value: `${totalFC.toLocaleString()} FC`, bold: true },
-                  { label: "Équivalent USD", value: `$${totalUSD.toFixed(2)}` },
-                  { label: "Taux FC/USD", value: exchangeRate },
-                  { label: "No reçu paiement", value: receiptNo || nextReceiptNo },
-                  { label: "No registre cerises", value: cherryRegisterNo || nextRegisterNo },
-                  { label: "No rapport livraison", value: deliveryReportNo || currentReportNo },
-                  { label: "Mode de paiement", value: payMethod === "cash" ? "Espèces" : payMethod === "mobile_money" ? "Mobile money" : "Banque" },
+                  { label: t("collect.step5.fields.farmer"),       value: `${selectedFarmer.firstName} ${selectedFarmer.lastName}` },
+                  { label: t("collect.step5.fields.bioCode"),      value: selectedFarmer.bioId },
+                  { label: t("collect.step5.fields.groupement"),   value: selectedFarmer.groupement },
+                  { label: t("collect.step5.fields.village"),      value: selectedFarmer.village },
+                  { label: t("collect.step5.fields.purchaseDate"), value: new Date(purchaseDate).toLocaleDateString() },
+                  { label: t("collect.step5.fields.qty"),          value: `${qty} bidons` },
+                  { label: t("collect.step5.fields.pricePerBidon"),value: `${effectivePrice.toLocaleString()} FC` },
+                  { label: t("collect.step5.fields.totalFC"),      value: `${totalFC.toLocaleString()} FC`, bold: true },
+                  { label: t("collect.step5.fields.usdEquiv"),     value: `$${totalUSD.toFixed(2)}` },
+                  { label: t("collect.step5.fields.rateFC"),       value: exchangeRate },
+                  { label: t("collect.step5.fields.receiptNo"),    value: receiptNo || nextReceiptNo },
+                  { label: t("collect.step5.fields.registerNo"),   value: cherryRegisterNo || nextRegisterNo },
+                  { label: t("collect.step5.fields.reportNo"),     value: deliveryReportNo || currentReportNo },
+                  { label: t("collect.step5.fields.payMethod"),    value: methodLabel(payMethod) },
                 ].map(({ label, value, bold }, i, arr) => (
                   <View key={label} style={[styles.receiptRow, i < arr.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border }]}>
                     <Text style={[styles.receiptLabel, { color: colors.mutedForeground }]}>{label}</Text>
@@ -363,9 +351,9 @@ export default function CollectScreen() {
               </View>
               <View style={[styles.offlineNote, { backgroundColor: colors.amberLight, borderColor: colors.warning + "30" }]}>
                 <Ionicons name="cloud-upload-outline" size={14} color={colors.amber} />
-                <Text style={[styles.offlineText, { color: colors.amber }]}>Sauvegardé hors ligne. Sync automatique dès que le réseau est disponible.</Text>
+                <Text style={[styles.offlineText, { color: colors.amber }]}>{t("collect.step5.offline")}</Text>
               </View>
-              <PrimaryButton label="Confirmer & enregistrer le paiement" onPress={handleSave} loading={saving} />
+              <PrimaryButton label={t("collect.submit")} onPress={handleSave} loading={saving} />
             </View>
           )}
         </ScrollView>
@@ -376,7 +364,7 @@ export default function CollectScreen() {
             {step > 0
               ? <TouchableOpacity onPress={() => setStep(step - 1)} style={[styles.backBtn, { borderColor: colors.border }]}>
                   <Ionicons name="arrow-back" size={18} color={colors.foreground} />
-                  <Text style={[styles.backText, { color: colors.foreground }]}>Retour</Text>
+                  <Text style={[styles.backText, { color: colors.foreground }]}>{t("collect.back")}</Text>
                 </TouchableOpacity>
               : <View />
             }
@@ -385,7 +373,7 @@ export default function CollectScreen() {
               disabled={!canNext}
               style={[styles.nextBtn, { backgroundColor: canNext ? colors.primary : colors.muted }]}
             >
-              <Text style={[styles.nextText, { color: canNext ? "#fff" : colors.mutedForeground }]}>Suivant</Text>
+              <Text style={[styles.nextText, { color: canNext ? "#fff" : colors.mutedForeground }]}>{t("collect.next") || "Suivant"}</Text>
               <Ionicons name="arrow-forward" size={18} color={canNext ? "#fff" : colors.mutedForeground} />
             </Pressable>
           </View>

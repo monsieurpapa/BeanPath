@@ -1,10 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, router } from "expo-router";
 import { TouchableOpacity } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useColors } from "@/hooks/useColors";
 import { SyncChip } from "@/components/SyncChip";
 
 export default function ConsoleLayout() {
+  const { t } = useTranslation();
   const colors = useColors();
   return (
     <Stack
@@ -16,12 +18,12 @@ export default function ConsoleLayout() {
         headerRightContainerStyle: { paddingRight: 14 },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Operator Console" }} />
-      <Stack.Screen name="lots/index" options={{ title: "Lot Explorer" }} />
-      <Stack.Screen name="lots/[id]" options={{ title: "Lot Dossier" }} />
-      <Stack.Screen name="registers" options={{ title: "Registres des cerises" }} />
-      <Stack.Screen name="reports" options={{ title: "Rapports de livraison" }} />
-      <Stack.Screen name="reconciliation" options={{ title: "Reconciliation Inbox" }} />
+      <Stack.Screen name="index" options={{ title: t("nav.console") }} />
+      <Stack.Screen name="lots/index" options={{ title: t("nav.lotExplorer") }} />
+      <Stack.Screen name="lots/[id]" options={{ title: t("nav.lotDossier") }} />
+      <Stack.Screen name="registers" options={{ title: t("nav.registers") }} />
+      <Stack.Screen name="reports" options={{ title: t("nav.reports") }} />
+      <Stack.Screen name="reconciliation" options={{ title: t("nav.reconciliation") }} />
     </Stack>
   );
 }

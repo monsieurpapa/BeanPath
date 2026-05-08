@@ -1,3 +1,4 @@
+import "@/i18n";
 import {
   Inter_400Regular,
   Inter_500Medium,

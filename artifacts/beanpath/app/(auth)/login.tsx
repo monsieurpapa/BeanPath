@@ -6,6 +6,7 @@ import {
   SafeAreaView, ScrollView, StyleSheet, Text,
   TextInput, TouchableOpacity, View,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useAuth, type UserRole } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
@@ -40,7 +41,21 @@ const ROLE_ACCENT: Record<UserRole, string> = {
   certifier:        "#0369a1",
 };
 
+const ROLE_ORGS: Record<UserRole, string> = {
+  field_agent:      "TCC — Tounga wa Café Congo",
+  lead_farmer:      "TCC — Tounga wa Café Congo",
+  station_operator: "Station de lavage KAHISA / NAKEZA",
+  coop_admin:       "NAKEZA SARL",
+  buyer:            "Nordic Roasters AS",
+  certifier:        "FLO-CERT GmbH",
+  exporter:         "Great Lakes Export DRC",
+  qc_grader:        "Coffee Quality Institute — DRC",
+  transporter:      "Transport Kivu SARL",
+  mill_operator:    "Moulin de Bukavu SARL",
+};
+
 export default function LoginScreen() {
+  const { t } = useTranslation();
   const { role } = useLocalSearchParams<{ role: UserRole }>();
   const { signIn } = useAuth();
   const { showSuccess, showError } = useToast();
@@ -67,20 +82,20 @@ export default function LoginScreen() {
     try {
       await new Promise((r) => setTimeout(r, 900));
       await signIn(effectiveRole, mode === "phone" ? { phone } : { email });
-      showSuccess(
-        "Connexion réussie",
-        ROLE_LABELS[effectiveRole] + " connecté(e)"
-      );
+      const roleLabel = t(`roles.${effectiveRole}`, ROLE_LABELS[effectiveRole]);
+      showSuccess(t("auth.loginSuccess"), roleLabel + " connecté(e)");
       const surface = ROLE_SURFACE[effectiveRole];
       if (surface === "console") router.replace("/(console)/" as any);
       else if (surface === "buyer") router.replace("/(console)/" as any);
       else router.replace("/(tabs)/" as any);
     } catch (err: any) {
-      showError("Échec de la connexion", err?.message ?? "Vérifiez vos identifiants et réessayez.");
+      showError(t("auth.loginFailed"), err?.message ?? t("auth.loginFailedMsg"));
     } finally {
       setLoading(false);
     }
   };
+
+  const roleLabel = t(`roles.${effectiveRole}`, ROLE_LABELS[effectiveRole]);
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
@@ -98,7 +113,7 @@ export default function LoginScreen() {
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Ionicons name="arrow-back" size={22} color={colors.foreground} />
-              <Text style={[styles.backText, { color: colors.mutedForeground }]}>Changer de rôle</Text>
+              <Text style={[styles.backText, { color: colors.mutedForeground }]}>{t("auth.changeRole")}</Text>
             </TouchableOpacity>
 
             {/* Role badge */}
@@ -107,28 +122,15 @@ export default function LoginScreen() {
                 <Ionicons name={ROLE_ICONS[effectiveRole]} size={18} color={accent} />
               </View>
               <View>
-                <Text style={[styles.roleLabel, { color: accent }]}>{ROLE_LABELS[effectiveRole]}</Text>
-                <Text style={[styles.roleSub, { color: colors.mutedForeground }]}>
-                  {effectiveRole === "field_agent"      ? "TCC — Tounga wa Café Congo"      :
-                   effectiveRole === "lead_farmer"      ? "TCC — Tounga wa Café Congo"      :
-                   effectiveRole === "station_operator" ? "Station de lavage KAHISA / NAKEZA":
-                   effectiveRole === "coop_admin"       ? "NAKEZA SARL"                      :
-                   effectiveRole === "buyer"            ? "Nordic Roasters AS"               :
-                   effectiveRole === "certifier"        ? "FLO-CERT GmbH"                   :
-                   effectiveRole === "exporter"         ? "Great Lakes Export DRC"           :
-                   effectiveRole === "qc_grader"        ? "Coffee Quality Institute — DRC"   :
-                   effectiveRole === "transporter"      ? "Transport Kivu SARL"              :
-                                                         "Moulin de Bukavu SARL"}
-                </Text>
+                <Text style={[styles.roleLabel, { color: accent }]}>{roleLabel}</Text>
+                <Text style={[styles.roleSub, { color: colors.mutedForeground }]}>{ROLE_ORGS[effectiveRole]}</Text>
               </View>
             </View>
 
             <View style={styles.header}>
-              <Text style={[styles.title, { color: colors.foreground }]}>Connexion</Text>
+              <Text style={[styles.title, { color: colors.foreground }]}>{t("auth.loginTitle")}</Text>
               <Text style={[styles.sub, { color: colors.mutedForeground }]}>
-                {isFieldWorker
-                  ? "Utilisez votre numéro de téléphone pour un accès rapide hors-ligne."
-                  : "Entrez vos identifiants pour accéder à votre espace."}
+                {isFieldWorker ? t("auth.subPhone") : t("auth.subEmail")}
               </Text>
             </View>
 
@@ -146,7 +148,7 @@ export default function LoginScreen() {
                     color={mode === m ? accent : colors.mutedForeground}
                   />
                   <Text style={[styles.toggleText, { color: mode === m ? accent : colors.mutedForeground }]}>
-                    {m === "phone" ? "Téléphone OTP" : "E-mail"}
+                    {m === "phone" ? t("auth.phoneOtp") : t("auth.email")}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -190,7 +192,7 @@ export default function LoginScreen() {
                       value={password}
                       onChangeText={setPassword}
                       secureTextEntry={!showPass}
-                      placeholder="Mot de passe"
+                      placeholder={t("auth.password")}
                       placeholderTextColor={colors.mutedForeground}
                     />
                     <TouchableOpacity onPress={() => setShowPass((s) => !s)}>
@@ -198,7 +200,7 @@ export default function LoginScreen() {
                     </TouchableOpacity>
                   </View>
                   <TouchableOpacity style={styles.forgot}>
-                    <Text style={[styles.forgotText, { color: colors.primary }]}>Mot de passe oublié ?</Text>
+                    <Text style={[styles.forgotText, { color: colors.primary }]}>{t("auth.forgotPassword")}</Text>
                   </TouchableOpacity>
                 </>
               )}
@@ -207,7 +209,7 @@ export default function LoginScreen() {
             {/* Biometric shortcut */}
             <TouchableOpacity style={styles.biometric}>
               <Ionicons name="finger-print-outline" size={18} color={accent} />
-              <Text style={[styles.biometricText, { color: accent }]}>Déverrouiller par biométrie</Text>
+              <Text style={[styles.biometricText, { color: accent }]}>{t("auth.biometric")}</Text>
             </TouchableOpacity>
 
             {/* CTA */}
@@ -219,12 +221,12 @@ export default function LoginScreen() {
             >
               {loading
                 ? <ActivityIndicator color="#fff" size="small" />
-                : <Text style={styles.ctaText}>Se connecter</Text>}
+                : <Text style={styles.ctaText}>{t("auth.signIn")}</Text>}
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.register} onPress={() => router.push("/(auth)/register" as any)}>
               <Text style={[styles.registerText, { color: colors.mutedForeground }]}>
-                Nouveau ? <Text style={{ color: accent }}>Créer un compte</Text>
+                {t("auth.newAccount")}
               </Text>
             </TouchableOpacity>
           </ScrollView>

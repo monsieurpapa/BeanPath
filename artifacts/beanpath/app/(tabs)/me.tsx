@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { useSync } from "@/context/SyncContext";
 import { useToast } from "@/context/ToastContext";
@@ -17,6 +18,7 @@ const LANGUAGES = [
 ];
 
 export default function MeScreen() {
+  const { t } = useTranslation();
   const { user, signOut, updateUser } = useAuth();
   const { pendingCount, conflictCount, lastSyncedAt, online, syncing, triggerSync } = useSync();
   const { showSuccess, showError } = useToast();
@@ -27,9 +29,9 @@ export default function MeScreen() {
 
   const handleSignOutRequest = () => {
     if (Platform.OS !== "web") {
-      Alert.alert("Déconnexion", "Voulez-vous vraiment vous déconnecter ?", [
-        { text: "Annuler", style: "cancel" },
-        { text: "Déconnecter", style: "destructive", onPress: () => signOut().then(() => router.replace("/(auth)/welcome")) },
+      Alert.alert(t("profile.signOut.title"), t("profile.signOut.confirm"), [
+        { text: t("profile.signOut.cancel"), style: "cancel" },
+        { text: t("profile.signOut.confirmBtn"), style: "destructive", onPress: () => signOut().then(() => router.replace("/(auth)/welcome")) },
       ]);
       return;
     }
@@ -44,28 +46,30 @@ export default function MeScreen() {
   const handleSync = async () => {
     try {
       await triggerSync();
-      showSuccess("Synchronisation terminée", "Toutes les données sont à jour.");
+      showSuccess(t("profile.sync.done"), t("profile.sync.doneMsg"));
     } catch {
-      showError("Échec de la synchronisation", "Vérifiez votre connexion et réessayez.");
+      showError(t("profile.sync.failed"), t("profile.sync.failedMsg"));
     }
   };
 
   const handleLanguageChange = (code: string) => {
     updateUser({ locale: code });
     const lang = LANGUAGES.find((l) => l.code === code);
-    showSuccess("Langue mise à jour", lang?.label);
+    showSuccess(t("profile.languageUpdated"), lang?.label);
   };
 
   const formatAgo = (iso: string | null) => {
-    if (!iso) return "Jamais";
+    if (!iso) return t("profile.never");
     const ms = Date.now() - new Date(iso).getTime();
     const m = Math.floor(ms / 60000);
-    if (isNaN(m)) return "Jamais";
-    if (m < 1) return "À l'instant";
-    if (m < 60) return `il y a ${m} min`;
-    if (m < 1440) return `il y a ${Math.floor(m / 60)}h`;
-    return `il y a ${Math.floor(m / 1440)}j`;
+    if (isNaN(m)) return t("profile.never");
+    if (m < 1) return t("profile.justNow");
+    if (m < 60) return t("profile.minutesAgo", { m });
+    if (m < 1440) return t("profile.hoursAgo", { h: Math.floor(m / 60) });
+    return t("profile.daysAgo", { d: Math.floor(m / 1440) });
   };
+
+  const roleLabel = user?.role ? (t(`roles.${user.role}`, ROLE_LABELS[user.role])) : "—";
 
   return (
     <ScrollView
@@ -81,52 +85,52 @@ export default function MeScreen() {
           </Text>
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={[styles.userName, { color: colors.foreground }]}>{user?.name ?? "Inconnu"}</Text>
-          <Text style={[styles.userRole, { color: colors.primary }]}>
-            {user?.role ? (ROLE_LABELS[user.role] ?? user.role) : "—"}
-          </Text>
+          <Text style={[styles.userName, { color: colors.foreground }]}>{user?.name ?? t("profile.unknown")}</Text>
+          <Text style={[styles.userRole, { color: colors.primary }]}>{roleLabel}</Text>
           <Text style={[styles.userOrg, { color: colors.mutedForeground }]}>{user?.orgName}</Text>
         </View>
-        <View style={[styles.cropPill, { backgroundColor: colors.greenLight }]}>
-          <Ionicons name="leaf-outline" size={12} color={colors.accent} />
-          <Text style={[styles.cropText, { color: colors.accent }]}>{user?.cropFocus}</Text>
-        </View>
+        {user?.cropFocus && (
+          <View style={[styles.cropPill, { backgroundColor: colors.greenLight }]}>
+            <Ionicons name="leaf-outline" size={12} color={colors.accent} />
+            <Text style={[styles.cropText, { color: colors.accent }]}>{user.cropFocus}</Text>
+          </View>
+        )}
       </View>
 
       {/* Sync status */}
-      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Synchronisation</Text>
+      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("profile.sections.sync")}</Text>
       <View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={[styles.row, { borderBottomColor: colors.border }]}>
           <Ionicons name={online ? "cloud-outline" : "cloud-offline-outline"} size={18} color={online ? colors.accent : colors.mutedForeground} />
-          <Text style={[styles.rowLabel, { color: colors.foreground }]}>Connexion</Text>
+          <Text style={[styles.rowLabel, { color: colors.foreground }]}>{t("profile.sync.connection")}</Text>
           <Text style={[styles.rowValue, { color: online ? colors.accent : colors.mutedForeground }]}>
-            {online ? "En ligne" : "Hors ligne"}
+            {online ? t("common.online") : t("common.offline")}
           </Text>
         </View>
         <View style={[styles.row, { borderBottomColor: colors.border }]}>
           <Ionicons name="time-outline" size={18} color={colors.mutedForeground} />
-          <Text style={[styles.rowLabel, { color: colors.foreground }]}>Dernière sync</Text>
+          <Text style={[styles.rowLabel, { color: colors.foreground }]}>{t("profile.sync.lastSync")}</Text>
           <Text style={[styles.rowValue, { color: colors.mutedForeground }]}>{formatAgo(lastSyncedAt)}</Text>
         </View>
         <View style={[styles.row, { borderBottomColor: colors.border }]}>
           <Ionicons name="cloud-upload-outline" size={18} color={pendingCount > 0 ? colors.warning : colors.mutedForeground} />
-          <Text style={[styles.rowLabel, { color: colors.foreground }]}>En attente</Text>
+          <Text style={[styles.rowLabel, { color: colors.foreground }]}>{t("profile.sync.pending")}</Text>
           <Text style={[styles.rowValue, { color: pendingCount > 0 ? colors.warning : colors.mutedForeground }]}>
-            {pendingCount} enregistrement{pendingCount > 1 ? "s" : ""}
+            {t("profile.sync.pendingCount", { count: pendingCount })}
           </Text>
         </View>
         {conflictCount > 0 && (
           <View style={[styles.row, { borderBottomColor: colors.border }]}>
             <Ionicons name="warning-outline" size={18} color={colors.warning} />
-            <Text style={[styles.rowLabel, { color: colors.foreground }]}>Conflits</Text>
+            <Text style={[styles.rowLabel, { color: colors.foreground }]}>{t("profile.sync.conflicts")}</Text>
             <Text style={[styles.rowValue, { color: colors.warning }]}>
-              {conflictCount} non résolu{conflictCount > 1 ? "s" : ""}
+              {t("profile.sync.conflictCount", { count: conflictCount })}
             </Text>
           </View>
         )}
         <View style={styles.row}>
           <Ionicons name="wifi-outline" size={18} color={colors.mutedForeground} />
-          <Text style={[styles.rowLabel, { color: colors.foreground }]}>Sync Wi-Fi uniquement</Text>
+          <Text style={[styles.rowLabel, { color: colors.foreground }]}>{t("profile.sync.wifiOnly")}</Text>
           <Switch
             value={wifiOnly}
             onValueChange={setWifiOnly}
@@ -143,12 +147,12 @@ export default function MeScreen() {
       >
         <Ionicons name="sync-outline" size={18} color={colors.primary} />
         <Text style={[styles.syncBtnText, { color: colors.primary }]}>
-          {syncing ? "Synchronisation…" : "Synchroniser maintenant"}
+          {syncing ? t("profile.sync.syncing") : t("profile.sync.syncNow")}
         </Text>
       </TouchableOpacity>
 
       {/* Language */}
-      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Langue</Text>
+      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("profile.sections.language")}</Text>
       <View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
         {LANGUAGES.map((lang, i) => (
           <Pressable
@@ -156,6 +160,9 @@ export default function MeScreen() {
             onPress={() => handleLanguageChange(lang.code)}
             style={[styles.row, i < LANGUAGES.length - 1 ? { borderBottomWidth: 1, borderBottomColor: colors.border } : {}]}
           >
+            <Text style={[styles.langFlag, { color: colors.mutedForeground }]}>
+              {lang.code === "fr" ? "🇫🇷" : lang.code === "en" ? "🇬🇧" : lang.code === "sw" ? "🇹🇿" : "🇷🇼"}
+            </Text>
             <Text style={[styles.rowLabel, { color: colors.foreground }]}>{lang.label}</Text>
             {user?.locale === lang.code && (
               <Ionicons name="checkmark-circle" size={18} color={colors.primary} />
@@ -165,38 +172,38 @@ export default function MeScreen() {
       </View>
 
       {/* Device info */}
-      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Appareil</Text>
+      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("profile.sections.device")}</Text>
       <View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={[styles.row, { borderBottomColor: colors.border }]}>
           <Ionicons name="phone-portrait-outline" size={18} color={colors.mutedForeground} />
-          <Text style={[styles.rowLabel, { color: colors.foreground }]}>ID Appareil</Text>
+          <Text style={[styles.rowLabel, { color: colors.foreground }]}>{t("profile.device.id")}</Text>
           <Text style={[styles.rowValue, { color: colors.mutedForeground, fontFamily: "Inter_400Regular" }]}>d8f3a1…c9e2</Text>
         </View>
         <View style={styles.row}>
           <Ionicons name="shield-checkmark-outline" size={18} color={colors.accent} />
-          <Text style={[styles.rowLabel, { color: colors.foreground }]}>Clé appareil</Text>
-          <Text style={[styles.rowValue, { color: colors.accent }]}>Active</Text>
+          <Text style={[styles.rowLabel, { color: colors.foreground }]}>{t("profile.device.key")}</Text>
+          <Text style={[styles.rowValue, { color: colors.accent }]}>{t("profile.device.active")}</Text>
         </View>
       </View>
 
-      {/* Sign out — inline confirmation on web, Alert on native */}
+      {/* Sign out */}
       {confirmingSignOut ? (
         <View style={[styles.confirmCard, { backgroundColor: colors.dangerLight, borderColor: colors.danger + "40" }]}>
           <Text style={[styles.confirmText, { color: colors.danger }]}>
-            Voulez-vous vraiment vous déconnecter ?
+            {t("profile.signOut.confirm")}
           </Text>
           <View style={styles.confirmRow}>
             <TouchableOpacity
               onPress={() => setConfirmingSignOut(false)}
               style={[styles.confirmBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
             >
-              <Text style={[styles.confirmBtnText, { color: colors.foreground }]}>Annuler</Text>
+              <Text style={[styles.confirmBtnText, { color: colors.foreground }]}>{t("profile.signOut.cancel")}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleSignOutConfirm}
               style={[styles.confirmBtn, { backgroundColor: colors.danger }]}
             >
-              <Text style={[styles.confirmBtnText, { color: "#fff" }]}>Déconnecter</Text>
+              <Text style={[styles.confirmBtnText, { color: "#fff" }]}>{t("profile.signOut.confirmBtn")}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -206,12 +213,12 @@ export default function MeScreen() {
           style={[styles.signOutBtn, { borderColor: colors.danger + "40", backgroundColor: colors.dangerLight }]}
         >
           <Ionicons name="log-out-outline" size={18} color={colors.danger} />
-          <Text style={[styles.signOutText, { color: colors.danger }]}>Se déconnecter</Text>
+          <Text style={[styles.signOutText, { color: colors.danger }]}>{t("profile.signOut.button")}</Text>
         </TouchableOpacity>
       )}
 
       <Text style={[styles.version, { color: colors.mutedForeground }]}>
-        BeanPath v1.0.0 · Hors-ligne d'abord · Cryptographiquement vérifié
+        {t("profile.version")}
       </Text>
     </ScrollView>
   );
@@ -233,6 +240,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 14, paddingVertical: 14, borderBottomWidth: 1 },
   rowLabel: { flex: 1, fontSize: 14, fontFamily: "Inter_400Regular" },
   rowValue: { fontSize: 13, fontFamily: "Inter_500Medium" },
+  langFlag: { fontSize: 18, width: 28, textAlign: "center" },
   syncBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, padding: 14, borderRadius: 12, borderWidth: 1.5, marginBottom: 24 },
   syncBtnText: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
   signOutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, padding: 14, borderRadius: 12, borderWidth: 1, marginTop: 8 },

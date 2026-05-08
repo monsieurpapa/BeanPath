@@ -1,0 +1,513 @@
+{
+  "common": {
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "back": "Retour",
+    "next": "Suivant",
+    "confirm": "Confirmer",
+    "search": "Rechercher",
+    "loading": "Chargement…",
+    "error": "Erreur",
+    "offline": "Hors ligne",
+    "online": "En ligne",
+    "pending": "En attente",
+    "all": "Tous",
+    "seeAll": "Voir tout",
+    "unknown": "Inconnu",
+    "console": "Console",
+    "terrain": "Terrain",
+    "bidons": "bidon",
+    "bidons_plural": "bidons",
+    "registers": "Registres",
+    "reports": "Rapports",
+    "farmers": "Agriculteurs"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "farmers": "Agriculteurs",
+    "collect": "Collecte",
+    "lots": "Lots",
+    "profile": "Profil",
+    "console": "Console opérateur",
+    "lotExplorer": "Explorateur de lots",
+    "lotDossier": "Dossier de lot",
+    "registers": "Registres des cerises",
+    "reports": "Rapports de livraison",
+    "reconciliation": "Réconciliation"
+  },
+  "roles": {
+    "field_agent": "Agent de terrain",
+    "lead_farmer": "Agriculteur leader",
+    "station_operator": "Opérateur de station",
+    "transporter": "Transporteur",
+    "mill_operator": "Opérateur moulin",
+    "qc_grader": "Inspecteur qualité",
+    "exporter": "Exportateur",
+    "buyer": "Acheteur",
+    "coop_admin": "Administrateur",
+    "certifier": "Certificateur"
+  },
+  "stages": {
+    "cherry_received": "Cerises reçues",
+    "pulping": "Dépulpage",
+    "fermenting": "Fermentation",
+    "washing": "Lavage",
+    "drying": "Séchage",
+    "dry_parchment": "Parche sèche",
+    "hulling": "Déparcheminé",
+    "graded": "Trié/Classé",
+    "bagged": "Ensaché",
+    "in_transit": "En transit",
+    "shipped": "Exporté",
+    "closed": "Fermé"
+  },
+  "auth": {
+    "changeRole": "Changer de rôle",
+    "phoneOtp": "Téléphone OTP",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "biometric": "Déverrouiller par biométrie",
+    "signIn": "Se connecter",
+    "newAccount": "Nouveau ? Créer un compte",
+    "loginTitle": "Connexion",
+    "subPhone": "Utilisez votre numéro de téléphone pour un accès rapide hors-ligne.",
+    "subEmail": "Entrez vos identifiants pour accéder à votre espace.",
+    "loginSuccess": "Connexion réussie",
+    "loginFailed": "Échec de la connexion",
+    "loginFailedMsg": "Vérifiez vos identifiants et réessayez."
+  },
+  "demo": {
+    "tagline": "Accès immédiat · Aucune inscription",
+    "title": "Essayez BeanPath",
+    "subtitle": "Choisissez un profil pour explorer la plateforme avec des données fictives réalistes.",
+    "enterDemo": "Entrer en démo",
+    "disclaimer": "Les données affichées sont fictives et servent uniquement à la démonstration. Aucune donnée réelle n'est utilisée.",
+    "hasAccount": "Vous avez un compte ? Se connecter",
+    "personas": {
+      "field_agent": {
+        "title": "Agent de terrain",
+        "description": "Interface terrain pour la collecte quotidienne des cerises, le paiement des agriculteurs et la gestion des lots.",
+        "features": ["Tableau de bord & livraisons du jour", "Enregistrement cerises · reçus PDF", "Registre des agriculteurs"],
+        "surfaceLabel": "Interface mobile · 5 onglets"
+      },
+      "coop_admin": {
+        "title": "Administrateur coopérative",
+        "description": "Console de gestion complète : finances, rapports EUDR, réconciliation, lots et membres.",
+        "features": ["Console de gestion complète", "Rapports & conformité EUDR", "Explorateur de lots & dossiers"],
+        "surfaceLabel": "Console de gestion"
+      },
+      "buyer": {
+        "title": "Acheteur / Torréfacteur",
+        "description": "Accès en lecture aux dossiers de lots, traçabilité complète, certifications et histoires d'origine.",
+        "features": ["Dossiers de lots complets", "Traçabilité champ-à-tasse", "Certificats Bio · Fair Trade · EUDR"],
+        "surfaceLabel": "Console acheteur"
+      }
+    }
+  },
+  "dashboard": {
+    "morning": "Bonjour",
+    "afternoon": "Bon après-midi",
+    "evening": "Bonsoir",
+    "stats": {
+      "deliveries": "Livraisons",
+      "bidonsReceived": "Bidons reçus",
+      "farmers": "Agriculteurs",
+      "paidToday": "Payé aujourd'hui"
+    },
+    "syncBanner": "{{count}} livraison à synchroniser · Appuyez pour synchroniser",
+    "syncBanner_plural": "{{count}} livraisons à synchroniser · Appuyez pour synchroniser",
+    "quickActions": "Actions rapides",
+    "recentDeliveries": "Livraisons récentes",
+    "noDeliveries": "Aucune livraison enregistrée aujourd'hui",
+    "actions": {
+      "newFarmer": "Enregistrer agriculteur",
+      "newDelivery": "Enregistrer livraison",
+      "myLots": "Mes lots"
+    },
+    "deliverySub": "{{qty}} bidons · {{price}} FC/bidon · Reçu #{{receipt}}"
+  },
+  "farmers": {
+    "searchPlaceholder": "Nom, Code Bio, groupement, village…",
+    "noTitle": "Aucun agriculteur trouvé",
+    "noSub": "Essayez une autre recherche ou inscrivez un nouvel agriculteur.",
+    "count": "{{count}} agriculteur",
+    "count_plural": "{{count}} agriculteurs",
+    "detail": {
+      "notFound": "Agriculteur introuvable",
+      "stats": {
+        "deliveries": "Livraisons",
+        "totalBidons": "Total bidons",
+        "plants": "Pieds",
+        "paidUSD": "Payé (USD)"
+      },
+      "info": {
+        "territoire": "Territoire",
+        "groupement": "Groupement",
+        "village": "Village",
+        "station": "Station",
+        "phone": "Téléphone",
+        "genderAge": "Sexe / Âge",
+        "crop": "Culture",
+        "registeredAt": "Inscrit le"
+      },
+      "gender": {
+        "M": "Homme",
+        "F": "Femme",
+        "Other": "Autre"
+      },
+      "crop": {
+        "coffee": "Café",
+        "cocoa": "Cacao",
+        "both": "Café & Cacao"
+      },
+      "age": "{{age}} ans",
+      "recordDelivery": "Enregistrer une livraison",
+      "deliveryHistory": "Historique des livraisons",
+      "noDeliveries": "Aucune livraison enregistrée",
+      "totalPaid": "Total payé (FC)",
+      "pending": "En attente",
+      "receiptLine": "Reçu #{{receipt}} · Registre {{register}} · {{date}}",
+      "priceLine": "{{price}} FC/bidon · Taux {{rate}} FC/USD · {{method}}",
+      "cash": "Espèces",
+      "mobileMoney": "Mobile money",
+      "bank": "Banque",
+      "groupRoles": {
+        "president": "Président",
+        "vp": "Vice-Président",
+        "secretary": "Secrétaire",
+        "member": "Membre"
+      }
+    },
+    "new": {
+      "accessDenied": "Vous n'avez pas l'autorisation d'inscrire de nouveaux agriculteurs.",
+      "back": "Retour",
+      "gender": "Sexe",
+      "location": "Localisation",
+      "production": "Production",
+      "groupRole": "Rôle dans le groupement",
+      "firstName": "Prénom *",
+      "lastName": "Nom *",
+      "phone": "Téléphone",
+      "age": "Âge",
+      "territoire": "Territoire",
+      "groupement": "Groupement",
+      "village": "Village *",
+      "plants": "Nombre de pieds *",
+      "plantsHint": "Nombre de caféiers/cacaoyers",
+      "mainCrop": "Culture principale",
+      "bioIdLabel": "Code Bio généré",
+      "offlineNote": "Sauvegardé localement. Synchronisation automatique en ligne.",
+      "saveBtn": "Enregistrer l'agriculteur",
+      "saved": "Agriculteur inscrit",
+      "errorTitle": "Erreur d'inscription",
+      "errorMsg": "Vérifiez les informations et réessayez."
+    }
+  },
+  "collect": {
+    "accessDenied": "Vous n'avez pas l'autorisation d'enregistrer des livraisons de cerises.",
+    "back": "Retour",
+    "steps": ["Agriculteur", "Quantité", "Prix & Taux", "Documents", "Confirmer"],
+    "step1": {
+      "title": "Sélectionner l'agriculteur",
+      "searchPlaceholder": "Nom, prénom ou Code Bio…"
+    },
+    "step2": {
+      "title": "Quantité livrée",
+      "unit": "bidons de 5 litres",
+      "kgEstimate": "≈ {{kg}} kg cerises estimés",
+      "purchaseDate": "Date d'achat",
+      "datePlaceholder": "AAAA-MM-JJ"
+    },
+    "step3": {
+      "title": "Prix et taux de change",
+      "priceBand": "Bande de prix (FC/bidon)",
+      "customPrice": "Prix personnalisé (facultatif)",
+      "exchangeRate": "Taux de change (FC/USD)",
+      "usdEquiv": "Équivalent USD",
+      "customPlaceholder": "ex. 850"
+    },
+    "step4": {
+      "title": "Numéros de documents",
+      "receiptNo": "No de reçu de paiement *",
+      "registerNo": "No du registre des cerises",
+      "registerHint": "Laissez vide pour créer un nouveau registre (No {{n}})",
+      "reportNo": "No du rapport de livraison",
+      "payMethod": "Mode de paiement",
+      "payMethods": {
+        "cash": "Espèces",
+        "mobile_money": "Mobile money",
+        "bank": "Banque"
+      }
+    },
+    "step5": {
+      "title": "Confirmation de livraison",
+      "receiptTitle": "REÇU DE LIVRAISON DE CERISES",
+      "offline": "Sauvegardé hors ligne. Sync automatique dès que le réseau est disponible.",
+      "fields": {
+        "farmer": "Agriculteur",
+        "bioCode": "Code Bio",
+        "groupement": "Groupement",
+        "village": "Village",
+        "purchaseDate": "Date d'achat",
+        "qty": "Quantité (bidons)",
+        "pricePerBidon": "Prix / bidon",
+        "totalFC": "Total (FC)",
+        "usdEquiv": "Équivalent USD",
+        "rateFC": "Taux FC/USD",
+        "receiptNo": "No reçu paiement",
+        "registerNo": "No registre cerises",
+        "reportNo": "No rapport livraison",
+        "payMethod": "Mode de paiement"
+      }
+    },
+    "submit": "Confirmer & enregistrer le paiement",
+    "saved": "Livraison enregistrée",
+    "savedMsg": "Reçu #{{receipt}} · {{qty}} bidons · {{total}} FC",
+    "errorTitle": "Erreur d'enregistrement",
+    "errorMsg": "Vérifiez les données et réessayez.",
+    "pieds": "pieds"
+  },
+  "lots": {
+    "stats": {
+      "active": "Lots actifs",
+      "bidons": "Bidons totaux",
+      "weight": "Poids total",
+      "eudrReady": "EUDR prêts"
+    },
+    "filters": {
+      "all": "Tous",
+      "reception": "Réception",
+      "processing": "Traitement",
+      "drying": "Séchage",
+      "export": "Export",
+      "closed": "Fermé"
+    },
+    "searchPlaceholder": "Rechercher lots par réf, culture…",
+    "noTitle": "Aucun lot correspondant",
+    "noSub": "Essayez une autre recherche ou filtre.",
+    "meta": "{{crop}} · {{weight}} · {{farmers}} agriculteurs",
+    "coffee": "Café",
+    "cocoa": "Cacao"
+  },
+  "lot": {
+    "notFound": "Lot introuvable",
+    "stats": {
+      "weight": "Poids",
+      "bidons": "Bidons",
+      "farmers": "Agriculteurs",
+      "certs": "Certif."
+    },
+    "crop": {
+      "coffee": "Café",
+      "cocoa": "Cacao"
+    },
+    "cupScore": "Note SCA",
+    "eudr": {
+      "title": "EUDR Conforme",
+      "sub": "{{count}} agriculteur avec parcelle vérifiée. Aucun risque de déforestation détecté.",
+      "sub_plural": "{{count}} agriculteurs avec parcelles vérifiées. Aucun risque de déforestation détecté.",
+      "downloadDDS": "DDS PDF",
+      "ddsComing": "Le téléchargement du certificat DDS sera disponible dans la prochaine mise à jour."
+    },
+    "financial": {
+      "sourceRegisters": "Registres sources",
+      "totalBidons": "Total bidons reçus",
+      "paidToFarmers": "Payé aux agriculteurs (FC)"
+    },
+    "chain": "Chaîne de traitement",
+    "inProgress": "en cours",
+    "copiedRef": "Référence copiée",
+    "lotRef": "Référence du lot",
+    "sourceRegisters": "Registres de cerises sources",
+    "noRegisters": "Aucun registre lié à ce lot",
+    "register": "Registre {{n}}",
+    "deliveriesBidons": "{{count}} livraisons · {{bidons}} bidons",
+    "contributingFarmers": "Agriculteurs contributeurs",
+    "tamper": {
+      "title": "Traçabilité vérifiée",
+      "sub": "Ce lot est tracé depuis {{count}} registre de cerises et {{farmers}} agriculteur identifié.",
+      "sub_plural": "Ce lot est tracé depuis {{count}} registres de cerises et {{farmers}} agriculteurs identifiés."
+    },
+    "stageFlow": {
+      "cherry_received": "Cerises reçues à la station",
+      "pulping": "Dépulpage",
+      "fermenting": "Fermentation (12–48h)",
+      "washing": "Lavage",
+      "drying": "Séchage (tables surélevées)",
+      "dry_parchment": "Parche sèche — en stock",
+      "hulling": "Déparcheminé (décortiqueur)",
+      "graded": "Trié et classé",
+      "bagged": "Ensaché pour export",
+      "in_transit": "En transit vers le port",
+      "shipped": "Exporté"
+    }
+  },
+  "profile": {
+    "sections": {
+      "sync": "Synchronisation",
+      "language": "Langue",
+      "device": "Appareil"
+    },
+    "sync": {
+      "connection": "Connexion",
+      "lastSync": "Dernière sync",
+      "pending": "En attente",
+      "conflicts": "Conflits",
+      "wifiOnly": "Sync Wi-Fi uniquement",
+      "syncing": "Synchronisation…",
+      "syncNow": "Synchroniser maintenant",
+      "done": "Synchronisation terminée",
+      "doneMsg": "Toutes les données sont à jour.",
+      "failed": "Échec de la synchronisation",
+      "failedMsg": "Vérifiez votre connexion et réessayez.",
+      "pendingCount": "{{count}} enregistrement",
+      "pendingCount_plural": "{{count}} enregistrements",
+      "conflictCount": "{{count}} non résolu",
+      "conflictCount_plural": "{{count}} non résolus"
+    },
+    "device": {
+      "id": "ID Appareil",
+      "key": "Clé appareil",
+      "active": "Active"
+    },
+    "signOut": {
+      "title": "Déconnexion",
+      "confirm": "Voulez-vous vraiment vous déconnecter ?",
+      "cancel": "Annuler",
+      "button": "Se déconnecter",
+      "confirmBtn": "Déconnecter"
+    },
+    "version": "BeanPath v1.0.0 · Hors-ligne d'abord · Cryptographiquement vérifié",
+    "languageUpdated": "Langue mise à jour",
+    "unknown": "Inconnu",
+    "never": "Jamais",
+    "justNow": "À l'instant",
+    "minutesAgo": "il y a {{m}} min",
+    "hoursAgo": "il y a {{h}}h",
+    "daysAgo": "il y a {{d}}j"
+  },
+  "console": {
+    "field": "Terrain",
+    "kpi": {
+      "bidons": "Bidons reçus",
+      "totalWeight": "Poids total",
+      "activeLots": "Lots actifs",
+      "farmers": "Agriculteurs",
+      "paidFC": "Payé (FC)",
+      "eudrReady": "EUDR prêts",
+      "unsynced": "Non synchronisés",
+      "conflicts": "Conflits"
+    },
+    "byGroupement": "Par groupement",
+    "table": {
+      "groupement": "Groupement",
+      "bidons": "Bidons",
+      "totalFC": "Total FC",
+      "document": "Document",
+      "qty": "Quantité",
+      "ref": "Réf",
+      "stage": "Stade",
+      "farmers": "Agriculteurs"
+    },
+    "lotStatus": "État des lots",
+    "recentLots": "Lots récents",
+    "collectDocs": "Documents de collecte",
+    "conflictsAlert": "{{count}} conflit non résolu nécessite votre attention",
+    "conflictsAlert_plural": "{{count}} conflits non résolus nécessitent votre attention",
+    "allConflictsResolved": "Tous les conflits sont résolus",
+    "nav": {
+      "cherryRegisters": "Registres des cerises",
+      "cherryRegistersSub": "{{count}} registres · {{bidons}} bidons",
+      "deliveryReports": "Rapports de livraison",
+      "deliveryReportsSub": "{{count}} rapports de transport",
+      "lotExplorer": "Explorateur de lots",
+      "lotExplorerSub": "{{count}} lots en traitement",
+      "reconciliation": "Réconciliation",
+      "reconciliationSub": "{{count}} conflit en attente",
+      "reconciliationSub_plural": "{{count}} conflits en attente",
+      "eudrExport": "Exportation & EUDR",
+      "eudrExportSub": "DDV · Déclarations de diligence raisonnable",
+      "certifications": "Certifications",
+      "certificationsSub": "Bio · Fair Trade · Rainforest Alliance",
+      "qualityControl": "Contrôle qualité",
+      "qualityControlSub": "Scores de tasse · Audits · Défauts",
+      "members": "Membres coopérative",
+      "membersSub": "{{count}} agriculteurs inscrits"
+    },
+    "stations": "{{count}} station",
+    "stations_plural": "{{count}} stations",
+    "eudrInfo": "Le module d'exportation EUDR sera disponible prochainement.",
+    "certInfo": "Le module de certification Bio/Fair Trade sera disponible prochainement.",
+    "qcInfo": "L'enregistrement des scores de tasse sera disponible prochainement.",
+    "membersInfo": "Le module d'administration des membres sera disponible prochainement."
+  },
+  "reconciliation": {
+    "summary": {
+      "conflicts": "{{count}} conflit nécessite votre attention",
+      "conflicts_plural": "{{count}} conflits nécessitent votre attention",
+      "allResolved": "Tous les conflits sont résolus"
+    },
+    "empty": {
+      "title": "Aucun conflit en attente",
+      "sub": "Tous les conflits de synchronisation ont été résolus."
+    },
+    "labels": {
+      "mine": "Mine",
+      "theirs": "Theirs"
+    },
+    "keep": {
+      "mine": "Garder le mien",
+      "theirs": "Garder le leur",
+      "merge": "Fusionner"
+    },
+    "resolved": "Résolus",
+    "conflict": {
+      "resolved": "Conflit résolu"
+    }
+  },
+  "registers": {
+    "summary": {
+      "registers": "Registres",
+      "bidons": "Bidons totaux",
+      "paid": "Payé (FC)"
+    },
+    "explain": "Chaque registre groupe les livraisons d'un même point de collecte sur une journée. Plusieurs registres sont ensuite regroupés dans un Rapport de livraison.",
+    "filterAll": "Tous",
+    "reportFilter": "Rapport {{n}}",
+    "col": {
+      "bioFarmer": "Code Bio / Agriculteur",
+      "bidons": "Bidons",
+      "fcPerBidon": "FC/bidon",
+      "totalFC": "Total FC",
+      "receipt": "Reçu"
+    },
+    "total": "Total registre {{n}}",
+    "deliveries": "{{count}} livraison",
+    "deliveries_plural": "{{count}} livraisons",
+    "exchangeRate": "Taux de change: {{rates}} FC/USD · ≈ ${{usd}} USD"
+  },
+  "reports": {
+    "summary": {
+      "reports": "Rapports",
+      "registers": "Registres",
+      "bidons": "Bidons totaux",
+      "totalFC": "Total FC"
+    },
+    "explain": "Un Rapport de livraison regroupe plusieurs registres de cerises correspondant à un même transport vers la station de lavage. Son numéro figure sur chaque reçu de paiement.",
+    "reportNum": "Rapport",
+    "registersIncluded": "Registres inclus",
+    "farmers": "{{count}} agriculteur",
+    "farmers_plural": "{{count}} agriculteurs",
+    "registers": "{{count}} registre",
+    "registers_plural": "{{count}} registres",
+    "deliveries": "{{count}} livraison",
+    "deliveries_plural": "{{count}} livraisons",
+    "priceBreakdown": "Répartition par prix",
+    "financial": {
+      "totalPaid": "Total payé aux agriculteurs",
+      "avgRate": "Taux de change moyen",
+      "usdEquiv": "Équivalent USD"
+    }
+  }
+}

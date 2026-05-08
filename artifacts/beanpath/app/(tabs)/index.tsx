@@ -6,6 +6,7 @@ import {
   StyleSheet, Text, TouchableOpacity, View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
 import { useSync } from "@/context/SyncContext";
@@ -13,20 +14,15 @@ import { ROLE_LABELS } from "@/lib/rbac";
 import { usePermission } from "@/hooks/usePermission";
 import { useColors } from "@/hooks/useColors";
 
-function timeAgo(iso: string) {
+function timeAgo(iso: string, t: (k: string, o?: any) => string) {
   const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
-  if (m < 1) return "à l'instant";
-  if (m < 60) return `il y a ${m} min`;
-  return `il y a ${Math.floor(m / 60)}h`;
+  if (m < 1) return t("profile.justNow");
+  if (m < 60) return t("profile.minutesAgo", { m });
+  return t("profile.hoursAgo", { h: Math.floor(m / 60) });
 }
 
-const ALL_QUICK_ACTIONS = [
-  { label: "Enregistrer agriculteur", icon: "person-add-outline" as const, route: "/(tabs)/farmers/new" as const, permission: "farmer.create" as const },
-  { label: "Enregistrer livraison",   icon: "cube-outline"        as const, route: "/(tabs)/collect/"     as const, permission: "delivery.create" as const },
-  { label: "Mes lots",                icon: "layers-outline"       as const, route: "/(tabs)/lots/"        as const, permission: "lot.view" as const },
-];
-
 export default function TodayScreen() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { deliveries } = useData();
   const { pendingCount, triggerSync, syncing } = useSync();
@@ -35,6 +31,12 @@ export default function TodayScreen() {
   const canViewLots       = usePermission("lot.view");
   const colors = useColors();
   const insets = useSafeAreaInsets();
+
+  const ALL_QUICK_ACTIONS = useMemo(() => [
+    { label: t("dashboard.actions.newFarmer"), icon: "person-add-outline" as const, route: "/(tabs)/farmers/new" as const, permission: "farmer.create" as const },
+    { label: t("dashboard.actions.newDelivery"), icon: "cube-outline" as const, route: "/(tabs)/collect/" as const, permission: "delivery.create" as const },
+    { label: t("dashboard.actions.myLots"), icon: "layers-outline" as const, route: "/(tabs)/lots/" as const, permission: "lot.view" as const },
+  ], [t]);
 
   const todayDeliveries = useMemo(() => {
     const todayStr = new Date().toISOString().split("T")[0];
@@ -49,10 +51,12 @@ export default function TodayScreen() {
 
   const greeting = () => {
     const h = new Date().getHours();
-    if (h < 12) return "Bonjour";
-    if (h < 17) return "Bon après-midi";
-    return "Bonsoir";
+    if (h < 12) return t("dashboard.morning");
+    if (h < 17) return t("dashboard.afternoon");
+    return t("dashboard.evening");
   };
+
+  const roleLabel = user?.role ? t(`roles.${user.role}`, ROLE_LABELS[user.role]) : "";
 
   return (
     <ScrollView
@@ -68,7 +72,7 @@ export default function TodayScreen() {
           <Text style={[styles.name, { color: colors.foreground }]}>{user?.name?.split(" ")[0] ?? "Agent"}</Text>
           {user?.role && (
             <Text style={[styles.rolePill, { color: colors.primary }]}>
-              {ROLE_LABELS[user.role]} · {user.orgName?.split(" ")[0]}
+              {roleLabel} · {user.orgName?.split(" ")[0]}
             </Text>
           )}
         </View>
@@ -77,16 +81,16 @@ export default function TodayScreen() {
           style={[styles.consoleBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
           <Ionicons name="desktop-outline" size={14} color={colors.mutedForeground} />
-          <Text style={[styles.consoleBtnText, { color: colors.mutedForeground }]}>Console</Text>
+          <Text style={[styles.consoleBtnText, { color: colors.mutedForeground }]}>{t("common.console")}</Text>
         </TouchableOpacity>
       </View>
 
       {/* Today stats */}
       <View style={styles.statsRow}>
         {[
-          { label: "Livraisons", value: String(todayDeliveries.length), icon: "receipt-outline" as const },
-          { label: "Bidons reçus", value: String(todayBidons), icon: "cube-outline" as const },
-          { label: "Agriculteurs", value: String(farmersToday), icon: "people-outline" as const },
+          { label: t("dashboard.stats.deliveries"), value: String(todayDeliveries.length), icon: "receipt-outline" as const },
+          { label: t("dashboard.stats.bidonsReceived"), value: String(todayBidons), icon: "cube-outline" as const },
+          { label: t("dashboard.stats.farmers"), value: String(farmersToday), icon: "people-outline" as const },
         ].map((s) => (
           <View key={s.label} style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Ionicons name={s.icon} size={18} color={colors.primary} />
@@ -100,7 +104,7 @@ export default function TodayScreen() {
       {todayFC > 0 && (
         <View style={[styles.fcCard, { backgroundColor: colors.greenLight, borderColor: colors.accent + "30" }]}>
           <Ionicons name="cash-outline" size={18} color={colors.accent} />
-          <Text style={[styles.fcLabel, { color: colors.accent }]}>Payé aujourd'hui</Text>
+          <Text style={[styles.fcLabel, { color: colors.accent }]}>{t("dashboard.stats.paidToday")}</Text>
           <Text style={[styles.fcAmount, { color: colors.accent }]}>{todayFC.toLocaleString()} FC</Text>
         </View>
       )}
@@ -109,12 +113,14 @@ export default function TodayScreen() {
       {pendingCount > 0 && (
         <TouchableOpacity onPress={triggerSync} style={[styles.syncBanner, { backgroundColor: colors.amberLight, borderColor: colors.warning + "40" }]}>
           <Ionicons name="cloud-upload-outline" size={16} color={colors.warning} />
-          <Text style={[styles.syncText, { color: colors.amber }]}>{pendingCount} livraison{pendingCount > 1 ? "s" : ""} à synchroniser · Appuyez pour synchroniser</Text>
+          <Text style={[styles.syncText, { color: colors.amber }]}>
+            {t(pendingCount === 1 ? "dashboard.syncBanner" : "dashboard.syncBanner_plural", { count: pendingCount })}
+          </Text>
         </TouchableOpacity>
       )}
 
-      {/* Quick actions — RBAC filtered */}
-      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Actions rapides</Text>
+      {/* Quick actions */}
+      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("dashboard.quickActions")}</Text>
       <View style={styles.actions}>
         {ALL_QUICK_ACTIONS.filter((a) => {
           if (a.permission === "farmer.create")   return canCreateFarmer;
@@ -136,11 +142,11 @@ export default function TodayScreen() {
       </View>
 
       {/* Recent deliveries */}
-      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Livraisons récentes</Text>
+      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("dashboard.recentDeliveries")}</Text>
       {recent.length === 0 ? (
         <View style={[styles.emptyCard, { backgroundColor: colors.surface }]}>
           <Ionicons name="cube-outline" size={28} color={colors.mutedForeground} />
-          <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>Aucune livraison enregistrée aujourd'hui</Text>
+          <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>{t("dashboard.noDeliveries")}</Text>
         </View>
       ) : (
         recent.map((d) => (
@@ -155,11 +161,13 @@ export default function TodayScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.delivName, { color: colors.foreground }]}>{d.farmerName}</Text>
-              <Text style={[styles.delivSub, { color: colors.mutedForeground }]}>{d.quantityBidons} bidons · {d.pricePerBidonFC} FC/bidon · Reçu #{d.receiptNo}</Text>
+              <Text style={[styles.delivSub, { color: colors.mutedForeground }]}>
+                {t("dashboard.deliverySub", { qty: d.quantityBidons, price: d.pricePerBidonFC, receipt: d.receiptNo })}
+              </Text>
             </View>
             <View style={{ alignItems: "flex-end" }}>
               <Text style={[styles.delivFC, { color: colors.primary }]}>{d.totalFC.toLocaleString()} FC</Text>
-              <Text style={[styles.delivTime, { color: colors.mutedForeground }]}>{timeAgo(d.recordedAt)}</Text>
+              <Text style={[styles.delivTime, { color: colors.mutedForeground }]}>{timeAgo(d.recordedAt, t)}</Text>
               {!d.synced && <View style={[styles.pendingDot, { backgroundColor: colors.warning }]} />}
             </View>
           </TouchableOpacity>

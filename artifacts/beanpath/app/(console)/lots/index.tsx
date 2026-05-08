@@ -3,20 +3,12 @@ import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { FlatList, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { CertBadge } from "@/components/CertBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { StageTag } from "@/components/StageTag";
 import { type LotStage, useData } from "@/context/DataContext";
 import { useColors } from "@/hooks/useColors";
-
-const STAGE_FILTERS: { label: string; stages: LotStage[] | null }[] = [
-  { label: "Tous", stages: null },
-  { label: "Réception", stages: ["cherry_received"] },
-  { label: "Traitement", stages: ["pulping", "fermenting", "washing"] },
-  { label: "Séchage", stages: ["drying", "dry_parchment"] },
-  { label: "Export", stages: ["hulling", "graded", "bagged", "in_transit", "shipped"] },
-  { label: "Fermé", stages: ["closed"] },
-];
 
 function formatWeight(kg: number) {
   if (kg >= 1000) return (kg / 1000).toFixed(2) + " MT";
@@ -24,22 +16,32 @@ function formatWeight(kg: number) {
 }
 
 export default function LotExplorerScreen() {
+  const { t } = useTranslation();
   const { lots } = useData();
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState("");
   const [filterIdx, setFilterIdx] = useState(0);
 
+  const STAGE_FILTERS: { label: string; stages: LotStage[] | null }[] = useMemo(() => [
+    { label: t("lots.filters.all"), stages: null },
+    { label: t("lots.filters.reception"), stages: ["cherry_received"] },
+    { label: t("lots.filters.processing"), stages: ["pulping", "fermenting", "washing"] },
+    { label: t("lots.filters.drying"), stages: ["drying", "dry_parchment"] },
+    { label: t("lots.filters.export"), stages: ["hulling", "graded", "bagged", "in_transit", "shipped"] },
+    { label: t("lots.filters.closed"), stages: ["closed"] },
+  ], [t]);
+
   const filtered = useMemo(() => {
     let result = lots;
-    const stages = STAGE_FILTERS[filterIdx].stages;
+    const stages = STAGE_FILTERS[filterIdx]?.stages;
     if (stages) result = result.filter((l) => stages.includes(l.stage));
     if (query.trim()) {
       const q = query.toLowerCase();
       result = result.filter((l) => l.ref.toLowerCase().includes(q) || l.crop.toLowerCase().includes(q));
     }
     return result;
-  }, [lots, filterIdx, query]);
+  }, [lots, filterIdx, query, STAGE_FILTERS]);
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
@@ -47,7 +49,13 @@ export default function LotExplorerScreen() {
       <View style={[styles.searchBar, { borderBottomColor: colors.border, paddingTop: Platform.OS === "web" ? 16 : 0 }]}>
         <View style={[styles.search, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Ionicons name="search-outline" size={16} color={colors.mutedForeground} />
-          <TextInput style={[styles.searchInput, { color: colors.foreground }]} value={query} onChangeText={setQuery} placeholder="Search lots by ref, crop…" placeholderTextColor={colors.mutedForeground} />
+          <TextInput
+            style={[styles.searchInput, { color: colors.foreground }]}
+            value={query}
+            onChangeText={setQuery}
+            placeholder={t("lots.searchPlaceholder")}
+            placeholderTextColor={colors.mutedForeground}
+          />
         </View>
       </View>
 
@@ -77,7 +85,13 @@ export default function LotExplorerScreen() {
               <StageTag stage={lot.stage} size="sm" />
             </View>
             <View style={styles.rowMeta}>
-              <Text style={[styles.metaText, { color: colors.mutedForeground }]}>{lot.crop === "coffee" ? "Café" : "Cacao"} · {formatWeight(lot.weightKg)} · {lot.farmerCount} agriculteurs</Text>
+              <Text style={[styles.metaText, { color: colors.mutedForeground }]}>
+                {t("lots.meta", {
+                  crop: lot.crop === "coffee" ? t("lots.coffee") : t("lots.cocoa"),
+                  weight: formatWeight(lot.weightKg),
+                  farmers: lot.farmerCount,
+                })}
+              </Text>
             </View>
             <View style={styles.certs}>
               {lot.certifications.map((c) => <CertBadge key={c} regime={c} />)}
@@ -85,7 +99,7 @@ export default function LotExplorerScreen() {
           </Pressable>
         )}
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 24 }]}
-        ListEmptyComponent={<EmptyState icon="layers-outline" title="No lots match" subtitle="Try a different search or filter." />}
+        ListEmptyComponent={<EmptyState icon="layers-outline" title={t("lots.noTitle")} subtitle={t("lots.noSub")} />}
         showsVerticalScrollIndicator={false}
       />
     </View>

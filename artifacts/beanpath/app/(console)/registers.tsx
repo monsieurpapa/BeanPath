@@ -5,16 +5,9 @@ import {
   TouchableOpacity, View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { useData } from "@/context/DataContext";
 import { useColors } from "@/hooks/useColors";
-
-/**
- * Cherry Register screen — console view of the "Registre des cerises" document hierarchy.
- *
- * In the real DRC workflow each register groups all deliveries
- * from a single collection area on a single day, before being
- * batched into a Delivery Report for transport to the station.
- */
 
 function formatFC(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + " M FC";
@@ -23,7 +16,7 @@ function formatFC(n: number) {
 }
 
 function fmtDate(d: string) {
-  return new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
+  return new Date(d).toLocaleDateString(undefined, { day: "2-digit", month: "short" });
 }
 
 const PRICE_COLOR: Record<number, string> = {
@@ -33,6 +26,7 @@ const PRICE_COLOR: Record<number, string> = {
 };
 
 export default function RegistersScreen() {
+  const { t } = useTranslation();
   const { registers, deliveries, reports, stations } = useData();
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -47,7 +41,6 @@ export default function RegistersScreen() {
     return registers.filter(r => r.deliveryReportNo === filterReport);
   }, [registers, filterReport]);
 
-  // Sort by date descending
   const sorted = useMemo(() => [...filtered].sort((a, b) => b.date.localeCompare(a.date)), [filtered]);
 
   return (
@@ -59,9 +52,9 @@ export default function RegistersScreen() {
       {/* Summary strip */}
       <View style={[styles.summary, { backgroundColor: colors.card, borderColor: colors.border }]}>
         {[
-          { label: "Registres", value: String(registers.length), icon: "list-outline" as const },
-          { label: "Bidons totaux", value: totalBidons.toLocaleString(), icon: "cube-outline" as const },
-          { label: "Payé (FC)", value: formatFC(totalFC), icon: "cash-outline" as const },
+          { label: t("registers.summary.registers"), value: String(registers.length), icon: "list-outline" as const },
+          { label: t("registers.summary.bidons"),    value: totalBidons.toLocaleString(), icon: "cube-outline" as const },
+          { label: t("registers.summary.paid"),      value: formatFC(totalFC), icon: "cash-outline" as const },
         ].map((s, i, arr) => (
           <React.Fragment key={s.label}>
             <View style={styles.summStat}>
@@ -77,9 +70,7 @@ export default function RegistersScreen() {
       {/* Explain card */}
       <View style={[styles.explainCard, { backgroundColor: colors.amberLight, borderColor: colors.primary + "20" }]}>
         <Ionicons name="information-circle-outline" size={16} color={colors.amber} />
-        <Text style={[styles.explainText, { color: colors.amber }]}>
-          Chaque registre groupe les livraisons d'un même point de collecte sur une journée. Plusieurs registres sont ensuite regroupés dans un Rapport de livraison.
-        </Text>
+        <Text style={[styles.explainText, { color: colors.amber }]}>{t("registers.explain")}</Text>
       </View>
 
       {/* Filter by report */}
@@ -89,7 +80,7 @@ export default function RegistersScreen() {
             onPress={() => setFilterReport(null)}
             style={[styles.chip, { backgroundColor: !filterReport ? colors.primary : colors.surface, borderColor: !filterReport ? colors.primary : colors.border }]}
           >
-            <Text style={[styles.chipText, { color: !filterReport ? "#fff" : colors.mutedForeground }]}>Tous</Text>
+            <Text style={[styles.chipText, { color: !filterReport ? "#fff" : colors.mutedForeground }]}>{t("registers.filterAll")}</Text>
           </TouchableOpacity>
           {reports.map(r => (
             <TouchableOpacity
@@ -97,7 +88,9 @@ export default function RegistersScreen() {
               onPress={() => setFilterReport(filterReport === r.reportNo ? null : r.reportNo)}
               style={[styles.chip, { backgroundColor: filterReport === r.reportNo ? colors.primary : colors.surface, borderColor: filterReport === r.reportNo ? colors.primary : colors.border }]}
             >
-              <Text style={[styles.chipText, { color: filterReport === r.reportNo ? "#fff" : colors.mutedForeground }]}>Rapport {r.reportNo}</Text>
+              <Text style={[styles.chipText, { color: filterReport === r.reportNo ? "#fff" : colors.mutedForeground }]}>
+                {t("registers.reportFilter", { n: r.reportNo })}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -112,7 +105,6 @@ export default function RegistersScreen() {
 
         return (
           <View key={reg.id} style={[styles.regCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            {/* Header row */}
             <TouchableOpacity
               style={styles.regHeader}
               onPress={() => setExpandedId(expanded ? null : reg.id)}
@@ -125,11 +117,13 @@ export default function RegistersScreen() {
                 <View style={styles.regTitleRow}>
                   <Text style={[styles.regVillage, { color: colors.foreground }]}>{reg.village ?? reg.groupement}</Text>
                   <View style={[styles.reportPill, { backgroundColor: colors.greenLight }]}>
-                    <Text style={[styles.reportPillText, { color: colors.accent }]}>Rapport {reg.deliveryReportNo}</Text>
+                    <Text style={[styles.reportPillText, { color: colors.accent }]}>
+                      {t("registers.reportFilter", { n: reg.deliveryReportNo })}
+                    </Text>
                   </View>
                 </View>
                 <Text style={[styles.regMeta, { color: colors.mutedForeground }]}>
-                  {fmtDate(reg.date)} · {station?.name} · {regDelivs.length} livraison{regDelivs.length > 1 ? "s" : ""}
+                  {fmtDate(reg.date)} · {station?.name} · {t(regDelivs.length === 1 ? "registers.deliveries" : "registers.deliveries_plural", { count: regDelivs.length })}
                 </Text>
               </View>
               <View style={{ alignItems: "flex-end", gap: 2 }}>
@@ -139,12 +133,16 @@ export default function RegistersScreen() {
               </View>
             </TouchableOpacity>
 
-            {/* Expandable delivery list */}
             {expanded && (
               <View style={[styles.delivList, { borderTopColor: colors.border }]}>
-                {/* Column headers */}
                 <View style={[styles.delivHead, { backgroundColor: colors.surface }]}>
-                  {["Code Bio / Agriculteur", "Bidons", "FC/bidon", "Total FC", "Reçu"].map(h => (
+                  {[
+                    t("registers.col.bioFarmer"),
+                    t("registers.col.bidons"),
+                    t("registers.col.fcPerBidon"),
+                    t("registers.col.totalFC"),
+                    t("registers.col.receipt"),
+                  ].map(h => (
                     <Text key={h} style={[styles.delivHeadCell, { color: colors.mutedForeground }]}>{h}</Text>
                   ))}
                 </View>
@@ -165,19 +163,19 @@ export default function RegistersScreen() {
                     <Text style={[styles.delivCell, { color: colors.mutedForeground, flex: 0.7, fontFamily: "Inter_400Regular" }]}>#{d.receiptNo}</Text>
                   </View>
                 ))}
-                {/* Register totals */}
                 <View style={[styles.totalsRow, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-                  <Text style={[styles.totalsLabel, { color: colors.mutedForeground }]}>Total registre {reg.registerNo}</Text>
+                  <Text style={[styles.totalsLabel, { color: colors.mutedForeground }]}>{t("registers.total", { n: reg.registerNo })}</Text>
                   <Text style={[styles.totalsBidons, { color: colors.foreground }]}>{reg.totalBidons} bidons</Text>
                   <Text style={[styles.totalsFC, { color: colors.primary }]}>{reg.totalFC.toLocaleString()} FC</Text>
                 </View>
-                {/* Exchange rate note */}
                 {regDelivs.length > 0 && (
                   <View style={[styles.rateRow, { borderTopColor: colors.border }]}>
                     <Ionicons name="swap-horizontal-outline" size={12} color={colors.mutedForeground} />
                     <Text style={[styles.rateText, { color: colors.mutedForeground }]}>
-                      Taux de change: {[...new Set(regDelivs.map(d => d.exchangeRateFC_USD))].join(", ")} FC/USD
-                      {" · "}≈ ${(reg.totalFC / regDelivs[0].exchangeRateFC_USD).toFixed(0)} USD
+                      {t("registers.exchangeRate", {
+                        rates: [...new Set(regDelivs.map(d => d.exchangeRateFC_USD))].join(", "),
+                        usd: (reg.totalFC / regDelivs[0].exchangeRateFC_USD).toFixed(0),
+                      })}
                     </Text>
                   </View>
                 )}

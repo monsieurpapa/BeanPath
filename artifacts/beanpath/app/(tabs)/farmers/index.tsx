@@ -3,12 +3,14 @@ import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { FlatList, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/EmptyState";
 import { FarmerCard } from "@/components/FarmerCard";
 import { useData } from "@/context/DataContext";
 import { useColors } from "@/hooks/useColors";
 
 export default function FarmersScreen() {
+  const { t } = useTranslation();
   const { farmers } = useData();
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -27,6 +29,10 @@ export default function FarmersScreen() {
     );
   }, [farmers, query]);
 
+  const countLabel = filtered.length === 1
+    ? t("farmers.count", { count: filtered.length })
+    : t("farmers.count_plural", { count: filtered.length });
+
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       {/* Search bar */}
@@ -37,7 +43,7 @@ export default function FarmersScreen() {
             style={[styles.searchInput, { color: colors.foreground }]}
             value={query}
             onChangeText={setQuery}
-            placeholder="Nom, Code Bio, groupement, village…"
+            placeholder={t("farmers.searchPlaceholder")}
             placeholderTextColor={colors.mutedForeground}
           />
           {!!query && (
@@ -46,7 +52,7 @@ export default function FarmersScreen() {
             </Pressable>
           )}
         </View>
-        <Text style={[styles.count, { color: colors.mutedForeground }]}>{filtered.length} farmer{filtered.length !== 1 ? "s" : ""}</Text>
+        <Text style={[styles.count, { color: colors.mutedForeground }]}>{countLabel}</Text>
       </View>
 
       <FlatList
@@ -56,7 +62,7 @@ export default function FarmersScreen() {
           <FarmerCard farmer={item} onPress={() => router.push({ pathname: "/(tabs)/farmers/[id]", params: { id: item.id } })} />
         )}
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 90 }]}
-        ListEmptyComponent={<EmptyState icon="person-outline" title="No farmers found" subtitle="Try a different search or register a new farmer." />}
+        ListEmptyComponent={<EmptyState icon="person-outline" title={t("farmers.noTitle")} subtitle={t("farmers.noSub")} />}
         showsVerticalScrollIndicator={false}
       />
 

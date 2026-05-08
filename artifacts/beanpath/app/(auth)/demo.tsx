@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import type { UserRole } from "@/context/AuthContext";
 
@@ -22,53 +23,38 @@ const CONSOLE_ROLES = new Set<UserRole>([
 
 type DemoPersona = {
   role: UserRole;
-  title: string;
   name: string;
   org: string;
-  description: string;
-  features: string[];
   icon: keyof typeof import("@expo/vector-icons").Ionicons.glyphMap;
   accent: string;
-  surfaceLabel: string;
 };
 
 const DEMO_PERSONAS: DemoPersona[] = [
   {
-    role:         "field_agent",
-    title:        "Agent de terrain",
-    name:         "Bulonza MUDUMBI",
-    org:          "TCC — Tounga wa Café Congo",
-    description:  "Interface terrain pour la collecte quotidienne des cerises, le paiement des agriculteurs et la gestion des lots.",
-    features:     ["Tableau de bord & livraisons du jour", "Enregistrement cerises · reçus PDF", "Registre des agriculteurs"],
-    icon:         "leaf-outline",
-    accent:       "#b45309",
-    surfaceLabel: "Interface mobile · 5 onglets",
+    role:   "field_agent",
+    name:   "Bulonza MUDUMBI",
+    org:    "TCC — Tounga wa Café Congo",
+    icon:   "leaf-outline",
+    accent: "#b45309",
   },
   {
-    role:         "coop_admin",
-    title:        "Administrateur coopérative",
-    name:         "Bishops KAJEREGE",
-    org:          "NAKEZA SARL",
-    description:  "Console de gestion complète : finances, rapports EUDR, réconciliation, lots et membres.",
-    features:     ["Console de gestion complète", "Rapports & conformité EUDR", "Explorateur de lots & dossiers"],
-    icon:         "shield-checkmark-outline",
-    accent:       "#1d4ed8",
-    surfaceLabel: "Console de gestion",
+    role:   "coop_admin",
+    name:   "Bishops KAJEREGE",
+    org:    "NAKEZA SARL",
+    icon:   "shield-checkmark-outline",
+    accent: "#1d4ed8",
   },
   {
-    role:         "buyer",
-    title:        "Acheteur / Torréfacteur",
-    name:         "Lars ERIKSEN",
-    org:          "Nordic Roasters AS",
-    description:  "Accès en lecture aux dossiers de lots, traçabilité complète, certifications et histoires d'origine.",
-    features:     ["Dossiers de lots complets", "Traçabilité champ-à-tasse", "Certificats Bio · Fair Trade · EUDR"],
-    icon:         "bag-handle-outline",
-    accent:       "#6d28d9",
-    surfaceLabel: "Console acheteur",
+    role:   "buyer",
+    name:   "Lars ERIKSEN",
+    org:    "Nordic Roasters AS",
+    icon:   "bag-handle-outline",
+    accent: "#6d28d9",
   },
 ];
 
 export default function DemoScreen() {
+  const { t } = useTranslation();
   const { loginAsDemo } = useAuth();
   const [loading, setLoading] = useState<UserRole | null>(null);
   const inFlight = useRef(false);
@@ -111,18 +97,22 @@ export default function DemoScreen() {
             <View style={{ flex: 1 }}>
               <View style={s.demoTag}>
                 <Ionicons name="flash" size={10} color="#b45309" />
-                <Text style={s.demoTagText}>Accès immédiat · Aucune inscription</Text>
+                <Text style={s.demoTagText}>{t("demo.tagline")}</Text>
               </View>
-              <Text style={s.title}>Essayez BeanPath</Text>
-              <Text style={s.subtitle}>
-                Choisissez un profil pour explorer la plateforme avec des données fictives réalistes.
-              </Text>
+              <Text style={s.title}>{t("demo.title")}</Text>
+              <Text style={s.subtitle}>{t("demo.subtitle")}</Text>
             </View>
           </View>
 
           {/* Persona cards */}
           {DEMO_PERSONAS.map((p) => {
             const isLoading = loading === p.role;
+            const personaKey = p.role as "field_agent" | "coop_admin" | "buyer";
+            const title = t(`demo.personas.${personaKey}.title`);
+            const description = t(`demo.personas.${personaKey}.description`);
+            const features = t(`demo.personas.${personaKey}.features`, { returnObjects: true }) as string[];
+            const surfaceLabel = t(`demo.personas.${personaKey}.surfaceLabel`);
+
             return (
               <Pressable
                 key={p.role}
@@ -140,22 +130,22 @@ export default function DemoScreen() {
                     <Ionicons name={p.icon} size={24} color={p.accent} />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.cardTitle}>{p.title}</Text>
+                    <Text style={s.cardTitle}>{title}</Text>
                     <Text style={[s.cardOrg, { color: p.accent }]}>{p.name}</Text>
                     <Text style={s.cardOrgName}>{p.org}</Text>
                   </View>
                   <View style={[s.surfacePill, { backgroundColor: p.accent + "18", borderColor: p.accent + "30" }]}>
-                    <Text style={[s.surfaceText, { color: p.accent }]}>{p.surfaceLabel}</Text>
+                    <Text style={[s.surfaceText, { color: p.accent }]}>{surfaceLabel}</Text>
                   </View>
                 </View>
 
                 {/* Description */}
-                <Text style={s.cardDesc}>{p.description}</Text>
+                <Text style={s.cardDesc}>{description}</Text>
 
                 {/* Feature list */}
                 <View style={s.featureList}>
-                  {p.features.map((f) => (
-                    <View key={f} style={s.featureRow}>
+                  {(Array.isArray(features) ? features : []).map((f, i) => (
+                    <View key={i} style={s.featureRow}>
                       <Ionicons name="checkmark-circle" size={13} color={p.accent} />
                       <Text style={s.featureText}>{f}</Text>
                     </View>
@@ -169,7 +159,7 @@ export default function DemoScreen() {
                   ) : (
                     <>
                       <Ionicons name="rocket-outline" size={15} color="#fff" />
-                      <Text style={s.ctaText}>Entrer en démo</Text>
+                      <Text style={s.ctaText}>{t("demo.enterDemo")}</Text>
                       <Ionicons name="arrow-forward" size={14} color="#fff" />
                     </>
                   )}
@@ -181,9 +171,7 @@ export default function DemoScreen() {
           {/* Footer note */}
           <View style={s.note}>
             <Ionicons name="information-circle-outline" size={14} color="rgba(255,255,255,0.25)" />
-            <Text style={s.noteText}>
-              Les données affichées sont fictives et servent uniquement à la démonstration. Aucune donnée réelle n'est utilisée.
-            </Text>
+            <Text style={s.noteText}>{t("demo.disclaimer")}</Text>
           </View>
 
           {/* Sign-in link */}
@@ -191,7 +179,7 @@ export default function DemoScreen() {
             style={s.signinLink}
             onPress={() => router.push({ pathname: "/(auth)/personas" })}
           >
-            <Text style={s.signinLinkText}>Vous avez un compte ? Se connecter</Text>
+            <Text style={s.signinLinkText}>{t("demo.hasAccount")}</Text>
             <Ionicons name="arrow-forward" size={13} color="rgba(255,255,255,0.35)" />
           </TouchableOpacity>
         </ScrollView>

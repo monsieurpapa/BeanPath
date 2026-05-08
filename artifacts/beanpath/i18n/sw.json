@@ -1,0 +1,513 @@
+{
+  "common": {
+    "cancel": "Ghairi",
+    "save": "Hifadhi",
+    "back": "Rudi",
+    "next": "Endelea",
+    "confirm": "Thibitisha",
+    "search": "Tafuta",
+    "loading": "Inapakia…",
+    "error": "Hitilafu",
+    "offline": "Nje ya mtandao",
+    "online": "Mtandaoni",
+    "pending": "Inasubiri",
+    "all": "Yote",
+    "seeAll": "Angalia yote",
+    "unknown": "Haijulikani",
+    "console": "Konsoli",
+    "terrain": "Shambani",
+    "bidons": "bidon",
+    "bidons_plural": "mabidoni",
+    "registers": "Rejista",
+    "reports": "Ripoti",
+    "farmers": "Wakulima"
+  },
+  "nav": {
+    "dashboard": "Dashibodi",
+    "farmers": "Wakulima",
+    "collect": "Kukusanya",
+    "lots": "Vipande",
+    "profile": "Wasifu",
+    "console": "Konsoli ya Opereta",
+    "lotExplorer": "Kivinjari cha Vipande",
+    "lotDossier": "Faili ya Kipande",
+    "registers": "Rejista za Tunda",
+    "reports": "Ripoti za Utoaji",
+    "reconciliation": "Usuluhishi"
+  },
+  "roles": {
+    "field_agent": "Wakala wa Shamba",
+    "lead_farmer": "Mkulima Mkuu",
+    "station_operator": "Opereta wa Kituo",
+    "transporter": "Msafirishaji",
+    "mill_operator": "Opereta wa Kinu",
+    "qc_grader": "Mkaguzi wa Ubora",
+    "exporter": "Msafirishaji wa Nje",
+    "buyer": "Mnunuzi",
+    "coop_admin": "Msimamizi",
+    "certifier": "Mthibitishaji"
+  },
+  "stages": {
+    "cherry_received": "Tunda limepokelewa",
+    "pulping": "Kuchomoa maganda",
+    "fermenting": "Kuchachua",
+    "washing": "Kuosha",
+    "drying": "Kukaushia",
+    "dry_parchment": "Kanda kame",
+    "hulling": "Kuondoa ganda",
+    "graded": "Kupangwa",
+    "bagged": "Kufungwa mfukoni",
+    "in_transit": "Katika usafiri",
+    "shipped": "Imesafirishwa",
+    "closed": "Imefungwa"
+  },
+  "auth": {
+    "changeRole": "Badilisha jukumu",
+    "phoneOtp": "Simu OTP",
+    "email": "Barua pepe",
+    "password": "Nenosiri",
+    "forgotPassword": "Umesahau nenosiri?",
+    "biometric": "Fungua kwa alama za mwili",
+    "signIn": "Ingia",
+    "newAccount": "Mpya? Fungua akaunti",
+    "loginTitle": "Ingia",
+    "subPhone": "Tumia nambari yako ya simu kwa ufikiaji wa haraka bila mtandao.",
+    "subEmail": "Weka vitambulisho vyako ili kupata nafasi yako.",
+    "loginSuccess": "Umeingia vizuri",
+    "loginFailed": "Kuingia kumeshindwa",
+    "loginFailedMsg": "Angalia vitambulisho vyako na ujaribu tena."
+  },
+  "demo": {
+    "tagline": "Ufikiaji wa haraka · Bila usajili",
+    "title": "Jaribu BeanPath",
+    "subtitle": "Chagua wasifu ili kuchunguza jukwaa na data ya maonyesho.",
+    "enterDemo": "Ingia Maonyesho",
+    "disclaimer": "Data inayoonyeshwa ni ya mazoezi tu. Hakuna data halisi inayotumiwa.",
+    "hasAccount": "Una akaunti? Ingia",
+    "personas": {
+      "field_agent": {
+        "title": "Wakala wa Shamba",
+        "description": "Kiolesura cha shamba kwa ukusanyaji wa kila siku wa tunda, malipo ya wakulima na usimamizi wa vipande.",
+        "features": ["Dashibodi & utoaji wa leo", "Kurekodi tunda · risiti za PDF", "Rejista ya wakulima"],
+        "surfaceLabel": "Programu ya simu · vichupo 5"
+      },
+      "coop_admin": {
+        "title": "Msimamizi wa Ushirika",
+        "description": "Konsoli kamili ya usimamizi: fedha, ripoti za EUDR, usuluhishi, vipande na wanachama.",
+        "features": ["Konsoli kamili ya usimamizi", "Ripoti & utiifu wa EUDR", "Kivinjari cha vipande & faili"],
+        "surfaceLabel": "Konsoli ya usimamizi"
+      },
+      "buyer": {
+        "title": "Mnunuzi / Mkusanyaji Kahawa",
+        "description": "Ufikiaji wa kusoma faili za vipande, ufuatiliaji kamili, vyeti na hadithi za asili.",
+        "features": ["Faili kamili za vipande", "Ufuatiliaji shamba-hadi-kikombe", "Vyeti vya Kikaboni · Biashara Haki · EUDR"],
+        "surfaceLabel": "Konsoli ya mnunuzi"
+      }
+    }
+  },
+  "dashboard": {
+    "morning": "Habari za asubuhi",
+    "afternoon": "Habari za mchana",
+    "evening": "Habari za jioni",
+    "stats": {
+      "deliveries": "Utoaji",
+      "bidonsReceived": "Mabidoni yaliyopokelewa",
+      "farmers": "Wakulima",
+      "paidToday": "Kimelipwa leo"
+    },
+    "syncBanner": "Utoaji {{count}} wa kusawazisha · Gusa kusawazisha",
+    "syncBanner_plural": "Utoaji {{count}} wa kusawazisha · Gusa kusawazisha",
+    "quickActions": "Vitendo vya haraka",
+    "recentDeliveries": "Utoaji wa hivi karibuni",
+    "noDeliveries": "Hakuna utoaji uliosajiliwa leo",
+    "actions": {
+      "newFarmer": "Sajili mkulima",
+      "newDelivery": "Sajili utoaji",
+      "myLots": "Vipande vyangu"
+    },
+    "deliverySub": "Mabidoni {{qty}} · FC {{price}}/bidon · Risiti #{{receipt}}"
+  },
+  "farmers": {
+    "searchPlaceholder": "Jina, Nambari ya Bio, kikundi, kijiji…",
+    "noTitle": "Hakuna wakulima waliopatikana",
+    "noSub": "Jaribu utafutaji mwingine au sajili mkulima mpya.",
+    "count": "mkulima {{count}}",
+    "count_plural": "wakulima {{count}}",
+    "detail": {
+      "notFound": "Mkulima hakupatikana",
+      "stats": {
+        "deliveries": "Utoaji",
+        "totalBidons": "Jumla ya mabidoni",
+        "plants": "Miti",
+        "paidUSD": "Kimelipwa (USD)"
+      },
+      "info": {
+        "territoire": "Wilaya",
+        "groupement": "Kikundi",
+        "village": "Kijiji",
+        "station": "Kituo",
+        "phone": "Simu",
+        "genderAge": "Jinsia / Umri",
+        "crop": "Zao",
+        "registeredAt": "Alisajiliwa"
+      },
+      "gender": {
+        "M": "Mwanaume",
+        "F": "Mwanamke",
+        "Other": "Nyingine"
+      },
+      "crop": {
+        "coffee": "Kahawa",
+        "cocoa": "Kakao",
+        "both": "Kahawa & Kakao"
+      },
+      "age": "{{age}} miaka",
+      "recordDelivery": "Sajili utoaji",
+      "deliveryHistory": "Historia ya utoaji",
+      "noDeliveries": "Hakuna utoaji uliosajiliwa",
+      "totalPaid": "Jumla iliyolipwa (FC)",
+      "pending": "Inasubiri",
+      "receiptLine": "Risiti #{{receipt}} · Rejista {{register}} · {{date}}",
+      "priceLine": "FC {{price}}/bidon · Kiwango {{rate}} FC/USD · {{method}}",
+      "cash": "Taslimu",
+      "mobileMoney": "Pesa za simu",
+      "bank": "Benki",
+      "groupRoles": {
+        "president": "Rais",
+        "vp": "Makamu Rais",
+        "secretary": "Katibu",
+        "member": "Mwanachama"
+      }
+    },
+    "new": {
+      "accessDenied": "Huna ruhusa ya kusajili wakulima wapya.",
+      "back": "Rudi",
+      "gender": "Jinsia",
+      "location": "Mahali",
+      "production": "Uzalishaji",
+      "groupRole": "Jukumu katika kikundi",
+      "firstName": "Jina la kwanza *",
+      "lastName": "Jina la familia *",
+      "phone": "Simu",
+      "age": "Umri",
+      "territoire": "Wilaya",
+      "groupement": "Kikundi",
+      "village": "Kijiji *",
+      "plants": "Idadi ya miti *",
+      "plantsHint": "Idadi ya miti ya kahawa/kakao",
+      "mainCrop": "Zao kuu",
+      "bioIdLabel": "Nambari ya Bio iliyoundwa",
+      "offlineNote": "Imehifadhiwa ndani. Usawazishaji wa moja kwa moja mtandaoni.",
+      "saveBtn": "Sajili mkulima",
+      "saved": "Mkulima amesajiliwa",
+      "errorTitle": "Hitilafu ya usajili",
+      "errorMsg": "Angalia maelezo na ujaribu tena."
+    }
+  },
+  "collect": {
+    "accessDenied": "Huna ruhusa ya kusajili utoaji wa tunda la kahawa.",
+    "back": "Rudi",
+    "steps": ["Mkulima", "Kiasi", "Bei & Kiwango", "Hati", "Thibitisha"],
+    "step1": {
+      "title": "Chagua mkulima",
+      "searchPlaceholder": "Jina au Nambari ya Bio…"
+    },
+    "step2": {
+      "title": "Kiasi kilichowasilishwa",
+      "unit": "mabidoni ya lita 5",
+      "kgEstimate": "≈ kg {{kg}} za tunda inakadiria",
+      "purchaseDate": "Tarehe ya ununuzi",
+      "datePlaceholder": "MWAKA-MWE-SIKU"
+    },
+    "step3": {
+      "title": "Bei na kiwango cha ubadilishaji",
+      "priceBand": "Kiwango cha bei (FC/bidon)",
+      "customPrice": "Bei ya mtu binafsi (si lazima)",
+      "exchangeRate": "Kiwango cha ubadilishaji (FC/USD)",
+      "usdEquiv": "Sawa na USD",
+      "customPlaceholder": "mfano 850"
+    },
+    "step4": {
+      "title": "Nambari za hati",
+      "receiptNo": "Nambari ya risiti ya malipo *",
+      "registerNo": "Nambari ya rejista ya tunda",
+      "registerHint": "Acha tupu ili kuunda rejista mpya (Na. {{n}})",
+      "reportNo": "Nambari ya ripoti ya utoaji",
+      "payMethod": "Njia ya malipo",
+      "payMethods": {
+        "cash": "Taslimu",
+        "mobile_money": "Pesa za simu",
+        "bank": "Benki"
+      }
+    },
+    "step5": {
+      "title": "Uthibitisho wa utoaji",
+      "receiptTitle": "RISITI YA UWASILISHAJI WA TUNDA",
+      "offline": "Imehifadhiwa bila mtandao. Usawazishaji wa moja kwa moja unapofika mtandao.",
+      "fields": {
+        "farmer": "Mkulima",
+        "bioCode": "Nambari ya Bio",
+        "groupement": "Kikundi",
+        "village": "Kijiji",
+        "purchaseDate": "Tarehe ya ununuzi",
+        "qty": "Kiasi (mabidoni)",
+        "pricePerBidon": "Bei / bidon",
+        "totalFC": "Jumla (FC)",
+        "usdEquiv": "Sawa na USD",
+        "rateFC": "Kiwango FC/USD",
+        "receiptNo": "Nambari ya risiti",
+        "registerNo": "Nambari ya rejista",
+        "reportNo": "Nambari ya ripoti",
+        "payMethod": "Njia ya malipo"
+      }
+    },
+    "submit": "Thibitisha & sajili malipo",
+    "saved": "Utoaji umesajiliwa",
+    "savedMsg": "Risiti #{{receipt}} · Mabidoni {{qty}} · FC {{total}}",
+    "errorTitle": "Hitilafu ya kurekodi",
+    "errorMsg": "Angalia data na ujaribu tena.",
+    "pieds": "miti"
+  },
+  "lots": {
+    "stats": {
+      "active": "Vipande vya sasa",
+      "bidons": "Jumla ya mabidoni",
+      "weight": "Uzito jumla",
+      "eudrReady": "EUDR tayari"
+    },
+    "filters": {
+      "all": "Yote",
+      "reception": "Mapokezi",
+      "processing": "Usindikaji",
+      "drying": "Kukaushia",
+      "export": "Usafirishaji",
+      "closed": "Imefungwa"
+    },
+    "searchPlaceholder": "Tafuta vipande kwa rejista, zao…",
+    "noTitle": "Hakuna vipande vinavyolingana",
+    "noSub": "Jaribu utafutaji au kichujio kingine.",
+    "meta": "{{crop}} · {{weight}} · wakulima {{farmers}}",
+    "coffee": "Kahawa",
+    "cocoa": "Kakao"
+  },
+  "lot": {
+    "notFound": "Kipande hakipatikani",
+    "stats": {
+      "weight": "Uzito",
+      "bidons": "Mabidoni",
+      "farmers": "Wakulima",
+      "certs": "Vyeti"
+    },
+    "crop": {
+      "coffee": "Kahawa",
+      "cocoa": "Kakao"
+    },
+    "cupScore": "Alama ya SCA",
+    "eudr": {
+      "title": "Inakidhi EUDR",
+      "sub": "Mkulima {{count}} mwenye shamba lililothibitishwa. Hakuna hatari ya ukataji wa miti.",
+      "sub_plural": "Wakulima {{count}} wenye mashamba yaliyothibitishwa. Hakuna hatari ya ukataji wa miti.",
+      "downloadDDS": "DDS PDF",
+      "ddsComing": "Upakuaji wa cheti cha DDS utapatikana katika sasisho lijalo."
+    },
+    "financial": {
+      "sourceRegisters": "Rejista chanzo",
+      "totalBidons": "Jumla ya mabidoni yaliyopokelewa",
+      "paidToFarmers": "Kimelipwa kwa wakulima (FC)"
+    },
+    "chain": "Mnyororo wa usindikaji",
+    "inProgress": "inafanywa",
+    "copiedRef": "Rejista imenakiliwa",
+    "lotRef": "Rejista ya kipande",
+    "sourceRegisters": "Rejista chanzo za tunda",
+    "noRegisters": "Hakuna rejista zinazohusiana na kipande hiki",
+    "register": "Rejista {{n}}",
+    "deliveriesBidons": "Utoaji {{count}} · Mabidoni {{bidons}}",
+    "contributingFarmers": "Wakulima waliochangia",
+    "tamper": {
+      "title": "Ufuatiliaji uliothibitishwa",
+      "sub": "Kipande hiki kimefuatiliwa kutoka rejista {{count}} ya tunda na mkulima {{farmers}} aliyejulikana.",
+      "sub_plural": "Kipande hiki kimefuatiliwa kutoka rejista {{count}} za tunda na wakulima {{farmers}} waliojulikana."
+    },
+    "stageFlow": {
+      "cherry_received": "Tunda limepokelewa kituo",
+      "pulping": "Kuchomoa maganda",
+      "fermenting": "Kuchachua (masaa 12-48)",
+      "washing": "Kuosha",
+      "drying": "Kukaushia (meza zilizoinuliwa)",
+      "dry_parchment": "Kanda kame — akiba",
+      "hulling": "Kuondoa ganda (mashine)",
+      "graded": "Kupanga na kutabaka",
+      "bagged": "Kufungwa mfukoni kwa usafirishaji",
+      "in_transit": "Katika usafiri kwenda bandari",
+      "shipped": "Imesafirishwa nje ya nchi"
+    }
+  },
+  "profile": {
+    "sections": {
+      "sync": "Usawazishaji",
+      "language": "Lugha",
+      "device": "Kifaa"
+    },
+    "sync": {
+      "connection": "Muunganisho",
+      "lastSync": "Usawazishaji wa mwisho",
+      "pending": "Inasubiri",
+      "conflicts": "Migogoro",
+      "wifiOnly": "Sawazisha kwenye Wi-Fi pekee",
+      "syncing": "Inasawazisha…",
+      "syncNow": "Sawazisha sasa",
+      "done": "Usawazishaji umekamilika",
+      "doneMsg": "Data yote iko sasa hivi.",
+      "failed": "Usawazishaji umeshindwa",
+      "failedMsg": "Angalia muunganisho wako na ujaribu tena.",
+      "pendingCount": "rekodi {{count}}",
+      "pendingCount_plural": "rekodi {{count}}",
+      "conflictCount": "mgongano {{count}} ambao haujasuluhiwa",
+      "conflictCount_plural": "migogoro {{count}} ambayo haijasuluhiwa"
+    },
+    "device": {
+      "id": "Kitambulisho cha Kifaa",
+      "key": "Ufunguo wa kifaa",
+      "active": "Inafanya kazi"
+    },
+    "signOut": {
+      "title": "Toka",
+      "confirm": "Je, una uhakika unataka kutoka?",
+      "cancel": "Ghairi",
+      "button": "Toka",
+      "confirmBtn": "Toka"
+    },
+    "version": "BeanPath v1.0.0 · Bila mtandao kwanza · Imethibitishwa kwa siri",
+    "languageUpdated": "Lugha imesasishwa",
+    "unknown": "Haijulikani",
+    "never": "Kamwe",
+    "justNow": "Sasa hivi",
+    "minutesAgo": "dakika {{m}} zilizopita",
+    "hoursAgo": "saa {{h}} zilizopita",
+    "daysAgo": "siku {{d}} zilizopita"
+  },
+  "console": {
+    "field": "Shambani",
+    "kpi": {
+      "bidons": "Mabidoni yaliyopokelewa",
+      "totalWeight": "Uzito jumla",
+      "activeLots": "Vipande vya sasa",
+      "farmers": "Wakulima",
+      "paidFC": "Kimelipwa (FC)",
+      "eudrReady": "EUDR tayari",
+      "unsynced": "Hazijasawazishwa",
+      "conflicts": "Migogoro"
+    },
+    "byGroupement": "Kwa kikundi",
+    "table": {
+      "groupement": "Kikundi",
+      "bidons": "Mabidoni",
+      "totalFC": "Jumla ya FC",
+      "document": "Hati",
+      "qty": "Kiasi",
+      "ref": "Rejista",
+      "stage": "Hatua",
+      "farmers": "Wakulima"
+    },
+    "lotStatus": "Hali ya vipande",
+    "recentLots": "Vipande vya hivi karibuni",
+    "collectDocs": "Nyaraka za ukusanyaji",
+    "conflictsAlert": "Mgogoro {{count}} usioshughulikiwa unahitaji umakini wako",
+    "conflictsAlert_plural": "Migogoro {{count}} isiyoshughulikiwa inahitaji umakini wako",
+    "allConflictsResolved": "Migogoro yote imesuluhiwa",
+    "nav": {
+      "cherryRegisters": "Rejista za Tunda",
+      "cherryRegistersSub": "Rejista {{count}} · Mabidoni {{bidons}}",
+      "deliveryReports": "Ripoti za Utoaji",
+      "deliveryReportsSub": "Ripoti {{count}} za usafiri",
+      "lotExplorer": "Kivinjari cha Vipande",
+      "lotExplorerSub": "Vipande {{count}} vinavyosindikwa",
+      "reconciliation": "Usuluhishi",
+      "reconciliationSub": "Mgogoro {{count}} unaosimama",
+      "reconciliationSub_plural": "Migogoro {{count}} inayosimama",
+      "eudrExport": "Usafirishaji & EUDR",
+      "eudrExportSub": "DDV · Matamko ya Uangalifu",
+      "certifications": "Vyeti",
+      "certificationsSub": "Kikaboni · Biashara Haki · Rainforest Alliance",
+      "qualityControl": "Udhibiti wa Ubora",
+      "qualityControlSub": "Alama za kikombe · Ukaguzi · Kasoro",
+      "members": "Wanachama wa Ushirika",
+      "membersSub": "Wakulima {{count}} waliojisajili"
+    },
+    "stations": "kituo {{count}}",
+    "stations_plural": "vituo {{count}}",
+    "eudrInfo": "Moduli ya usafirishaji wa EUDR itapatikana hivi karibuni.",
+    "certInfo": "Moduli ya vyeti vya Kikaboni/Biashara Haki itapatikana hivi karibuni.",
+    "qcInfo": "Kurekodi alama za kikombe kutapatikana hivi karibuni.",
+    "membersInfo": "Moduli ya usimamizi wa wanachama itapatikana hivi karibuni."
+  },
+  "reconciliation": {
+    "summary": {
+      "conflicts": "Mgongano {{count}} unahitaji umakini wako",
+      "conflicts_plural": "Migongano {{count}} inahitaji umakini wako",
+      "allResolved": "Migogoro yote imesuluhiwa"
+    },
+    "empty": {
+      "title": "Hakuna mgongano unaosimama",
+      "sub": "Migongano yote ya usawazishaji imesuluhiwa."
+    },
+    "labels": {
+      "mine": "Yangu",
+      "theirs": "Yao"
+    },
+    "keep": {
+      "mine": "Hifadhi yangu",
+      "theirs": "Hifadhi yao",
+      "merge": "Unganisha"
+    },
+    "resolved": "Imesuluhiwa",
+    "conflict": {
+      "resolved": "Mgongano umesuluhiwa"
+    }
+  },
+  "registers": {
+    "summary": {
+      "registers": "Rejista",
+      "bidons": "Jumla ya mabidoni",
+      "paid": "Kimelipwa (FC)"
+    },
+    "explain": "Kila rejista inakusanya utoaji kutoka sehemu moja ya ukusanyaji siku moja. Rejista nyingi kisha hukusanywa katika Ripoti ya Utoaji.",
+    "filterAll": "Yote",
+    "reportFilter": "Ripoti {{n}}",
+    "col": {
+      "bioFarmer": "Nambari ya Bio / Mkulima",
+      "bidons": "Mabidoni",
+      "fcPerBidon": "FC/bidon",
+      "totalFC": "Jumla ya FC",
+      "receipt": "Risiti"
+    },
+    "total": "Jumla ya rejista {{n}}",
+    "deliveries": "utoaji {{count}}",
+    "deliveries_plural": "utoaji {{count}}",
+    "exchangeRate": "Kiwango cha ubadilishaji: {{rates}} FC/USD · ≈ ${{usd}} USD"
+  },
+  "reports": {
+    "summary": {
+      "reports": "Ripoti",
+      "registers": "Rejista",
+      "bidons": "Jumla ya mabidoni",
+      "totalFC": "Jumla ya FC"
+    },
+    "explain": "Ripoti ya Utoaji inakusanya rejista nyingi za tunda la kahawa kwa usafiri mmoja hadi kituo cha kunawa. Nambari yake inaonekana kwenye kila risiti ya malipo.",
+    "reportNum": "Ripoti",
+    "registersIncluded": "Rejista zilizojumuishwa",
+    "farmers": "mkulima {{count}}",
+    "farmers_plural": "wakulima {{count}}",
+    "registers": "rejista {{count}}",
+    "registers_plural": "rejista {{count}}",
+    "deliveries": "utoaji {{count}}",
+    "deliveries_plural": "utoaji {{count}}",
+    "priceBreakdown": "Mgawanyo wa bei",
+    "financial": {
+      "totalPaid": "Jumla iliyolipwa kwa wakulima",
+      "avgRate": "Kiwango cha wastani cha ubadilishaji",
+      "usdEquiv": "Sawa na USD"
+    }
+  }
+}

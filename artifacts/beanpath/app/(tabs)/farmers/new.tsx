@@ -7,6 +7,7 @@ import {
   Text, TextInput, TouchableOpacity, View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { AccessDeniedBanner } from "@/components/RoleGate";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useAuth } from "@/context/AuthContext";
@@ -16,7 +17,6 @@ import { useToast } from "@/context/ToastContext";
 import { usePermission } from "@/hooks/usePermission";
 import { useColors } from "@/hooks/useColors";
 
-// Auto-generate a BioID from cooperative prefix + groupement code + sequence
 function generateBioId(coopPrefix: string, groupement: string, village: string, count: number): string {
   const grpCode = groupement.slice(0, 1).toUpperCase();
   const vilCode = village.slice(0, 2).toUpperCase();
@@ -26,19 +26,9 @@ function generateBioId(coopPrefix: string, groupement: string, village: string, 
 
 const GROUPEMENTS = ["Bushumba", "Mudaka", "Miti", "Luhihi", "Kabare", "Walungu"];
 const TERRITOIRES = ["Kabare", "Walungu", "Shabunda", "Kalehe", "Mwenga", "Uvira"];
-const CROPS: { label: string; value: "coffee" | "cocoa" | "both" }[] = [
-  { label: "Café", value: "coffee" },
-  { label: "Cacao", value: "cocoa" },
-  { label: "Les deux", value: "both" },
-];
-const GROUP_ROLES: { label: string; value: "member" | "president" | "vp" | "secretary" }[] = [
-  { label: "Membre", value: "member" },
-  { label: "Président", value: "president" },
-  { label: "Vice-Président", value: "vp" },
-  { label: "Secrétaire", value: "secretary" },
-];
 
 export default function NewFarmerScreen() {
+  const { t } = useTranslation();
   const { addFarmer, farmers, stations } = useData();
   const { addPending } = useSync();
   const { user } = useAuth();
@@ -47,6 +37,18 @@ export default function NewFarmerScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const [saving, setSaving] = useState(false);
+
+  const CROPS = [
+    { label: t("farmers.detail.crop.coffee"), value: "coffee" as const },
+    { label: t("farmers.detail.crop.cocoa"), value: "cocoa" as const },
+    { label: t("farmers.detail.crop.both"), value: "both" as const },
+  ];
+  const GROUP_ROLES = [
+    { label: t("farmers.detail.groupRoles.member"), value: "member" as const },
+    { label: t("farmers.detail.groupRoles.president"), value: "president" as const },
+    { label: t("farmers.detail.groupRoles.vp"), value: "vp" as const },
+    { label: t("farmers.detail.groupRoles.secretary"), value: "secretary" as const },
+  ];
 
   const [form, setForm] = useState({
     firstName: "",
@@ -66,7 +68,6 @@ export default function NewFarmerScreen() {
   const set = (k: keyof typeof form) => (v: string) => {
     setForm((f) => {
       const next = { ...f, [k]: v };
-      // Auto-generate bioId when key fields change
       if (k === "groupement" || k === "village") {
         const coopPrefix = user?.orgId?.includes("nakeza") ? "NKZ" : "TCC";
         next.bioId = generateBioId(coopPrefix, next.groupement, next.village || "XX", farmers.length);
@@ -102,12 +103,12 @@ export default function NewFarmerScreen() {
       });
       addPending();
       showSuccess(
-        "Agriculteur inscrit",
+        t("farmers.new.saved"),
         `${form.firstName} ${form.lastName.toUpperCase()} · Code Bio: ${bioId}`
       );
       router.back();
     } catch (err: any) {
-      showError("Erreur d'inscription", err?.message ?? "Vérifiez les informations et réessayez.");
+      showError(t("farmers.new.errorTitle"), err?.message ?? t("farmers.new.errorMsg"));
     } finally {
       setSaving(false);
     }
@@ -117,10 +118,10 @@ export default function NewFarmerScreen() {
     return (
       <View style={[styles.root, { backgroundColor: colors.background, padding: 20, paddingTop: 60 }]}>
         <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 24 }}>
-          <Ionicons name="arrow-back" size={20} color={colors.background === "#fafaf9" ? "#1c1917" : "#fafaf9"} />
-          <Text style={{ color: "#78716c", fontFamily: "Inter_400Regular", fontSize: 13 }}>Retour</Text>
+          <Ionicons name="arrow-back" size={20} color={colors.foreground} />
+          <Text style={{ color: colors.mutedForeground, fontFamily: "Inter_400Regular", fontSize: 13 }}>{t("farmers.new.back")}</Text>
         </TouchableOpacity>
-        <AccessDeniedBanner message="Vous n'avez pas l'autorisation d'inscrire de nouveaux agriculteurs." />
+        <AccessDeniedBanner message={t("farmers.new.accessDenied")} />
       </View>
     );
   }
@@ -134,7 +135,7 @@ export default function NewFarmerScreen() {
         keyboardShouldPersistTaps="handled"
       >
         {/* Gender row */}
-        <Text style={[styles.label, { color: colors.foreground }]}>Sexe</Text>
+        <Text style={[styles.label, { color: colors.foreground }]}>{t("farmers.new.gender")}</Text>
         <View style={styles.pillRow}>
           {(["M", "F", "Other"] as const).map((g) => (
             <TouchableOpacity
@@ -143,7 +144,7 @@ export default function NewFarmerScreen() {
               style={[styles.pill, { borderColor: form.gender === g ? colors.primary : colors.border, backgroundColor: form.gender === g ? colors.amberLight : colors.surface }]}
             >
               <Text style={[styles.pillText, { color: form.gender === g ? colors.primary : colors.mutedForeground }]}>
-                {g === "M" ? "Homme" : g === "F" ? "Femme" : "Autre"}
+                {t(`farmers.detail.gender.${g}`)}
               </Text>
             </TouchableOpacity>
           ))}
@@ -152,45 +153,45 @@ export default function NewFarmerScreen() {
         {/* Name fields */}
         <View style={styles.row2}>
           <View style={{ flex: 1 }}>
-            <Text style={[styles.label, { color: colors.foreground }]}>Prénom *</Text>
+            <Text style={[styles.label, { color: colors.foreground }]}>{t("farmers.new.firstName")}</Text>
             <Field value={form.firstName} onChange={set("firstName")} placeholder="Bulonza" icon="person-outline" colors={colors} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={[styles.label, { color: colors.foreground }]}>Nom *</Text>
+            <Text style={[styles.label, { color: colors.foreground }]}>{t("farmers.new.lastName")}</Text>
             <Field value={form.lastName} onChange={set("lastName")} placeholder="MUDUMBI" icon="person-outline" colors={colors} />
           </View>
         </View>
 
         <View style={styles.row2}>
           <View style={{ flex: 1 }}>
-            <Text style={[styles.label, { color: colors.foreground }]}>Téléphone</Text>
+            <Text style={[styles.label, { color: colors.foreground }]}>{t("farmers.new.phone")}</Text>
             <Field value={form.phone} onChange={set("phone")} placeholder="+243 970 000 000" icon="phone-portrait-outline" colors={colors} keyboardType="phone-pad" />
           </View>
           <View style={{ width: 90 }}>
-            <Text style={[styles.label, { color: colors.foreground }]}>Âge</Text>
+            <Text style={[styles.label, { color: colors.foreground }]}>{t("farmers.new.age")}</Text>
             <Field value={form.age} onChange={set("age")} placeholder="42" icon="calendar-outline" colors={colors} keyboardType="numeric" />
           </View>
         </View>
 
         {/* Location */}
-        <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>Localisation</Text>
+        <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>{t("farmers.new.location")}</Text>
 
-        <Text style={[styles.label, { color: colors.foreground }]}>Territoire</Text>
+        <Text style={[styles.label, { color: colors.foreground }]}>{t("farmers.new.territoire")}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
           <View style={styles.chipRow}>
-            {TERRITOIRES.map((t) => (
+            {TERRITOIRES.map((t_) => (
               <TouchableOpacity
-                key={t}
-                onPress={() => setForm((f) => ({ ...f, territoire: t }))}
-                style={[styles.chip, { borderColor: form.territoire === t ? colors.primary : colors.border, backgroundColor: form.territoire === t ? colors.amberLight : colors.surface }]}
+                key={t_}
+                onPress={() => setForm((f) => ({ ...f, territoire: t_ }))}
+                style={[styles.chip, { borderColor: form.territoire === t_ ? colors.primary : colors.border, backgroundColor: form.territoire === t_ ? colors.amberLight : colors.surface }]}
               >
-                <Text style={[styles.chipText, { color: form.territoire === t ? colors.primary : colors.mutedForeground }]}>{t}</Text>
+                <Text style={[styles.chipText, { color: form.territoire === t_ ? colors.primary : colors.mutedForeground }]}>{t_}</Text>
               </TouchableOpacity>
             ))}
           </View>
         </ScrollView>
 
-        <Text style={[styles.label, { color: colors.foreground }]}>Groupement</Text>
+        <Text style={[styles.label, { color: colors.foreground }]}>{t("farmers.new.groupement")}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
           <View style={styles.chipRow}>
             {GROUPEMENTS.map((g) => (
@@ -205,16 +206,16 @@ export default function NewFarmerScreen() {
           </View>
         </ScrollView>
 
-        <Text style={[styles.label, { color: colors.foreground }]}>Village *</Text>
+        <Text style={[styles.label, { color: colors.foreground }]}>{t("farmers.new.village")}</Text>
         <Field value={form.village} onChange={set("village")} placeholder="Cinjava" icon="location-outline" colors={colors} />
 
         {/* Production */}
-        <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>Production</Text>
+        <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>{t("farmers.new.production")}</Text>
 
-        <Text style={[styles.label, { color: colors.foreground }]}>Nombre de pieds *</Text>
-        <Field value={form.nbPieds} onChange={set("nbPieds")} placeholder="420" icon="leaf-outline" colors={colors} keyboardType="numeric" hint="Nombre de caféiers/cacaoyers" />
+        <Text style={[styles.label, { color: colors.foreground }]}>{t("farmers.new.plants")}</Text>
+        <Field value={form.nbPieds} onChange={set("nbPieds")} placeholder="420" icon="leaf-outline" colors={colors} keyboardType="numeric" hint={t("farmers.new.plantsHint")} />
 
-        <Text style={[styles.label, { color: colors.foreground }]}>Culture principale</Text>
+        <Text style={[styles.label, { color: colors.foreground }]}>{t("farmers.new.mainCrop")}</Text>
         <View style={styles.pillRow}>
           {CROPS.map((c) => (
             <TouchableOpacity
@@ -228,7 +229,7 @@ export default function NewFarmerScreen() {
         </View>
 
         {/* Role */}
-        <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>Rôle dans le groupement</Text>
+        <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>{t("farmers.new.groupRole")}</Text>
         <View style={styles.pillRow}>
           {GROUP_ROLES.map((r) => (
             <TouchableOpacity
@@ -245,17 +246,17 @@ export default function NewFarmerScreen() {
         <View style={[styles.bioIdCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Ionicons name="qr-code-outline" size={16} color={colors.primary} />
           <View style={{ flex: 1 }}>
-            <Text style={[styles.bioIdLabel, { color: colors.mutedForeground }]}>Code Bio généré</Text>
+            <Text style={[styles.bioIdLabel, { color: colors.mutedForeground }]}>{t("farmers.new.bioIdLabel")}</Text>
             <Text style={[styles.bioIdValue, { color: colors.primary }]}>{form.bioId || generateBioId("TCC", form.groupement, form.village || "XX", farmers.length)}</Text>
           </View>
         </View>
 
         <View style={[styles.offlineNote, { backgroundColor: colors.amberLight, borderColor: colors.warning + "30" }]}>
           <Ionicons name="cloud-upload-outline" size={14} color={colors.amber} />
-          <Text style={[styles.offlineText, { color: colors.amber }]}>Sauvegardé localement. Synchronisation automatique en ligne.</Text>
+          <Text style={[styles.offlineText, { color: colors.amber }]}>{t("farmers.new.offlineNote")}</Text>
         </View>
 
-        <PrimaryButton label="Enregistrer l'agriculteur" onPress={handleSave} loading={saving} disabled={!isValid} />
+        <PrimaryButton label={t("farmers.new.saveBtn")} onPress={handleSave} loading={saving} disabled={!isValid} />
       </ScrollView>
     </KeyboardAvoidingView>
   );

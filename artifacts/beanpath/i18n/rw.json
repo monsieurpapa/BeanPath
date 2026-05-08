@@ -1,0 +1,513 @@
+{
+  "common": {
+    "cancel": "Hagarika",
+    "save": "Bika",
+    "back": "Subira",
+    "next": "Komeza",
+    "confirm": "Emeza",
+    "search": "Shakisha",
+    "loading": "Gutegereza…",
+    "error": "Ikosa",
+    "offline": "Nta internet",
+    "online": "Ufite internet",
+    "pending": "Rindira",
+    "all": "Byose",
+    "seeAll": "Reba byose",
+    "unknown": "Ntazwi",
+    "console": "Konsoli",
+    "terrain": "Inzara",
+    "bidons": "bidon",
+    "bidons_plural": "amabidoni",
+    "registers": "Inyandiko",
+    "reports": "Raporo",
+    "farmers": "Abahinzi"
+  },
+  "nav": {
+    "dashboard": "Icyiciro",
+    "farmers": "Abahinzi",
+    "collect": "Gutara",
+    "lots": "Amapaki",
+    "profile": "Umwirondoro",
+    "console": "Konsoli y'Umukozi",
+    "lotExplorer": "Igenzura ry'amapaki",
+    "lotDossier": "Dosiye y'ipaki",
+    "registers": "Inyandiko z'inzabibu",
+    "reports": "Raporo z'igenamiterere",
+    "reconciliation": "Ubwuzu"
+  },
+  "roles": {
+    "field_agent": "Umukozi w'inzara",
+    "lead_farmer": "Umuhinzi mukuru",
+    "station_operator": "Umukozi wa sitasiyo",
+    "transporter": "Umutwara",
+    "mill_operator": "Umukozi wa milima",
+    "qc_grader": "Umugenzuzi w'ireme",
+    "exporter": "Uwohereza hanze",
+    "buyer": "Umuguzi",
+    "coop_admin": "Umuyobozi",
+    "certifier": "Uwamanika impamyabumenyi"
+  },
+  "stages": {
+    "cherry_received": "Inzabibu zabonetse",
+    "pulping": "Gushira",
+    "fermenting": "Ubutubutse",
+    "washing": "Gusukura",
+    "drying": "Ukusushira",
+    "dry_parchment": "Igahunda gikamye",
+    "hulling": "Gukuraho igafu",
+    "graded": "Gutondeka",
+    "bagged": "Gushyirwa mu gasaho",
+    "in_transit": "Mu nzira",
+    "shipped": "Byoherejwe",
+    "closed": "Bifunzwe"
+  },
+  "auth": {
+    "changeRole": "Hindura inshingano",
+    "phoneOtp": "Telefone OTP",
+    "email": "Imeyili",
+    "password": "Ijambobanga",
+    "forgotPassword": "Wibagiwe ijambobanga?",
+    "biometric": "Fungura hamwe na biometriki",
+    "signIn": "Injira",
+    "newAccount": "Mushya? Fungura konti",
+    "loginTitle": "Injira",
+    "subPhone": "Koresha inomero ya telefone yawe kugira ngo unguke vuba ntatanafashe internet.",
+    "subEmail": "Injiza ibimenyetso byawe kugira ngo ubone uburyo bwawe.",
+    "loginSuccess": "Winjiye neza",
+    "loginFailed": "Kwinjira byanze",
+    "loginFailedMsg": "Reba ibimenyetso byawe hanyuma ugerageze nanone."
+  },
+  "demo": {
+    "tagline": "Kwinjira vuba · Ntabwo bagatekerezwa",
+    "title": "Gerageza BeanPath",
+    "subtitle": "Hitamo umwirondoro kugira ngo urebe ingiriro hamwe na amakuru y'ubusesengure.",
+    "enterDemo": "Injira mu Nkuru Ngurukanwa",
+    "disclaimer": "Amakuru aherekejwe ni ya gutsinda gusa. Nta makuru nyakuri yakoreshwa.",
+    "hasAccount": "Ufite konti? Injira",
+    "personas": {
+      "field_agent": {
+        "title": "Umukozi w'inzara",
+        "description": "Aho gukorera inzara: gukusanya inzabibu buri munsi, kwishyura abahinzi no gucunga amapaki.",
+        "features": ["Icyiciro & ibigenerwa by'uyu munsi", "Gumanika inzabibu · Amahembe PDF", "Inyandiko y'abahinzi"],
+        "surfaceLabel": "Porogaramu ya telefone · tabo 5"
+      },
+      "coop_admin": {
+        "title": "Umuyobozi w'ikoperative",
+        "description": "Konsoli yuzuye yo gucunga: amafaranga, raporo za EUDR, ubwuzu, amapaki n'abanyamuryango.",
+        "features": ["Konsoli yuzuye yo gucunga", "Raporo & EUDR", "Igenzura ry'amapaki & dosiye"],
+        "surfaceLabel": "Konsoli yo gucunga"
+      },
+      "buyer": {
+        "title": "Umuguzi / Uwosha Ikawa",
+        "description": "Gusoma dosiye z'amapaki, gukurikirana byuzuye, impamyabumenyi n'inkuru z'inkomoko.",
+        "features": ["Dosiye yuzuye y'amapaki", "Gukurikirana kuva inzara kugeza mu kapu", "Impamyabumenyi Bio · Biashara Nziza · EUDR"],
+        "surfaceLabel": "Konsoli y'umuguzi"
+      }
+    }
+  },
+  "dashboard": {
+    "morning": "Mwaramutse",
+    "afternoon": "Murambe",
+    "evening": "Mwiriwe",
+    "stats": {
+      "deliveries": "Ibigenerwa",
+      "bidonsReceived": "Amabidoni yabonetse",
+      "farmers": "Abahinzi",
+      "paidToday": "Byishyuwe uyu munsi"
+    },
+    "syncBanner": "Igenamiterere {{count}} rigatanzwa · Kanda kugira ngo ritanzwe",
+    "syncBanner_plural": "Ibigenerwa {{count}} bigatanzwa · Kanda kugira ngo bitanzwe",
+    "quickActions": "Ibikorwa vya vuba",
+    "recentDeliveries": "Ibigenerwa bya vuba",
+    "noDeliveries": "Nta bigenerwa byatanzwe uyu munsi",
+    "actions": {
+      "newFarmer": "Andika umuhinzi",
+      "newDelivery": "Andika igenamiterere",
+      "myLots": "Amapaki yanjye"
+    },
+    "deliverySub": "Amabidoni {{qty}} · FC {{price}}/bidon · Irangamihandike #{{receipt}}"
+  },
+  "farmers": {
+    "searchPlaceholder": "Izina, Kode ya Bio, itsinda, umudugudu…",
+    "noTitle": "Nta muhinzi wabonetse",
+    "noSub": "Gerageza gushakisha urundi ngo winjize umuhinzi mushya.",
+    "count": "umuhinzi {{count}}",
+    "count_plural": "abahinzi {{count}}",
+    "detail": {
+      "notFound": "Umuhinzi ntaboneka",
+      "stats": {
+        "deliveries": "Ibigenerwa",
+        "totalBidons": "Amabidoni yose",
+        "plants": "Ibiti",
+        "paidUSD": "Byishyuwe (USD)"
+      },
+      "info": {
+        "territoire": "Intara",
+        "groupement": "Itsinda",
+        "village": "Umudugudu",
+        "station": "Sitasiyo",
+        "phone": "Telefone",
+        "genderAge": "Igitsina / Imyaka",
+        "crop": "Umusaruro",
+        "registeredAt": "Yandikiwe ku"
+      },
+      "gender": {
+        "M": "Gabo",
+        "F": "Gore",
+        "Other": "Ibindi"
+      },
+      "crop": {
+        "coffee": "Ikawa",
+        "cocoa": "Akakawo",
+        "both": "Ikawa n'akakawo"
+      },
+      "age": "imyaka {{age}}",
+      "recordDelivery": "Andika igenamiterere",
+      "deliveryHistory": "Amateka y'ibigenerwa",
+      "noDeliveries": "Nta bigenerwa byatanzwe",
+      "totalPaid": "Byishyuwe byose (FC)",
+      "pending": "Rindira",
+      "receiptLine": "Irangamihandike #{{receipt}} · Inyandiko {{register}} · {{date}}",
+      "priceLine": "FC {{price}}/bidon · Igipimo {{rate}} FC/USD · {{method}}",
+      "cash": "Amafaranga",
+      "mobileMoney": "Pesa ya telefone",
+      "bank": "Banki",
+      "groupRoles": {
+        "president": "Perezida",
+        "vp": "Visi-Perezida",
+        "secretary": "Umunyamabanga",
+        "member": "Umunyamuryango"
+      }
+    },
+    "new": {
+      "accessDenied": "Nta ngufu ufite yo gusaba abahinzi bashya.",
+      "back": "Subira",
+      "gender": "Igitsina",
+      "location": "Aho atuye",
+      "production": "Umusaruro",
+      "groupRole": "Inshingano mu itsinda",
+      "firstName": "Izina rya mbere *",
+      "lastName": "Izina ry'umuryango *",
+      "phone": "Telefone",
+      "age": "Imyaka",
+      "territoire": "Intara",
+      "groupement": "Itsinda",
+      "village": "Umudugudu *",
+      "plants": "Umubare w'ibiti *",
+      "plantsHint": "Umubare w'ibiti by'ikawa/akakawo",
+      "mainCrop": "Umusaruro w'ibanze",
+      "bioIdLabel": "Kode ya Bio yashyizweho",
+      "offlineNote": "Bihishwe ahantu. Iyungurura nyuma mugihe ufite internet.",
+      "saveBtn": "Andika umuhinzi",
+      "saved": "Umuhinzi yandikiwe",
+      "errorTitle": "Ikosa mu kwandikisha",
+      "errorMsg": "Reba amakuru hanyuma ugerageze nanone."
+    }
+  },
+  "collect": {
+    "accessDenied": "Nta ngufu ufite yo kumanika ibigenerwa by'inzabibu.",
+    "back": "Subira",
+    "steps": ["Umuhinzi", "Ingano", "Igiciro & Igipimo", "Inyandiko", "Emeza"],
+    "step1": {
+      "title": "Hitamo umuhinzi",
+      "searchPlaceholder": "Izina cyangwa Kode ya Bio…"
+    },
+    "step2": {
+      "title": "Ingano yatanzwe",
+      "unit": "amabidoni ya litiro 5",
+      "kgEstimate": "≈ kg {{kg}} z'inzabibu nk'uko bigezweho",
+      "purchaseDate": "Itariki y'iguranwa",
+      "datePlaceholder": "UMWAKA-UKWEZI-UMUNSI"
+    },
+    "step3": {
+      "title": "Igiciro n'igipimo cy'isimburanwa",
+      "priceBand": "Igipimo cy'igiciro (FC/bidon)",
+      "customPrice": "Igiciro cyihariye (nk'umwanza gusa)",
+      "exchangeRate": "Igipimo cy'isimburanwa (FC/USD)",
+      "usdEquiv": "Ingana na USD",
+      "customPlaceholder": "urugero: 850"
+    },
+    "step4": {
+      "title": "Imibare y'inyandiko",
+      "receiptNo": "Inomero y'irangamihandike ry'ubwishyu *",
+      "registerNo": "Inomero y'inyandiko y'inzabibu",
+      "registerHint": "Siga ubusa kugira ngo ushyiremo inyandiko nshya (Na. {{n}})",
+      "reportNo": "Inomero y'raporo y'igenamiterere",
+      "payMethod": "Uburyo bw'ubwishyu",
+      "payMethods": {
+        "cash": "Amafaranga",
+        "mobile_money": "Pesa ya telefone",
+        "bank": "Banki"
+      }
+    },
+    "step5": {
+      "title": "Icyemezo cy'igenamiterere",
+      "receiptTitle": "IRANGAMIHANDIKE RY'IGENAMITERERE RY'INZABIBU",
+      "offline": "Bihishwe utanafashe internet. Iyungurura nyuma mugihe network ibonetse.",
+      "fields": {
+        "farmer": "Umuhinzi",
+        "bioCode": "Kode ya Bio",
+        "groupement": "Itsinda",
+        "village": "Umudugudu",
+        "purchaseDate": "Itariki y'iguranwa",
+        "qty": "Ingano (amabidoni)",
+        "pricePerBidon": "Igiciro / bidon",
+        "totalFC": "Ingano yose (FC)",
+        "usdEquiv": "Ingana na USD",
+        "rateFC": "Igipimo FC/USD",
+        "receiptNo": "Inomero y'irangamihandike",
+        "registerNo": "Inomero y'inyandiko",
+        "reportNo": "Inomero y'raporo",
+        "payMethod": "Uburyo bw'ubwishyu"
+      }
+    },
+    "submit": "Emeza & andika ubwishyu",
+    "saved": "Igenamiterere ryatanzwe",
+    "savedMsg": "Irangamihandike #{{receipt}} · Amabidoni {{qty}} · FC {{total}}",
+    "errorTitle": "Ikosa mu kumanika",
+    "errorMsg": "Reba amakuru hanyuma ugerageze nanone.",
+    "pieds": "ibiti"
+  },
+  "lots": {
+    "stats": {
+      "active": "Amapaki akora",
+      "bidons": "Amabidoni yose",
+      "weight": "Ibiro byose",
+      "eudrReady": "EUDR biteguye"
+    },
+    "filters": {
+      "all": "Byose",
+      "reception": "Kwakira",
+      "processing": "Gucunga",
+      "drying": "Ukusushira",
+      "export": "Kohereza hanze",
+      "closed": "Bifunzwe"
+    },
+    "searchPlaceholder": "Shakisha amapaki na kode, umusaruro…",
+    "noTitle": "Nta mapaki ahuye",
+    "noSub": "Gerageza gushakisha urundi cyangwa kongereza ibyuzuzwa.",
+    "meta": "{{crop}} · {{weight}} · abahinzi {{farmers}}",
+    "coffee": "Ikawa",
+    "cocoa": "Akakawo"
+  },
+  "lot": {
+    "notFound": "Ipaki ntiboneka",
+    "stats": {
+      "weight": "Ibiro",
+      "bidons": "Amabidoni",
+      "farmers": "Abahinzi",
+      "certs": "Impamyabumenyi"
+    },
+    "crop": {
+      "coffee": "Ikawa",
+      "cocoa": "Akakawo"
+    },
+    "cupScore": "Amanota ya SCA",
+    "eudr": {
+      "title": "Ikurikira EUDR",
+      "sub": "Umuhinzi {{count}} ufite inzara yemejwe. Nta ngo y'izituruka y'ishyamba yabonetse.",
+      "sub_plural": "Abahinzi {{count}} bamwe na inzara zemejwe. Nta ngo y'izituruka y'ishyamba yabonetse.",
+      "downloadDDS": "DDS PDF",
+      "ddsComing": "Gukura icyemezo cya DDS bizaboneka mu iterambere rikurikira."
+    },
+    "financial": {
+      "sourceRegisters": "Inyandiko inkomoko",
+      "totalBidons": "Amabidoni yose yabonetse",
+      "paidToFarmers": "Byishyuwe ku bahinzi (FC)"
+    },
+    "chain": "Inzira yo gucuruza",
+    "inProgress": "biragenda",
+    "copiedRef": "Indoto yandukuye",
+    "lotRef": "Inkomoko y'ipaki",
+    "sourceRegisters": "Inyandiko inkomoko z'inzabibu",
+    "noRegisters": "Nta nyandiko zihuye n'iki ipaki",
+    "register": "Inyandiko {{n}}",
+    "deliveriesBidons": "Ibigenerwa {{count}} · Amabidoni {{bidons}}",
+    "contributingFarmers": "Abahinzi batanze",
+    "tamper": {
+      "title": "Gukurikirana byemejwe",
+      "sub": "Iki ipaki gikurikirana kuturuka inyandiko {{count}} y'inzabibu hamwe n'umuhinzi {{farmers}} uzwi.",
+      "sub_plural": "Iki ipaki gikurikirana kuturuka inyandiko {{count}} z'inzabibu hamwe n'abahinzi {{farmers}} bazwi."
+    },
+    "stageFlow": {
+      "cherry_received": "Inzabibu zabonetse ku sitasiyo",
+      "pulping": "Gushira",
+      "fermenting": "Ubutubutse (amasaha 12-48)",
+      "washing": "Gusukura",
+      "drying": "Ukusushira (ameza yuzuyemo)",
+      "dry_parchment": "Igahunda gikamye — mu bubiko",
+      "hulling": "Gukuraho igafu (mashini)",
+      "graded": "Gutondeka no gutabaka",
+      "bagged": "Gushyirwa mu gasaho kohereza hanze",
+      "in_transit": "Mu nzira yo kugera ku bwato",
+      "shipped": "Byoherejwe hanze y'igihugu"
+    }
+  },
+  "profile": {
+    "sections": {
+      "sync": "Iyungurura",
+      "language": "Ururimi",
+      "device": "Igikoresho"
+    },
+    "sync": {
+      "connection": "Guhuza",
+      "lastSync": "Iyungurura ry'ahageza",
+      "pending": "Rindira",
+      "conflicts": "Ibibazo",
+      "wifiOnly": "Yungura kuri Wi-Fi gusa",
+      "syncing": "Iyungurura…",
+      "syncNow": "Yungura nonaha",
+      "done": "Iyungurura yarangiye",
+      "doneMsg": "Amakuru yose ni ya vuba.",
+      "failed": "Iyungurura ryanze",
+      "failedMsg": "Reba guhuza kwawe hanyuma ugerageze nanone.",
+      "pendingCount": "inyandiko {{count}}",
+      "pendingCount_plural": "inyandiko {{count}}",
+      "conflictCount": "ikibazo {{count}} gitasobanye",
+      "conflictCount_plural": "ibibazo {{count}} bitasobanye"
+    },
+    "device": {
+      "id": "Indangaburanga y'igikoresho",
+      "key": "Urufunguzo rw'igikoresho",
+      "active": "Irakora"
+    },
+    "signOut": {
+      "title": "Gusohoka",
+      "confirm": "Urizeye ko ushaka gusohoka?",
+      "cancel": "Hagarika",
+      "button": "Sohoka",
+      "confirmBtn": "Sohoka"
+    },
+    "version": "BeanPath v1.0.0 · Simusomeka mbere · Byemejwe kuri siri",
+    "languageUpdated": "Ururumi rwahinduwe",
+    "unknown": "Ntazwi",
+    "never": "Ntabwo byigeze",
+    "justNow": "Nonaha",
+    "minutesAgo": "hashize iminota {{m}}",
+    "hoursAgo": "hashize amasaha {{h}}",
+    "daysAgo": "hashize iminsi {{d}}"
+  },
+  "console": {
+    "field": "Inzara",
+    "kpi": {
+      "bidons": "Amabidoni yabonetse",
+      "totalWeight": "Ibiro byose",
+      "activeLots": "Amapaki akora",
+      "farmers": "Abahinzi",
+      "paidFC": "Byishyuwe (FC)",
+      "eudrReady": "EUDR biteguye",
+      "unsynced": "Bitanyuranye",
+      "conflicts": "Ibibazo"
+    },
+    "byGroupement": "Ku itsinda",
+    "table": {
+      "groupement": "Itsinda",
+      "bidons": "Amabidoni",
+      "totalFC": "FC yose",
+      "document": "Inyandiko",
+      "qty": "Ingano",
+      "ref": "Kode",
+      "stage": "Intambwe",
+      "farmers": "Abahinzi"
+    },
+    "lotStatus": "Imiterere y'amapaki",
+    "recentLots": "Amapaki ya vuba",
+    "collectDocs": "Inyandiko z'ikusanyirizwa",
+    "conflictsAlert": "Ikibazo {{count}} kitasobanye gisaba inyumviro yawe",
+    "conflictsAlert_plural": "Ibibazo {{count}} bitasobanye bisaba inyumviro yawe",
+    "allConflictsResolved": "Ibibazo byose byasobanye",
+    "nav": {
+      "cherryRegisters": "Inyandiko z'inzabibu",
+      "cherryRegistersSub": "Inyandiko {{count}} · Amabidoni {{bidons}}",
+      "deliveryReports": "Raporo z'igenamiterere",
+      "deliveryReportsSub": "Raporo {{count}} zo gutwara",
+      "lotExplorer": "Igenzura ry'amapaki",
+      "lotExplorerSub": "Amapaki {{count}} acungwa",
+      "reconciliation": "Ubwuzu",
+      "reconciliationSub": "Ikibazo {{count}} gisimama",
+      "reconciliationSub_plural": "Ibibazo {{count}} bisimama",
+      "eudrExport": "Ubushobozi & EUDR",
+      "eudrExportSub": "DDV · Icyemezo cy'ubwihangane",
+      "certifications": "Impamyabumenyi",
+      "certificationsSub": "Bio · Biashara Nziza · Rainforest Alliance",
+      "qualityControl": "Igenzura ry'ireme",
+      "qualityControlSub": "Amanota y'ikapu · Igenzura · Ingenge",
+      "members": "Abanyamuryango",
+      "membersSub": "Abahinzi {{count}} banditse"
+    },
+    "stations": "sitasiyo {{count}}",
+    "stations_plural": "sitasiyo {{count}}",
+    "eudrInfo": "Modiye yo kohereza EUDR izaboneka vuba.",
+    "certInfo": "Modiye y'impamyabumenyi ya Bio/Biashara Nziza izaboneka vuba.",
+    "qcInfo": "Gumanika amanota y'ikapu bizaboneka vuba.",
+    "membersInfo": "Modiye yo gucunga abanyamuryango izaboneka vuba."
+  },
+  "reconciliation": {
+    "summary": {
+      "conflicts": "Ikibazo {{count}} gisaba inyumviro yawe",
+      "conflicts_plural": "Ibibazo {{count}} bisaba inyumviro yawe",
+      "allResolved": "Ibibazo byose byasobanye"
+    },
+    "empty": {
+      "title": "Nta kibazo gisimama",
+      "sub": "Ibibazo byose by'iyungurura byasobanye."
+    },
+    "labels": {
+      "mine": "Ubwanjye",
+      "theirs": "Iyabo"
+    },
+    "keep": {
+      "mine": "Bika ubwanjye",
+      "theirs": "Bika iyabo",
+      "merge": "Huza"
+    },
+    "resolved": "Byasobanye",
+    "conflict": {
+      "resolved": "Ikibazo cyasobanye"
+    }
+  },
+  "registers": {
+    "summary": {
+      "registers": "Inyandiko",
+      "bidons": "Amabidoni yose",
+      "paid": "Byishyuwe (FC)"
+    },
+    "explain": "Buri nyandiko igukusanya ibigenerwa bituruka ku muhanuro umwe w'ikusanyirizwa ku munsi umwe. Inyandiko nyingi zihingurwa mu Raporo y'igenamiterere.",
+    "filterAll": "Byose",
+    "reportFilter": "Raporo {{n}}",
+    "col": {
+      "bioFarmer": "Kode ya Bio / Umuhinzi",
+      "bidons": "Amabidoni",
+      "fcPerBidon": "FC/bidon",
+      "totalFC": "FC yose",
+      "receipt": "Irangamihandike"
+    },
+    "total": "Ingano y'inyandiko {{n}}",
+    "deliveries": "igenamiterere {{count}}",
+    "deliveries_plural": "ibigenerwa {{count}}",
+    "exchangeRate": "Igipimo cy'isimburanwa: {{rates}} FC/USD · ≈ ${{usd}} USD"
+  },
+  "reports": {
+    "summary": {
+      "reports": "Raporo",
+      "registers": "Inyandiko",
+      "bidons": "Amabidoni yose",
+      "totalFC": "FC yose"
+    },
+    "explain": "Raporo y'igenamiterere ikusanya inyandiko nyingi z'inzabibu z'iganiro imwe rigana na sitasiyo ya kukaraba. Inomero yayo igaragara kuri buri rangamihandike ry'ubwishyu.",
+    "reportNum": "Raporo",
+    "registersIncluded": "Inyandiko zifashwe",
+    "farmers": "umuhinzi {{count}}",
+    "farmers_plural": "abahinzi {{count}}",
+    "registers": "inyandiko {{count}}",
+    "registers_plural": "inyandiko {{count}}",
+    "deliveries": "igenamiterere {{count}}",
+    "deliveries_plural": "ibigenerwa {{count}}",
+    "priceBreakdown": "Igipimo cy'igiciro",
+    "financial": {
+      "totalPaid": "Byose byishyuwe ku bahinzi",
+      "avgRate": "Igipimo cy'isimburanwa cy'inkaburizwa",
+      "usdEquiv": "Ingana na USD"
+    }
+  }
+}

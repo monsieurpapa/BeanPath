@@ -6,17 +6,9 @@ import {
   TouchableOpacity, View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { useData } from "@/context/DataContext";
 import { useColors } from "@/hooks/useColors";
-
-/**
- * Delivery Report screen — console view of "Rapport de livraison" groupings.
- *
- * A Delivery Report batches multiple Cherry Registers for one transport event
- * (e.g. a truck trip from collection points to the washing station).
- * Each report has a unique number (5251, 5252, 5253…) that appears on
- * every register and every individual delivery receipt it contains.
- */
 
 function formatFC(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(3) + " M FC";
@@ -24,10 +16,11 @@ function formatFC(n: number) {
   return n.toLocaleString() + " FC";
 }
 function fmtDate(d: string) {
-  return new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+  return new Date(d).toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
 }
 
 export default function ReportsScreen() {
+  const { t } = useTranslation();
   const { reports, registers, deliveries, stations } = useData();
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -47,10 +40,10 @@ export default function ReportsScreen() {
       {/* Summary strip */}
       <View style={[styles.summary, { backgroundColor: colors.card, borderColor: colors.border }]}>
         {[
-          { label: "Rapports", value: String(reports.length), icon: "folder-outline" as const },
-          { label: "Registres", value: String(registers.length), icon: "list-outline" as const },
-          { label: "Bidons totaux", value: totalBidons.toLocaleString(), icon: "cube-outline" as const },
-          { label: "Total FC", value: formatFC(totalFC), icon: "cash-outline" as const },
+          { label: t("reports.summary.reports"),   value: String(reports.length),   icon: "folder-outline" as const },
+          { label: t("reports.summary.registers"), value: String(registers.length), icon: "list-outline" as const },
+          { label: t("reports.summary.bidons"),    value: totalBidons.toLocaleString(), icon: "cube-outline" as const },
+          { label: t("reports.summary.totalFC"),   value: formatFC(totalFC),        icon: "cash-outline" as const },
         ].map((s, i, arr) => (
           <React.Fragment key={s.label}>
             <View style={styles.summStat}>
@@ -66,9 +59,7 @@ export default function ReportsScreen() {
       {/* Explain card */}
       <View style={[styles.explainCard, { backgroundColor: colors.greenLight, borderColor: colors.accent + "20" }]}>
         <Ionicons name="information-circle-outline" size={16} color={colors.accent} />
-        <Text style={[styles.explainText, { color: colors.accent }]}>
-          Un Rapport de livraison regroupe plusieurs registres de cerises correspondant à un même transport vers la station de lavage. Son numéro figure sur chaque reçu de paiement.
-        </Text>
+        <Text style={[styles.explainText, { color: colors.accent }]}>{t("reports.explain")}</Text>
       </View>
 
       {/* Report list */}
@@ -78,23 +69,27 @@ export default function ReportsScreen() {
         const station   = stations.find(s => s.id === rp.stationId);
         const rpDelivs  = deliveries.filter(d => rp.registerNos.includes(d.cherryRegisterNo));
         const farmerIds = [...new Set(rpDelivs.map(d => d.farmerId))];
-        // Villages covered
         const villages  = [...new Set(rpDelivs.map(d => d.village))];
-        // Average rate
         const avgRate   = rpDelivs.length > 0
           ? (rpDelivs.reduce((s, d) => s + d.exchangeRateFC_USD, 0) / rpDelivs.length).toFixed(0)
           : "2700";
 
+        const registersLabel = rp.registerNos.length === 1
+          ? t("reports.registers", { count: rp.registerNos.length })
+          : t("reports.registers_plural", { count: rp.registerNos.length });
+        const farmersLabel = farmerIds.length === 1
+          ? t("reports.farmers", { count: farmerIds.length })
+          : t("reports.farmers_plural", { count: farmerIds.length });
+
         return (
           <View key={rp.id} style={[styles.rpCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            {/* Header */}
             <TouchableOpacity
               style={styles.rpHeader}
               onPress={() => setExpandedId(expanded ? null : rp.id)}
               activeOpacity={0.75}
             >
               <View style={[styles.rpNum, { backgroundColor: colors.primary }]}>
-                <Text style={styles.rpNumLabel}>Rapport</Text>
+                <Text style={styles.rpNumLabel}>{t("reports.reportNum")}</Text>
                 <Text style={styles.rpNumValue}>{rp.reportNo}</Text>
               </View>
               <View style={{ flex: 1 }}>
@@ -102,7 +97,7 @@ export default function ReportsScreen() {
                   {fmtDate(rp.dateFrom)}{rp.dateFrom !== rp.dateTo ? ` → ${fmtDate(rp.dateTo)}` : ""}
                 </Text>
                 <Text style={[styles.rpMeta, { color: colors.mutedForeground }]}>
-                  {station?.name} · {rp.registerNos.length} registre{rp.registerNos.length > 1 ? "s" : ""} · {farmerIds.length} agriculteurs
+                  {station?.name} · {registersLabel} · {farmersLabel}
                 </Text>
                 <Text style={[styles.rpMeta, { color: colors.mutedForeground }]}>
                   {villages.join(", ")}
@@ -116,12 +111,14 @@ export default function ReportsScreen() {
               </View>
             </TouchableOpacity>
 
-            {/* Expanded registers */}
             {expanded && (
               <View style={[styles.regsContainer, { borderTopColor: colors.border }]}>
-                <Text style={[styles.regsTitle, { color: colors.mutedForeground }]}>Registres inclus</Text>
+                <Text style={[styles.regsTitle, { color: colors.mutedForeground }]}>{t("reports.registersIncluded")}</Text>
                 {rpRegs.map((reg, i) => {
                   const regDelivs = deliveries.filter(d => reg.deliveryIds.includes(d.id));
+                  const delivLabel = regDelivs.length === 1
+                    ? t("reports.deliveries", { count: regDelivs.length })
+                    : t("reports.deliveries_plural", { count: regDelivs.length });
                   return (
                     <TouchableOpacity
                       key={reg.id}
@@ -135,9 +132,8 @@ export default function ReportsScreen() {
                       <View style={{ flex: 1 }}>
                         <Text style={[styles.regVillage, { color: colors.foreground }]}>{reg.village ?? reg.groupement}</Text>
                         <Text style={[styles.regDate, { color: colors.mutedForeground }]}>
-                          {fmtDate(reg.date)} · {regDelivs.length} livraison{regDelivs.length > 1 ? "s" : ""}
+                          {fmtDate(reg.date)} · {delivLabel}
                         </Text>
-                        {/* Farmers in this register */}
                         <Text style={[styles.regFarmers, { color: colors.mutedForeground }]} numberOfLines={2}>
                           {regDelivs.map(d => d.farmerBioId).join(", ")}
                         </Text>
@@ -151,9 +147,9 @@ export default function ReportsScreen() {
                   );
                 })}
 
-                {/* Price breakdown by band */}
+                {/* Price breakdown */}
                 <View style={[styles.breakdownSection, { borderTopColor: colors.border }]}>
-                  <Text style={[styles.breakdownTitle, { color: colors.mutedForeground }]}>Répartition par prix</Text>
+                  <Text style={[styles.breakdownTitle, { color: colors.mutedForeground }]}>{t("reports.priceBreakdown")}</Text>
                   <View style={styles.breakdownRow}>
                     {[700, 900, 1000].map(price => {
                       const count = rpDelivs.filter(d => d.pricePerBidonFC === price).reduce((s, d) => s + d.quantityBidons, 0);
@@ -172,15 +168,15 @@ export default function ReportsScreen() {
                 {/* Financial summary */}
                 <View style={[styles.finSummary, { backgroundColor: colors.amberLight, borderTopColor: colors.border }]}>
                   <View style={styles.finRow}>
-                    <Text style={[styles.finLabel, { color: colors.amber }]}>Total payé aux agriculteurs</Text>
+                    <Text style={[styles.finLabel, { color: colors.amber }]}>{t("reports.financial.totalPaid")}</Text>
                     <Text style={[styles.finVal, { color: colors.primary }]}>{rp.totalFC.toLocaleString()} FC</Text>
                   </View>
                   <View style={styles.finRow}>
-                    <Text style={[styles.finLabel, { color: colors.amber }]}>Taux de change moyen</Text>
+                    <Text style={[styles.finLabel, { color: colors.amber }]}>{t("reports.financial.avgRate")}</Text>
                     <Text style={[styles.finVal, { color: colors.primary }]}>{avgRate} FC/USD</Text>
                   </View>
                   <View style={styles.finRow}>
-                    <Text style={[styles.finLabel, { color: colors.amber }]}>Équivalent USD</Text>
+                    <Text style={[styles.finLabel, { color: colors.amber }]}>{t("reports.financial.usdEquiv")}</Text>
                     <Text style={[styles.finVal, { color: colors.primary }]}>${(rp.totalFC / parseFloat(avgRate)).toFixed(2)}</Text>
                   </View>
                 </View>

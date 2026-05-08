@@ -3,30 +3,32 @@ import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { FlatList, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/EmptyState";
 import { LotCard } from "@/components/LotCard";
 import { type LotStage, useData } from "@/context/DataContext";
 import { useColors } from "@/hooks/useColors";
 
-const FILTERS: { label: string; stages: LotStage[] | null }[] = [
-  { label: "Tous", stages: null },
-  { label: "Réception", stages: ["cherry_received"] },
-  { label: "Traitement", stages: ["pulping", "fermenting", "washing"] },
-  { label: "Séchage", stages: ["drying", "dry_parchment"] },
-  { label: "Export", stages: ["hulling", "graded", "bagged", "in_transit", "shipped"] },
-];
-
 export default function LotsScreen() {
+  const { t } = useTranslation();
   const { lots } = useData();
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const [filterIdx, setFilterIdx] = useState(0);
 
+  const FILTERS: { label: string; stages: LotStage[] | null }[] = useMemo(() => [
+    { label: t("lots.filters.all"), stages: null },
+    { label: t("lots.filters.reception"), stages: ["cherry_received"] },
+    { label: t("lots.filters.processing"), stages: ["pulping", "fermenting", "washing"] },
+    { label: t("lots.filters.drying"), stages: ["drying", "dry_parchment"] },
+    { label: t("lots.filters.export"), stages: ["hulling", "graded", "bagged", "in_transit", "shipped"] },
+  ], [t]);
+
   const filtered = useMemo(() => {
-    const stages = FILTERS[filterIdx].stages;
+    const stages = FILTERS[filterIdx]?.stages;
     if (!stages) return lots;
     return lots.filter((l) => stages.includes(l.stage));
-  }, [lots, filterIdx]);
+  }, [lots, filterIdx, FILTERS]);
 
   const totalKg = useMemo(() => lots.reduce((s, l) => s + l.weightKg, 0), [lots]);
   const totalBidons = useMemo(() => lots.reduce((s, l) => s + l.bidonCount, 0), [lots]);
@@ -38,22 +40,22 @@ export default function LotsScreen() {
       <View style={[styles.statsBar, { backgroundColor: colors.surface, borderBottomColor: colors.border, paddingTop: Platform.OS === "web" ? 80 : 0 }]}>
         <View style={styles.stat}>
           <Text style={[styles.statVal, { color: colors.foreground }]}>{lots.length}</Text>
-          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>Lots actifs</Text>
+          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>{t("lots.stats.active")}</Text>
         </View>
         <View style={[styles.div, { backgroundColor: colors.border }]} />
         <View style={styles.stat}>
           <Text style={[styles.statVal, { color: colors.foreground }]}>{totalBidons.toLocaleString()}</Text>
-          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>Bidons totaux</Text>
+          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>{t("lots.stats.bidons")}</Text>
         </View>
         <View style={[styles.div, { backgroundColor: colors.border }]} />
         <View style={styles.stat}>
           <Text style={[styles.statVal, { color: colors.foreground }]}>{(totalKg / 1000).toFixed(2)} MT</Text>
-          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>Poids total</Text>
+          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>{t("lots.stats.weight")}</Text>
         </View>
         <View style={[styles.div, { backgroundColor: colors.border }]} />
         <View style={styles.stat}>
           <Text style={[styles.statVal, { color: colors.foreground }]}>{eudrCount}</Text>
-          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>EUDR prêts</Text>
+          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>{t("lots.stats.eudrReady")}</Text>
         </View>
       </View>
 
@@ -80,7 +82,13 @@ export default function LotsScreen() {
           />
         )}
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 90 }]}
-        ListEmptyComponent={<EmptyState icon="layers-outline" title="Aucun lot trouvé" subtitle="Les lots apparaissent ici après réception des cerises à la station." />}
+        ListEmptyComponent={
+          <EmptyState
+            icon="layers-outline"
+            title={t("lots.noTitle")}
+            subtitle={t("lots.noSub")}
+          />
+        }
         showsVerticalScrollIndicator={false}
       />
     </View>

@@ -3,24 +3,16 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useMemo } from "react";
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { useData } from "@/context/DataContext";
 import { useColors } from "@/hooks/useColors";
-
-const ROLE_LABELS: Record<string, string> = {
-  president: "Président", vp: "Vice-Président", secretary: "Secrétaire", member: "Membre",
-};
 
 function formatFC(n: number) {
   return n.toLocaleString() + " FC";
 }
-function timeAgo(iso: string) {
-  const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
-  if (m < 60) return `il y a ${m} min`;
-  if (m < 1440) return `il y a ${Math.floor(m / 60)}h`;
-  return `il y a ${Math.floor(m / 1440)}j`;
-}
 
 export default function FarmerDetailScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { farmers, deliveries, stations } = useData();
   const colors = useColors();
@@ -36,8 +28,36 @@ export default function FarmerDetailScreen() {
     ? farmerDeliveries.reduce((s, d) => s + d.totalFC / d.exchangeRateFC_USD, 0)
     : 0;
 
+  const groupRoleLabel = (r: string | undefined) => {
+    if (!r || r === "member") return "";
+    const key = `farmers.detail.groupRoles.${r}`;
+    return t(key, r);
+  };
+
+  const genderLabel = (g: string | undefined) => {
+    if (g === "M") return t("farmers.detail.gender.M");
+    if (g === "F") return t("farmers.detail.gender.F");
+    return t("farmers.detail.gender.Other");
+  };
+
+  const cropLabel = (c: string | undefined) => {
+    if (c === "coffee") return t("farmers.detail.crop.coffee");
+    if (c === "cocoa") return t("farmers.detail.crop.cocoa");
+    return t("farmers.detail.crop.both");
+  };
+
+  const methodLabel = (m: string) => {
+    if (m === "mobile_money") return t("farmers.detail.mobileMoney");
+    if (m === "bank") return t("farmers.detail.bank");
+    return t("farmers.detail.cash");
+  };
+
   if (!farmer) {
-    return <View style={[styles.root, { backgroundColor: colors.background, justifyContent: "center", alignItems: "center" }]}><Text style={{ color: colors.mutedForeground, fontFamily: "Inter_400Regular" }}>Agriculteur introuvable</Text></View>;
+    return (
+      <View style={[styles.root, { backgroundColor: colors.background, justifyContent: "center", alignItems: "center" }]}>
+        <Text style={{ color: colors.mutedForeground, fontFamily: "Inter_400Regular" }}>{t("farmers.detail.notFound")}</Text>
+      </View>
+    );
   }
 
   return (
@@ -58,7 +78,7 @@ export default function FarmerDetailScreen() {
         </View>
         {farmer.groupRole && farmer.groupRole !== "member" && (
           <View style={[styles.rolePill, { backgroundColor: colors.greenLight }]}>
-            <Text style={[styles.roleText, { color: colors.accent }]}>{ROLE_LABELS[farmer.groupRole]}</Text>
+            <Text style={[styles.roleText, { color: colors.accent }]}>{groupRoleLabel(farmer.groupRole)}</Text>
           </View>
         )}
       </View>
@@ -66,10 +86,10 @@ export default function FarmerDetailScreen() {
       {/* Production stats */}
       <View style={styles.statsRow}>
         {[
-          { label: "Livraisons", value: String(farmerDeliveries.length), icon: "receipt-outline" as const },
-          { label: "Total bidons", value: String(totalBidons), icon: "cube-outline" as const },
-          { label: "Pieds", value: String(farmer.nbPieds), icon: "leaf-outline" as const },
-          { label: "Payé (USD)", value: `$${totalUSD.toFixed(0)}`, icon: "cash-outline" as const },
+          { label: t("farmers.detail.stats.deliveries"), value: String(farmerDeliveries.length), icon: "receipt-outline" as const },
+          { label: t("farmers.detail.stats.totalBidons"), value: String(totalBidons), icon: "cube-outline" as const },
+          { label: t("farmers.detail.stats.plants"), value: String(farmer.nbPieds), icon: "leaf-outline" as const },
+          { label: t("farmers.detail.stats.paidUSD"), value: `$${totalUSD.toFixed(0)}`, icon: "cash-outline" as const },
         ].map((s) => (
           <View key={s.label} style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Ionicons name={s.icon} size={16} color={colors.primary} />
@@ -82,14 +102,18 @@ export default function FarmerDetailScreen() {
       {/* Info card */}
       <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
         {[
-          { label: "Territoire", value: farmer.territoire, icon: "map-outline" as const },
-          { label: "Groupement", value: farmer.groupement, icon: "people-outline" as const },
-          { label: "Village", value: farmer.village, icon: "location-outline" as const },
-          { label: "Station", value: station?.name ?? "—", icon: "business-outline" as const },
-          { label: "Téléphone", value: farmer.phone || "—", icon: "phone-portrait-outline" as const },
-          { label: "Sexe / Âge", value: `${farmer.gender === "M" ? "Homme" : farmer.gender === "F" ? "Femme" : "Autre"}${farmer.age ? ` · ${farmer.age} ans` : ""}`, icon: "person-outline" as const },
-          { label: "Culture", value: farmer.crop === "coffee" ? "Café" : farmer.crop === "cocoa" ? "Cacao" : "Café & Cacao", icon: "leaf-outline" as const },
-          { label: "Inscrit le", value: new Date(farmer.registeredAt).toLocaleDateString("fr-FR"), icon: "calendar-outline" as const },
+          { label: t("farmers.detail.info.territoire"), value: farmer.territoire, icon: "map-outline" as const },
+          { label: t("farmers.detail.info.groupement"), value: farmer.groupement, icon: "people-outline" as const },
+          { label: t("farmers.detail.info.village"), value: farmer.village, icon: "location-outline" as const },
+          { label: t("farmers.detail.info.station"), value: station?.name ?? "—", icon: "business-outline" as const },
+          { label: t("farmers.detail.info.phone"), value: farmer.phone || "—", icon: "phone-portrait-outline" as const },
+          {
+            label: t("farmers.detail.info.genderAge"),
+            value: `${genderLabel(farmer.gender)}${farmer.age ? ` · ${t("farmers.detail.age", { age: farmer.age })}` : ""}`,
+            icon: "person-outline" as const,
+          },
+          { label: t("farmers.detail.info.crop"), value: cropLabel(farmer.crop), icon: "leaf-outline" as const },
+          { label: t("farmers.detail.info.registeredAt"), value: new Date(farmer.registeredAt).toLocaleDateString(), icon: "calendar-outline" as const },
         ].map(({ label, value, icon }, i, arr) => (
           <View key={label} style={[styles.infoRow, i < arr.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border }]}>
             <Ionicons name={icon} size={14} color={colors.mutedForeground} />
@@ -99,20 +123,20 @@ export default function FarmerDetailScreen() {
         ))}
       </View>
 
-      {/* Record a delivery */}
+      {/* Record delivery */}
       <TouchableOpacity
         onPress={() => router.push({ pathname: "/(tabs)/collect/", params: { farmerId: farmer.id, farmerName: `${farmer.firstName} ${farmer.lastName}`, farmerBioId: farmer.bioId } } as any)}
         style={[styles.collectBtn, { backgroundColor: colors.primary }]}
       >
         <Ionicons name="scale-outline" size={18} color="#fff" />
-        <Text style={styles.collectBtnText}>Enregistrer une livraison</Text>
+        <Text style={styles.collectBtnText}>{t("farmers.detail.recordDelivery")}</Text>
       </TouchableOpacity>
 
       {/* Delivery history */}
-      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Historique des livraisons</Text>
+      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("farmers.detail.deliveryHistory")}</Text>
       {farmerDeliveries.length === 0 ? (
         <View style={[styles.emptyCard, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>Aucune livraison enregistrée</Text>
+          <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>{t("farmers.detail.noDeliveries")}</Text>
         </View>
       ) : (
         farmerDeliveries.map((d) => (
@@ -123,15 +147,15 @@ export default function FarmerDetailScreen() {
                 <Text style={[styles.deliveryFC, { color: colors.primary }]}>{formatFC(d.totalFC)}</Text>
               </View>
               <Text style={[styles.deliverySub, { color: colors.mutedForeground }]}>
-                Reçu #{d.receiptNo} · Registre {d.cherryRegisterNo} · {new Date(d.purchaseDate).toLocaleDateString("fr-FR")}
+                {t("farmers.detail.receiptLine", { receipt: d.receiptNo, register: d.cherryRegisterNo, date: new Date(d.purchaseDate).toLocaleDateString() })}
               </Text>
               <Text style={[styles.deliverySub, { color: colors.mutedForeground }]}>
-                {d.pricePerBidonFC} FC/bidon · Taux {d.exchangeRateFC_USD} FC/USD · {d.paymentMethod === "mobile_money" ? "Mobile money" : "Espèces"}
+                {t("farmers.detail.priceLine", { price: d.pricePerBidonFC, rate: d.exchangeRateFC_USD, method: methodLabel(d.paymentMethod) })}
               </Text>
             </View>
             {!d.synced && (
               <View style={[styles.pendBadge, { backgroundColor: colors.amberLight }]}>
-                <Text style={[styles.pendText, { color: colors.amber }]}>En attente</Text>
+                <Text style={[styles.pendText, { color: colors.amber }]}>{t("farmers.detail.pending")}</Text>
               </View>
             )}
           </View>
@@ -140,7 +164,7 @@ export default function FarmerDetailScreen() {
 
       {farmerDeliveries.length > 0 && (
         <View style={[styles.totalRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.totalLabel, { color: colors.mutedForeground }]}>Total payé (FC)</Text>
+          <Text style={[styles.totalLabel, { color: colors.mutedForeground }]}>{t("farmers.detail.totalPaid")}</Text>
           <Text style={[styles.totalVal, { color: colors.primary }]}>{formatFC(totalFC)}</Text>
         </View>
       )}

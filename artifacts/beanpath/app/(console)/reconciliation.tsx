@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/EmptyState";
 import { useSync } from "@/context/SyncContext";
 import { useToast } from "@/context/ToastContext";
@@ -38,13 +39,8 @@ const SEED_CONFLICTS: ConflictItem[] = [
   },
 ];
 
-const KEEP_LABELS: Record<"mine" | "theirs" | "merge", string> = {
-  mine:   "Garder le mien",
-  theirs: "Garder le leur",
-  merge:  "Fusionner",
-};
-
 export default function ReconciliationScreen() {
+  const { t } = useTranslation();
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { resolveConflict } = useSync();
@@ -57,9 +53,10 @@ export default function ReconciliationScreen() {
     setConflicts((prev) => prev.map((c) => c.id === id ? { ...c, resolved: true } : c));
     setExpanded(null);
     resolveConflict();
+    const keepLabel = keep === "mine" ? t("reconciliation.keep.mine") : keep === "theirs" ? t("reconciliation.keep.theirs") : t("reconciliation.keep.merge");
     showSuccess(
-      "Conflit résolu",
-      `${conflict?.aggregate ?? ""} — ${KEEP_LABELS[keep].toLowerCase()}`
+      t("reconciliation.conflict.resolved"),
+      `${conflict?.aggregate ?? ""} — ${keepLabel.toLowerCase()}`
     );
   };
 
@@ -77,16 +74,16 @@ export default function ReconciliationScreen() {
         <Ionicons name={active.length > 0 ? "warning-outline" : "checkmark-circle-outline"} size={20} color={active.length > 0 ? colors.danger : colors.accent} />
         <Text style={[styles.summaryText, { color: active.length > 0 ? colors.danger : colors.accent }]}>
           {active.length > 0
-            ? `${active.length} conflit${active.length > 1 ? "s" : ""} nécessite${active.length > 1 ? "nt" : ""} votre attention`
-            : "Tous les conflits sont résolus"}
+            ? t(active.length === 1 ? "reconciliation.summary.conflicts" : "reconciliation.summary.conflicts_plural", { count: active.length })
+            : t("reconciliation.summary.allResolved")}
         </Text>
       </View>
 
       {active.length === 0 && (
         <EmptyState
           icon="checkmark-circle-outline"
-          title="Aucun conflit en attente"
-          subtitle="Tous les conflits de synchronisation ont été résolus."
+          title={t("reconciliation.empty.title")}
+          subtitle={t("reconciliation.empty.sub")}
         />
       )}
 
@@ -110,7 +107,7 @@ export default function ReconciliationScreen() {
               {/* Side by side */}
               <View style={styles.sideRow}>
                 <View style={[styles.side, { backgroundColor: colors.amberLight, borderColor: colors.primary + "40" }]}>
-                  <Text style={[styles.sideTitle, { color: colors.primary }]}>Mine</Text>
+                  <Text style={[styles.sideTitle, { color: colors.primary }]}>{t("reconciliation.labels.mine")}</Text>
                   {Object.entries(c.mine).map(([k, v]) => (
                     <View key={k} style={styles.fieldRow}>
                       <Text style={[styles.fieldKey, { color: colors.mutedForeground }]}>{k}</Text>
@@ -119,7 +116,7 @@ export default function ReconciliationScreen() {
                   ))}
                 </View>
                 <View style={[styles.side, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                  <Text style={[styles.sideTitle, { color: colors.mutedForeground }]}>Theirs</Text>
+                  <Text style={[styles.sideTitle, { color: colors.mutedForeground }]}>{t("reconciliation.labels.theirs")}</Text>
                   {Object.entries(c.theirs).map(([k, v]) => (
                     <View key={k} style={styles.fieldRow}>
                       <Text style={[styles.fieldKey, { color: colors.mutedForeground }]}>{k}</Text>
@@ -132,13 +129,13 @@ export default function ReconciliationScreen() {
               {/* Resolution buttons */}
               <View style={styles.resolutionRow}>
                 <Pressable onPress={() => resolve(c.id, "mine")} style={({ pressed }) => [styles.resolveBtn, { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 }]}>
-                  <Text style={styles.resolveBtnText}>Garder le mien</Text>
+                  <Text style={styles.resolveBtnText}>{t("reconciliation.keep.mine")}</Text>
                 </Pressable>
                 <Pressable onPress={() => resolve(c.id, "theirs")} style={({ pressed }) => [styles.resolveBtn, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, opacity: pressed ? 0.8 : 1 }]}>
-                  <Text style={[styles.resolveBtnText, { color: colors.foreground }]}>Garder le leur</Text>
+                  <Text style={[styles.resolveBtnText, { color: colors.foreground }]}>{t("reconciliation.keep.theirs")}</Text>
                 </Pressable>
                 <Pressable onPress={() => resolve(c.id, "merge")} style={({ pressed }) => [styles.resolveBtn, { backgroundColor: colors.greenLight, opacity: pressed ? 0.8 : 1 }]}>
-                  <Text style={[styles.resolveBtnText, { color: colors.accent }]}>Fusionner</Text>
+                  <Text style={[styles.resolveBtnText, { color: colors.accent }]}>{t("reconciliation.keep.merge")}</Text>
                 </Pressable>
               </View>
             </View>
@@ -149,7 +146,7 @@ export default function ReconciliationScreen() {
       {/* Resolved */}
       {done.length > 0 && (
         <>
-          <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>Résolus</Text>
+          <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>{t("reconciliation.resolved")}</Text>
           {done.map((c) => (
             <View key={c.id} style={[styles.doneCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <Ionicons name="checkmark-circle-outline" size={18} color={colors.accent} />

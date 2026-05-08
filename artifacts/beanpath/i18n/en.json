@@ -1,0 +1,513 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "search": "Search",
+    "loading": "Loading…",
+    "error": "Error",
+    "offline": "Offline",
+    "online": "Online",
+    "pending": "Pending",
+    "all": "All",
+    "seeAll": "See all",
+    "unknown": "Unknown",
+    "console": "Console",
+    "terrain": "Field",
+    "bidons": "bidon",
+    "bidons_plural": "bidons",
+    "registers": "Registers",
+    "reports": "Reports",
+    "farmers": "Farmers"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "farmers": "Farmers",
+    "collect": "Collect",
+    "lots": "Lots",
+    "profile": "Profile",
+    "console": "Operator Console",
+    "lotExplorer": "Lot Explorer",
+    "lotDossier": "Lot Dossier",
+    "registers": "Cherry Registers",
+    "reports": "Delivery Reports",
+    "reconciliation": "Reconciliation"
+  },
+  "roles": {
+    "field_agent": "Field Agent",
+    "lead_farmer": "Lead Farmer",
+    "station_operator": "Station Operator",
+    "transporter": "Transporter",
+    "mill_operator": "Mill Operator",
+    "qc_grader": "Quality Inspector",
+    "exporter": "Exporter",
+    "buyer": "Buyer",
+    "coop_admin": "Administrator",
+    "certifier": "Certifier"
+  },
+  "stages": {
+    "cherry_received": "Cherries received",
+    "pulping": "Pulping",
+    "fermenting": "Fermenting",
+    "washing": "Washing",
+    "drying": "Drying",
+    "dry_parchment": "Dry parchment",
+    "hulling": "Hulling",
+    "graded": "Graded",
+    "bagged": "Bagged",
+    "in_transit": "In transit",
+    "shipped": "Shipped",
+    "closed": "Closed"
+  },
+  "auth": {
+    "changeRole": "Change role",
+    "phoneOtp": "Phone OTP",
+    "email": "E-mail",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "biometric": "Unlock with biometrics",
+    "signIn": "Sign in",
+    "newAccount": "New? Create an account",
+    "loginTitle": "Sign In",
+    "subPhone": "Use your phone number for quick offline access.",
+    "subEmail": "Enter your credentials to access your workspace.",
+    "loginSuccess": "Sign-in successful",
+    "loginFailed": "Sign-in failed",
+    "loginFailedMsg": "Check your credentials and try again."
+  },
+  "demo": {
+    "tagline": "Instant access · No sign-up",
+    "title": "Try BeanPath",
+    "subtitle": "Choose a persona to explore the platform with realistic demo data.",
+    "enterDemo": "Enter Demo",
+    "disclaimer": "Data shown is fictitious and for demonstration purposes only. No real data is used.",
+    "hasAccount": "Have an account? Sign in",
+    "personas": {
+      "field_agent": {
+        "title": "Field Agent",
+        "description": "Field interface for daily cherry collection, farmer payments and lot management.",
+        "features": ["Dashboard & today's deliveries", "Cherry recording · PDF receipts", "Farmer register"],
+        "surfaceLabel": "Mobile app · 5 tabs"
+      },
+      "coop_admin": {
+        "title": "Cooperative Administrator",
+        "description": "Full management console: finances, EUDR reports, reconciliation, lots and members.",
+        "features": ["Full management console", "EUDR reports & compliance", "Lot explorer & dossiers"],
+        "surfaceLabel": "Management console"
+      },
+      "buyer": {
+        "title": "Buyer / Roaster",
+        "description": "Read-only access to lot dossiers, full traceability, certifications and origin stories.",
+        "features": ["Complete lot dossiers", "Farm-to-cup traceability", "Organic · Fair Trade · EUDR certs"],
+        "surfaceLabel": "Buyer console"
+      }
+    }
+  },
+  "dashboard": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening",
+    "stats": {
+      "deliveries": "Deliveries",
+      "bidonsReceived": "Bidons received",
+      "farmers": "Farmers",
+      "paidToday": "Paid today"
+    },
+    "syncBanner": "{{count}} delivery to sync · Tap to sync",
+    "syncBanner_plural": "{{count}} deliveries to sync · Tap to sync",
+    "quickActions": "Quick actions",
+    "recentDeliveries": "Recent deliveries",
+    "noDeliveries": "No deliveries recorded today",
+    "actions": {
+      "newFarmer": "Register farmer",
+      "newDelivery": "Record delivery",
+      "myLots": "My lots"
+    },
+    "deliverySub": "{{qty}} bidons · {{price}} FC/bidon · Receipt #{{receipt}}"
+  },
+  "farmers": {
+    "searchPlaceholder": "Name, Bio code, group, village…",
+    "noTitle": "No farmers found",
+    "noSub": "Try a different search or register a new farmer.",
+    "count": "{{count}} farmer",
+    "count_plural": "{{count}} farmers",
+    "detail": {
+      "notFound": "Farmer not found",
+      "stats": {
+        "deliveries": "Deliveries",
+        "totalBidons": "Total bidons",
+        "plants": "Plants",
+        "paidUSD": "Paid (USD)"
+      },
+      "info": {
+        "territoire": "Territory",
+        "groupement": "Group",
+        "village": "Village",
+        "station": "Station",
+        "phone": "Phone",
+        "genderAge": "Gender / Age",
+        "crop": "Crop",
+        "registeredAt": "Registered on"
+      },
+      "gender": {
+        "M": "Male",
+        "F": "Female",
+        "Other": "Other"
+      },
+      "crop": {
+        "coffee": "Coffee",
+        "cocoa": "Cocoa",
+        "both": "Coffee & Cocoa"
+      },
+      "age": "{{age}} yrs",
+      "recordDelivery": "Record a delivery",
+      "deliveryHistory": "Delivery history",
+      "noDeliveries": "No deliveries recorded",
+      "totalPaid": "Total paid (FC)",
+      "pending": "Pending",
+      "receiptLine": "Receipt #{{receipt}} · Register {{register}} · {{date}}",
+      "priceLine": "{{price}} FC/bidon · Rate {{rate}} FC/USD · {{method}}",
+      "cash": "Cash",
+      "mobileMoney": "Mobile money",
+      "bank": "Bank",
+      "groupRoles": {
+        "president": "President",
+        "vp": "Vice-President",
+        "secretary": "Secretary",
+        "member": "Member"
+      }
+    },
+    "new": {
+      "accessDenied": "You don't have permission to register new farmers.",
+      "back": "Back",
+      "gender": "Gender",
+      "location": "Location",
+      "production": "Production",
+      "groupRole": "Role in the group",
+      "firstName": "First name *",
+      "lastName": "Last name *",
+      "phone": "Phone",
+      "age": "Age",
+      "territoire": "Territory",
+      "groupement": "Groupement",
+      "village": "Village *",
+      "plants": "Number of plants *",
+      "plantsHint": "Number of coffee/cocoa trees",
+      "mainCrop": "Main crop",
+      "bioIdLabel": "Generated Bio code",
+      "offlineNote": "Saved locally. Auto-sync when online.",
+      "saveBtn": "Register farmer",
+      "saved": "Farmer registered",
+      "errorTitle": "Registration error",
+      "errorMsg": "Check the details and try again."
+    }
+  },
+  "collect": {
+    "accessDenied": "You don't have permission to record cherry deliveries.",
+    "back": "Back",
+    "steps": ["Farmer", "Quantity", "Price & Rate", "Documents", "Confirm"],
+    "step1": {
+      "title": "Select farmer",
+      "searchPlaceholder": "Name or Bio code…"
+    },
+    "step2": {
+      "title": "Quantity delivered",
+      "unit": "5-litre bidons",
+      "kgEstimate": "≈ {{kg}} kg cherries estimated",
+      "purchaseDate": "Purchase date",
+      "datePlaceholder": "YYYY-MM-DD"
+    },
+    "step3": {
+      "title": "Price & exchange rate",
+      "priceBand": "Price band (FC/bidon)",
+      "customPrice": "Custom price (optional)",
+      "exchangeRate": "Exchange rate (FC/USD)",
+      "usdEquiv": "USD equivalent",
+      "customPlaceholder": "e.g. 850"
+    },
+    "step4": {
+      "title": "Document numbers",
+      "receiptNo": "Payment receipt no. *",
+      "registerNo": "Cherry register no.",
+      "registerHint": "Leave empty to create a new register (No. {{n}})",
+      "reportNo": "Delivery report no.",
+      "payMethod": "Payment method",
+      "payMethods": {
+        "cash": "Cash",
+        "mobile_money": "Mobile money",
+        "bank": "Bank"
+      }
+    },
+    "step5": {
+      "title": "Delivery confirmation",
+      "receiptTitle": "CHERRY DELIVERY RECEIPT",
+      "offline": "Saved offline. Auto-sync when network is available.",
+      "fields": {
+        "farmer": "Farmer",
+        "bioCode": "Bio code",
+        "groupement": "Groupement",
+        "village": "Village",
+        "purchaseDate": "Purchase date",
+        "qty": "Quantity (bidons)",
+        "pricePerBidon": "Price / bidon",
+        "totalFC": "Total (FC)",
+        "usdEquiv": "USD equivalent",
+        "rateFC": "FC/USD rate",
+        "receiptNo": "Payment receipt no.",
+        "registerNo": "Cherry register no.",
+        "reportNo": "Delivery report no.",
+        "payMethod": "Payment method"
+      }
+    },
+    "submit": "Confirm & record payment",
+    "saved": "Delivery recorded",
+    "savedMsg": "Receipt #{{receipt}} · {{qty}} bidons · {{total}} FC",
+    "errorTitle": "Recording error",
+    "errorMsg": "Check the data and try again.",
+    "pieds": "plants"
+  },
+  "lots": {
+    "stats": {
+      "active": "Active lots",
+      "bidons": "Total bidons",
+      "weight": "Total weight",
+      "eudrReady": "EUDR ready"
+    },
+    "filters": {
+      "all": "All",
+      "reception": "Reception",
+      "processing": "Processing",
+      "drying": "Drying",
+      "export": "Export",
+      "closed": "Closed"
+    },
+    "searchPlaceholder": "Search lots by ref, crop…",
+    "noTitle": "No lots match",
+    "noSub": "Try a different search or filter.",
+    "meta": "{{crop}} · {{weight}} · {{farmers}} farmers",
+    "coffee": "Coffee",
+    "cocoa": "Cocoa"
+  },
+  "lot": {
+    "notFound": "Lot not found",
+    "stats": {
+      "weight": "Weight",
+      "bidons": "Bidons",
+      "farmers": "Farmers",
+      "certs": "Certs."
+    },
+    "crop": {
+      "coffee": "Coffee",
+      "cocoa": "Cocoa"
+    },
+    "cupScore": "SCA Score",
+    "eudr": {
+      "title": "EUDR Compliant",
+      "sub": "{{count}} farmer with verified plot. No deforestation risk detected.",
+      "sub_plural": "{{count}} farmers with verified plots. No deforestation risk detected.",
+      "downloadDDS": "DDS PDF",
+      "ddsComing": "DDS certificate download will be available in the next update."
+    },
+    "financial": {
+      "sourceRegisters": "Source registers",
+      "totalBidons": "Total bidons received",
+      "paidToFarmers": "Paid to farmers (FC)"
+    },
+    "chain": "Processing chain",
+    "inProgress": "in progress",
+    "copiedRef": "Reference copied",
+    "lotRef": "Lot reference",
+    "sourceRegisters": "Source cherry registers",
+    "noRegisters": "No registers linked to this lot",
+    "register": "Register {{n}}",
+    "deliveriesBidons": "{{count}} deliveries · {{bidons}} bidons",
+    "contributingFarmers": "Contributing farmers",
+    "tamper": {
+      "title": "Verified traceability",
+      "sub": "This lot is traced from {{count}} cherry register and {{farmers}} identified farmer.",
+      "sub_plural": "This lot is traced from {{count}} cherry registers and {{farmers}} identified farmers."
+    },
+    "stageFlow": {
+      "cherry_received": "Cherries received at station",
+      "pulping": "Pulping",
+      "fermenting": "Fermenting (12–48h)",
+      "washing": "Washing",
+      "drying": "Drying (raised beds)",
+      "dry_parchment": "Dry parchment — in stock",
+      "hulling": "Hulling (huller)",
+      "graded": "Sorted and graded",
+      "bagged": "Bagged for export",
+      "in_transit": "In transit to port",
+      "shipped": "Exported"
+    }
+  },
+  "profile": {
+    "sections": {
+      "sync": "Sync",
+      "language": "Language",
+      "device": "Device"
+    },
+    "sync": {
+      "connection": "Connection",
+      "lastSync": "Last sync",
+      "pending": "Pending",
+      "conflicts": "Conflicts",
+      "wifiOnly": "Sync on Wi-Fi only",
+      "syncing": "Syncing…",
+      "syncNow": "Sync now",
+      "done": "Sync complete",
+      "doneMsg": "All data is up to date.",
+      "failed": "Sync failed",
+      "failedMsg": "Check your connection and try again.",
+      "pendingCount": "{{count}} record",
+      "pendingCount_plural": "{{count}} records",
+      "conflictCount": "{{count}} unresolved",
+      "conflictCount_plural": "{{count}} unresolved"
+    },
+    "device": {
+      "id": "Device ID",
+      "key": "Device key",
+      "active": "Active"
+    },
+    "signOut": {
+      "title": "Sign out",
+      "confirm": "Are you sure you want to sign out?",
+      "cancel": "Cancel",
+      "button": "Sign out",
+      "confirmBtn": "Sign out"
+    },
+    "version": "BeanPath v1.0.0 · Offline-first · Cryptographically verified",
+    "languageUpdated": "Language updated",
+    "unknown": "Unknown",
+    "never": "Never",
+    "justNow": "Just now",
+    "minutesAgo": "{{m}} min ago",
+    "hoursAgo": "{{h}}h ago",
+    "daysAgo": "{{d}}d ago"
+  },
+  "console": {
+    "field": "Field",
+    "kpi": {
+      "bidons": "Bidons received",
+      "totalWeight": "Total weight",
+      "activeLots": "Active lots",
+      "farmers": "Farmers",
+      "paidFC": "Paid (FC)",
+      "eudrReady": "EUDR ready",
+      "unsynced": "Unsynced",
+      "conflicts": "Conflicts"
+    },
+    "byGroupement": "By groupement",
+    "table": {
+      "groupement": "Groupement",
+      "bidons": "Bidons",
+      "totalFC": "Total FC",
+      "document": "Document",
+      "qty": "Quantity",
+      "ref": "Ref",
+      "stage": "Stage",
+      "farmers": "Farmers"
+    },
+    "lotStatus": "Lot status",
+    "recentLots": "Recent lots",
+    "collectDocs": "Collection documents",
+    "conflictsAlert": "{{count}} unresolved conflict needs your attention",
+    "conflictsAlert_plural": "{{count}} unresolved conflicts need your attention",
+    "allConflictsResolved": "All conflicts resolved",
+    "nav": {
+      "cherryRegisters": "Cherry Registers",
+      "cherryRegistersSub": "{{count}} registers · {{bidons}} bidons",
+      "deliveryReports": "Delivery Reports",
+      "deliveryReportsSub": "{{count}} transport reports",
+      "lotExplorer": "Lot Explorer",
+      "lotExplorerSub": "{{count}} lots in processing",
+      "reconciliation": "Reconciliation",
+      "reconciliationSub": "{{count}} pending conflict",
+      "reconciliationSub_plural": "{{count}} pending conflicts",
+      "eudrExport": "Export & EUDR",
+      "eudrExportSub": "DDV · Due Diligence Statements",
+      "certifications": "Certifications",
+      "certificationsSub": "Organic · Fair Trade · Rainforest Alliance",
+      "qualityControl": "Quality Control",
+      "qualityControlSub": "Cup scores · Audits · Defects",
+      "members": "Cooperative members",
+      "membersSub": "{{count}} registered farmers"
+    },
+    "stations": "{{count}} station",
+    "stations_plural": "{{count}} stations",
+    "eudrInfo": "EUDR export module coming soon.",
+    "certInfo": "Organic/Fair Trade certification module coming soon.",
+    "qcInfo": "Cup score recording coming soon.",
+    "membersInfo": "Member administration module coming soon."
+  },
+  "reconciliation": {
+    "summary": {
+      "conflicts": "{{count}} conflict needs your attention",
+      "conflicts_plural": "{{count}} conflicts need your attention",
+      "allResolved": "All conflicts resolved"
+    },
+    "empty": {
+      "title": "No pending conflicts",
+      "sub": "All sync conflicts have been resolved."
+    },
+    "labels": {
+      "mine": "Mine",
+      "theirs": "Theirs"
+    },
+    "keep": {
+      "mine": "Keep mine",
+      "theirs": "Keep theirs",
+      "merge": "Merge"
+    },
+    "resolved": "Resolved",
+    "conflict": {
+      "resolved": "Conflict resolved"
+    }
+  },
+  "registers": {
+    "summary": {
+      "registers": "Registers",
+      "bidons": "Total bidons",
+      "paid": "Paid (FC)"
+    },
+    "explain": "Each register groups deliveries from the same collection point on a single day. Multiple registers are then grouped into a Delivery Report.",
+    "filterAll": "All",
+    "reportFilter": "Report {{n}}",
+    "col": {
+      "bioFarmer": "Bio Code / Farmer",
+      "bidons": "Bidons",
+      "fcPerBidon": "FC/bidon",
+      "totalFC": "Total FC",
+      "receipt": "Receipt"
+    },
+    "total": "Register {{n}} total",
+    "deliveries": "{{count}} delivery",
+    "deliveries_plural": "{{count}} deliveries",
+    "exchangeRate": "Exchange rate: {{rates}} FC/USD · ≈ ${{usd}} USD"
+  },
+  "reports": {
+    "summary": {
+      "reports": "Reports",
+      "registers": "Registers",
+      "bidons": "Total bidons",
+      "totalFC": "Total FC"
+    },
+    "explain": "A Delivery Report groups multiple cherry registers for the same transport to the washing station. Its number appears on each payment receipt.",
+    "reportNum": "Report",
+    "registersIncluded": "Included registers",
+    "farmers": "{{count}} farmer",
+    "farmers_plural": "{{count}} farmers",
+    "registers": "{{count}} register",
+    "registers_plural": "{{count}} registers",
+    "deliveries": "{{count}} delivery",
+    "deliveries_plural": "{{count}} deliveries",
+    "priceBreakdown": "Price breakdown",
+    "financial": {
+      "totalPaid": "Total paid to farmers",
+      "avgRate": "Average exchange rate",
+      "usdEquiv": "USD equivalent"
+    }
+  }
+}

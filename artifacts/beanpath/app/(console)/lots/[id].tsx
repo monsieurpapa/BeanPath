@@ -3,6 +3,7 @@ import { useLocalSearchParams } from "expo-router";
 import React, { useMemo } from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { CertBadge } from "@/components/CertBadge";
 import { StageTag } from "@/components/StageTag";
 import { useData } from "@/context/DataContext";
@@ -14,64 +15,61 @@ function formatWeight(kg: number) {
   return kg.toFixed(1) + " kg";
 }
 
-// Processing stages in order for CoC timeline
-const STAGE_FLOW = [
-  { stage: "cherry_received", label: "Cerises reçues à la station",       icon: "leaf-outline" as const,            color: "#b91c1c" },
-  { stage: "pulping",         label: "Dépulpage",                          icon: "cog-outline" as const,             color: "#b45309" },
-  { stage: "fermenting",      label: "Fermentation (12–48h)",              icon: "flask-outline" as const,           color: "#854d0e" },
-  { stage: "washing",         label: "Lavage",                             icon: "water-outline" as const,           color: "#1d4ed8" },
-  { stage: "drying",          label: "Séchage (tables surélevées)",        icon: "sunny-outline" as const,           color: "#b45309" },
-  { stage: "dry_parchment",   label: "Parche sèche — en stock",            icon: "cube-outline" as const,            color: "#57534e" },
-  { stage: "hulling",         label: "Déparcheminé (décortiqueur)",        icon: "construct-outline" as const,       color: "#3730a3" },
-  { stage: "graded",          label: "Trié et classé",                     icon: "filter-outline" as const,          color: "#15803d" },
-  { stage: "bagged",          label: "Ensaché pour export",                icon: "bag-handle-outline" as const,      color: "#166534" },
-  { stage: "in_transit",      label: "En transit vers le port",            icon: "car-outline" as const,             color: "#1d4ed8" },
-  { stage: "shipped",         label: "Exporté",                            icon: "boat-outline" as const,            color: "#3730a3" },
-];
-
 export default function LotDossierScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { lots, deliveries, registers, farmers } = useData();
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { showInfo, showSuccess } = useToast();
 
+  const STAGE_FLOW = [
+    { stage: "cherry_received", icon: "leaf-outline" as const,            color: "#b91c1c" },
+    { stage: "pulping",         icon: "cog-outline" as const,             color: "#b45309" },
+    { stage: "fermenting",      icon: "flask-outline" as const,           color: "#854d0e" },
+    { stage: "washing",         icon: "water-outline" as const,           color: "#1d4ed8" },
+    { stage: "drying",          icon: "sunny-outline" as const,           color: "#b45309" },
+    { stage: "dry_parchment",   icon: "cube-outline" as const,            color: "#57534e" },
+    { stage: "hulling",         icon: "construct-outline" as const,       color: "#3730a3" },
+    { stage: "graded",          icon: "filter-outline" as const,          color: "#15803d" },
+    { stage: "bagged",          icon: "bag-handle-outline" as const,      color: "#166534" },
+    { stage: "in_transit",      icon: "car-outline" as const,             color: "#1d4ed8" },
+    { stage: "shipped",         icon: "boat-outline" as const,            color: "#3730a3" },
+  ];
+
   const handleCopyRef = async (ref: string) => {
     if (Platform.OS === "web" && (globalThis as any).navigator?.clipboard) {
       try {
         await (globalThis as any).navigator.clipboard.writeText(ref);
-        showSuccess("Référence copiée", ref);
+        showSuccess(t("lot.copiedRef"), ref);
       } catch {
-        showInfo("Référence du lot", ref);
+        showInfo(t("lot.lotRef"), ref);
       }
     } else {
-      showInfo("Référence du lot", ref);
+      showInfo(t("lot.lotRef"), ref);
     }
   };
 
   const handleDownloadDDS = () => {
-    showInfo("DDS PDF", "Le téléchargement du certificat DDS sera disponible dans la prochaine mise à jour.");
+    showInfo(t("lot.eudr.downloadDDS"), t("lot.eudr.ddsComing"));
   };
 
   const lot = useMemo(() => lots.find((l) => l.id === id), [lots, id]);
 
-  // Find deliveries linked via cherry registers
   const linkedDeliveries = useMemo(() => {
     if (!lot) return [];
     return deliveries.filter((d) => lot.sourceRegisterNos.includes(d.cherryRegisterNo));
   }, [deliveries, lot]);
 
-  // Unique farmers who contributed
   const sourceFarmerIds = useMemo(() => [...new Set(linkedDeliveries.map((d) => d.farmerId))], [linkedDeliveries]);
   const sourceFarmers = useMemo(() => farmers.filter((f) => sourceFarmerIds.includes(f.id)), [farmers, sourceFarmerIds]);
 
-  // Determine which CoC stages are complete
   const stageIdx = STAGE_FLOW.findIndex((s) => s.stage === lot?.stage);
 
   if (!lot) {
     return (
       <View style={[styles.root, { backgroundColor: colors.background, justifyContent: "center", alignItems: "center" }]}>
-        <Text style={{ color: colors.mutedForeground, fontFamily: "Inter_400Regular" }}>Lot introuvable</Text>
+        <Text style={{ color: colors.mutedForeground, fontFamily: "Inter_400Regular" }}>{t("lot.notFound")}</Text>
       </View>
     );
   }
@@ -97,17 +95,17 @@ export default function LotDossierScreen() {
               <Ionicons name="copy-outline" size={14} color={colors.mutedForeground} style={{ marginTop: 3 }} />
             </Pressable>
             <Text style={[styles.heroSub, { color: colors.mutedForeground }]}>
-              {lot.crop === "coffee" ? "Café" : "Cacao"} · {lot.harvestSeason} · {lot.processingMethod ? lot.processingMethod.charAt(0).toUpperCase() + lot.processingMethod.slice(1) : ""}
+              {lot.crop === "coffee" ? t("lot.crop.coffee") : t("lot.crop.cocoa")} · {lot.harvestSeason} · {lot.processingMethod ? lot.processingMethod.charAt(0).toUpperCase() + lot.processingMethod.slice(1) : ""}
             </Text>
           </View>
           <StageTag stage={lot.stage} size="md" />
         </View>
         <View style={styles.heroStats}>
           {[
-            { label: "Poids", value: formatWeight(lot.weightKg), icon: "scale-outline" as const },
-            { label: "Bidons", value: String(lot.bidonCount), icon: "cube-outline" as const },
-            { label: "Agriculteurs", value: String(lot.farmerCount), icon: "people-outline" as const },
-            { label: "Certif.", value: String(lot.certifications.length), icon: "shield-checkmark-outline" as const },
+            { label: t("lot.stats.weight"),  value: formatWeight(lot.weightKg), icon: "scale-outline" as const },
+            { label: t("lot.stats.bidons"),  value: String(lot.bidonCount),     icon: "cube-outline" as const },
+            { label: t("lot.stats.farmers"), value: String(lot.farmerCount),    icon: "people-outline" as const },
+            { label: t("lot.stats.certs"),   value: String(lot.certifications.length), icon: "shield-checkmark-outline" as const },
           ].map((s) => (
             <View key={s.label} style={styles.heroStat}>
               <Ionicons name={s.icon} size={16} color={colors.primary} />
@@ -124,7 +122,7 @@ export default function LotDossierScreen() {
         {lot.cupScore && (
           <View style={[styles.cupRow, { backgroundColor: colors.amberLight, borderColor: colors.primary + "30" }]}>
             <Ionicons name="cafe-outline" size={14} color={colors.primary} />
-            <Text style={[styles.cupLabel, { color: colors.primary }]}>Note SCA</Text>
+            <Text style={[styles.cupLabel, { color: colors.primary }]}>{t("lot.cupScore")}</Text>
             <Text style={[styles.cupScore, { color: colors.primary }]}>{lot.cupScore}</Text>
           </View>
         )}
@@ -135,9 +133,9 @@ export default function LotDossierScreen() {
         <View style={[styles.eudrPanel, { backgroundColor: colors.greenLight, borderColor: colors.accent + "30" }]}>
           <Ionicons name="shield-checkmark" size={20} color={colors.accent} />
           <View style={{ flex: 1 }}>
-            <Text style={[styles.eudrTitle, { color: colors.accent }]}>EUDR Conforme</Text>
+            <Text style={[styles.eudrTitle, { color: colors.accent }]}>{t("lot.eudr.title")}</Text>
             <Text style={[styles.eudrSub, { color: colors.accent }]}>
-              {lot.farmerCount} agriculteurs avec parcelles vérifiées. Aucun risque de déforestation détecté.
+              {t(lot.farmerCount === 1 ? "lot.eudr.sub" : "lot.eudr.sub_plural", { count: lot.farmerCount })}
             </Text>
           </View>
           <TouchableOpacity
@@ -145,7 +143,7 @@ export default function LotDossierScreen() {
             style={[styles.eudrBtn, { backgroundColor: colors.accent }]}
           >
             <Ionicons name="download-outline" size={14} color="#fff" />
-            <Text style={styles.eudrBtnText}>DDS PDF</Text>
+            <Text style={styles.eudrBtnText}>{t("lot.eudr.downloadDDS")}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -154,26 +152,27 @@ export default function LotDossierScreen() {
       {totalFC > 0 && (
         <View style={[styles.finCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={styles.finRow}>
-            <Text style={[styles.finLabel, { color: colors.mutedForeground }]}>Registres sources</Text>
+            <Text style={[styles.finLabel, { color: colors.mutedForeground }]}>{t("lot.financial.sourceRegisters")}</Text>
             <Text style={[styles.finVal, { color: colors.foreground }]}>{lot.sourceRegisterNos.join(", ")}</Text>
           </View>
           <View style={[styles.finRow, { borderTopWidth: 1, borderTopColor: colors.border }]}>
-            <Text style={[styles.finLabel, { color: colors.mutedForeground }]}>Total bidons reçus</Text>
+            <Text style={[styles.finLabel, { color: colors.mutedForeground }]}>{t("lot.financial.totalBidons")}</Text>
             <Text style={[styles.finVal, { color: colors.foreground }]}>{totalBidons} bidons</Text>
           </View>
           <View style={[styles.finRow, { borderTopWidth: 1, borderTopColor: colors.border }]}>
-            <Text style={[styles.finLabel, { color: colors.mutedForeground }]}>Payé aux agriculteurs (FC)</Text>
+            <Text style={[styles.finLabel, { color: colors.mutedForeground }]}>{t("lot.financial.paidToFarmers")}</Text>
             <Text style={[styles.finVal, { color: colors.primary, fontFamily: "Inter_700Bold" }]}>{totalFC.toLocaleString()} FC</Text>
           </View>
         </View>
       )}
 
       {/* CoC timeline */}
-      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Chaîne de traitement</Text>
+      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("lot.chain")}</Text>
       <View style={[styles.timeline, { backgroundColor: colors.card, borderColor: colors.border }]}>
         {STAGE_FLOW.map((s, i) => {
           const done = i <= stageIdx;
           const current = i === stageIdx;
+          const stageFlowLabel = t(`lot.stageFlow.${s.stage}`, s.stage);
           return (
             <View key={s.stage} style={styles.timelineItem}>
               <View style={styles.timelineLeft}>
@@ -187,8 +186,8 @@ export default function LotDossierScreen() {
               </View>
               <View style={[styles.timelineBody, current && { opacity: 1 }, !done && { opacity: 0.4 }]}>
                 <Text style={[styles.timelineEvent, { color: colors.foreground }]}>
-                  {s.label}
-                  {current && <Text style={{ color: colors.primary, fontFamily: "Inter_400Regular" }}> — en cours</Text>}
+                  {stageFlowLabel}
+                  {current && <Text style={{ color: colors.primary, fontFamily: "Inter_400Regular" }}> — {t("lot.inProgress")}</Text>}
                 </Text>
               </View>
             </View>
@@ -196,11 +195,11 @@ export default function LotDossierScreen() {
         })}
       </View>
 
-      {/* Cherry register sources */}
-      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Registres de cerises sources</Text>
+      {/* Source registers */}
+      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("lot.sourceRegisters")}</Text>
       {lot.sourceRegisterNos.length === 0 ? (
         <View style={[styles.emptyCard, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>Aucun registre lié à ce lot</Text>
+          <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>{t("lot.noRegisters")}</Text>
         </View>
       ) : (
         <View style={[styles.sourcesCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
@@ -214,9 +213,9 @@ export default function LotDossierScreen() {
                   <Ionicons name="list-outline" size={14} color={colors.primary} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.sourceName, { color: colors.foreground }]}>Registre {regNo}</Text>
+                  <Text style={[styles.sourceName, { color: colors.foreground }]}>{t("lot.register", { n: regNo })}</Text>
                   <Text style={[styles.sourceMeta, { color: colors.mutedForeground }]}>
-                    {regDeliveries.length} livraisons · {regBidons} bidons
+                    {t("lot.deliveriesBidons", { count: regDeliveries.length, bidons: regBidons })}
                   </Text>
                 </View>
                 <Text style={[styles.sourceWeight, { color: colors.primary }]}>{regFC.toLocaleString()} FC</Text>
@@ -229,7 +228,7 @@ export default function LotDossierScreen() {
       {/* Source farmers */}
       {sourceFarmers.length > 0 && (
         <>
-          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Agriculteurs contributeurs</Text>
+          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("lot.contributingFarmers")}</Text>
           <View style={[styles.sourcesCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             {sourceFarmers.map((f, i) => {
               const fd = linkedDeliveries.filter((d) => d.farmerId === f.id);
@@ -253,9 +252,12 @@ export default function LotDossierScreen() {
       <View style={[styles.tamperCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <Ionicons name="lock-closed-outline" size={18} color={colors.mutedForeground} />
         <View style={{ flex: 1 }}>
-          <Text style={[styles.tamperTitle, { color: colors.foreground }]}>Traçabilité vérifiée</Text>
+          <Text style={[styles.tamperTitle, { color: colors.foreground }]}>{t("lot.tamper.title")}</Text>
           <Text style={[styles.tamperSub, { color: colors.mutedForeground }]}>
-            Ce lot est tracé depuis {lot.sourceRegisterNos.length} registre{lot.sourceRegisterNos.length > 1 ? "s" : ""} de cerises et {lot.farmerCount} agriculteurs identifiés.
+            {t(lot.sourceRegisterNos.length === 1 ? "lot.tamper.sub" : "lot.tamper.sub_plural", {
+              count: lot.sourceRegisterNos.length,
+              farmers: lot.farmerCount,
+            })}
           </Text>
         </View>
       </View>

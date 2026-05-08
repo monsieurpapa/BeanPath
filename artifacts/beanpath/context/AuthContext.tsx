@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import i18n from "@/i18n";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 export type UserRole =
@@ -95,6 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               AsyncStorage.removeItem(AUTH_KEY);
             } else {
               setUser(parsed);
+              if (parsed.locale) i18n.changeLanguage(parsed.locale);
             }
           } catch {
             AsyncStorage.removeItem(AUTH_KEY);
@@ -152,6 +154,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!prev) return prev;
       const next = { ...prev, ...updates };
       AsyncStorage.setItem(AUTH_KEY, JSON.stringify(next));
+      if (updates.locale) i18n.changeLanguage(updates.locale);
       return next;
     });
   }, []);

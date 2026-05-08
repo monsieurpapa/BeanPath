@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import React, { useMemo } from "react";
 import { Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { StageTag } from "@/components/StageTag";
 import { RoleGate } from "@/components/RoleGate";
 import { useAuth } from "@/context/AuthContext";
@@ -24,6 +25,7 @@ function formatWeight(kg: number) {
 }
 
 export default function ConsoleDashboard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { lots, farmers, deliveries, registers, reports, stations } = useData();
   const { conflictCount, pendingCount, triggerSync, syncing } = useSync();
@@ -44,14 +46,12 @@ export default function ConsoleDashboard() {
   const unsyncedCount = deliveries.filter((d) => !d.synced).length;
   const eudrReady = lots.filter((l) => l.certifications.includes("eudr")).length;
 
-  // Group lots by stage for breakdown
   const stageGroups = useMemo(() => {
     const g: Record<string, number> = {};
     lots.forEach((l) => { g[l.stage] = (g[l.stage] ?? 0) + 1; });
     return Object.entries(g);
   }, [lots]);
 
-  // Most active groupements
   const groupementTotals = useMemo(() => {
     const g: Record<string, { bidons: number; fc: number }> = {};
     deliveries.forEach((d) => {
@@ -63,6 +63,10 @@ export default function ConsoleDashboard() {
   }, [deliveries]);
 
   const recentLots = lots.slice(0, 5);
+  const stationsLabel = stations.length === 1
+    ? t("console.stations", { count: stations.length })
+    : t("console.stations_plural", { count: stations.length });
+  const roleLabel = user?.role ? t(`roles.${user.role}`, ROLE_LABELS[user.role]) : "";
 
   return (
     <ScrollView
@@ -75,11 +79,11 @@ export default function ConsoleDashboard() {
       <View style={styles.orgHeader}>
         <View>
           <Text style={[styles.orgName, { color: colors.foreground }]}>{user?.orgName}</Text>
-          <Text style={[styles.orgSub, { color: colors.mutedForeground }]}>{stations.length} station{stations.length > 1 ? "s" : ""} · {user?.cropFocus} · {user?.orgCurrency}</Text>
+          <Text style={[styles.orgSub, { color: colors.mutedForeground }]}>{stationsLabel} · {user?.cropFocus} · {user?.orgCurrency}</Text>
         </View>
         <TouchableOpacity onPress={() => router.push("/(tabs)/")} style={[styles.switchBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Ionicons name="phone-portrait-outline" size={14} color={colors.mutedForeground} />
-          <Text style={[styles.switchText, { color: colors.mutedForeground }]}>Terrain</Text>
+          <Text style={[styles.switchText, { color: colors.mutedForeground }]}>{t("console.field")}</Text>
         </TouchableOpacity>
       </View>
 
@@ -87,22 +91,24 @@ export default function ConsoleDashboard() {
       {conflictCount > 0 && (
         <TouchableOpacity onPress={() => router.push("/(console)/reconciliation")} style={[styles.conflictBanner, { backgroundColor: colors.dangerLight, borderColor: colors.danger + "30" }]}>
           <Ionicons name="warning-outline" size={18} color={colors.danger} />
-          <Text style={[styles.conflictText, { color: colors.danger }]}>{conflictCount} conflit{conflictCount > 1 ? "s" : ""} non résolus nécessitent votre attention</Text>
+          <Text style={[styles.conflictText, { color: colors.danger }]}>
+            {t(conflictCount === 1 ? "console.conflictsAlert" : "console.conflictsAlert_plural", { count: conflictCount })}
+          </Text>
           <Ionicons name="chevron-forward" size={16} color={colors.danger} />
         </TouchableOpacity>
       )}
 
-      {/* KPI grid — finance fields gated by finance.view */}
+      {/* KPI grid */}
       <View style={styles.kpiGrid}>
         {[
-          { label: "Bidons reçus",       value: totalBidons.toLocaleString(), icon: "cube-outline"            as const, color: colors.primary,        show: true },
-          { label: "Poids total",        value: formatWeight(totalKg),        icon: "scale-outline"           as const, color: colors.primary,        show: true },
-          { label: "Lots actifs",        value: String(lots.length),          icon: "layers-outline"          as const, color: colors.accent,         show: true },
-          { label: "Agriculteurs",       value: String(farmers.length),       icon: "people-outline"          as const, color: colors.accent,         show: true },
-          { label: "Payé (FC)",          value: formatFC(totalFC),            icon: "cash-outline"            as const, color: colors.primary,        show: canViewFinance },
-          { label: "EUDR prêts",         value: String(eudrReady),            icon: "shield-checkmark-outline"as const, color: colors.accent,         show: canExport || canCertify },
-          { label: "Non synchronisés",   value: String(unsyncedCount),        icon: "cloud-upload-outline"    as const, color: unsyncedCount > 0 ? colors.warning : colors.mutedForeground, show: true },
-          { label: "Conflits",           value: String(conflictCount),        icon: "warning-outline"         as const, color: conflictCount > 0 ? colors.danger : colors.mutedForeground,  show: canResolve },
+          { label: t("console.kpi.bidons"),       value: totalBidons.toLocaleString(), icon: "cube-outline"            as const, color: colors.primary,        show: true },
+          { label: t("console.kpi.totalWeight"),  value: formatWeight(totalKg),        icon: "scale-outline"           as const, color: colors.primary,        show: true },
+          { label: t("console.kpi.activeLots"),   value: String(lots.length),          icon: "layers-outline"          as const, color: colors.accent,         show: true },
+          { label: t("console.kpi.farmers"),      value: String(farmers.length),       icon: "people-outline"          as const, color: colors.accent,         show: true },
+          { label: t("console.kpi.paidFC"),       value: formatFC(totalFC),            icon: "cash-outline"            as const, color: colors.primary,        show: canViewFinance },
+          { label: t("console.kpi.eudrReady"),    value: String(eudrReady),            icon: "shield-checkmark-outline"as const, color: colors.accent,         show: canExport || canCertify },
+          { label: t("console.kpi.unsynced"),     value: String(unsyncedCount),        icon: "cloud-upload-outline"    as const, color: unsyncedCount > 0 ? colors.warning : colors.mutedForeground, show: true },
+          { label: t("console.kpi.conflicts"),    value: String(conflictCount),        icon: "warning-outline"         as const, color: conflictCount > 0 ? colors.danger : colors.mutedForeground,  show: canResolve },
         ].filter((k) => k.show).map((k) => (
           <View key={k.label} style={[styles.kpiCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Ionicons name={k.icon} size={18} color={k.color} />
@@ -112,15 +118,15 @@ export default function ConsoleDashboard() {
         ))}
       </View>
 
-      {/* Par groupement — finance.view required for FC column */}
+      {/* Par groupement */}
       {groupementTotals.length > 0 && (
         <>
-          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Par groupement</Text>
+          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("console.byGroupement")}</Text>
           <View style={[styles.tableCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <View style={[styles.tableHeader, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-              <Text style={[styles.tableHead, { color: colors.mutedForeground, flex: 1 }]}>Groupement</Text>
-              <Text style={[styles.tableHead, { color: colors.mutedForeground, flex: 1 }]}>Bidons</Text>
-              {canViewFinance && <Text style={[styles.tableHead, { color: colors.mutedForeground, flex: 1.4 }]}>Total FC</Text>}
+              <Text style={[styles.tableHead, { color: colors.mutedForeground, flex: 1 }]}>{t("console.table.groupement")}</Text>
+              <Text style={[styles.tableHead, { color: colors.mutedForeground, flex: 1 }]}>{t("console.table.bidons")}</Text>
+              {canViewFinance && <Text style={[styles.tableHead, { color: colors.mutedForeground, flex: 1.4 }]}>{t("console.table.totalFC")}</Text>}
             </View>
             {groupementTotals.map(([grp, data], i) => (
               <View key={grp} style={[styles.tableRow, i < groupementTotals.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border }]}>
@@ -136,7 +142,7 @@ export default function ConsoleDashboard() {
       )}
 
       {/* Stage breakdown */}
-      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>État des lots</Text>
+      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("console.lotStatus")}</Text>
       <View style={[styles.tableCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
         {stageGroups.map(([stage, count], i) => (
           <View key={stage} style={[styles.stageRow, i < stageGroups.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border }]}>
@@ -149,15 +155,15 @@ export default function ConsoleDashboard() {
         ))}
       </View>
 
-      {/* Recent lots table */}
+      {/* Recent lots */}
       <View style={styles.sectionRow}>
-        <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Lots récents</Text>
-        <TouchableOpacity onPress={() => router.push("/(console)/lots/")}><Text style={[styles.seeAll, { color: colors.primary }]}>Voir tout</Text></TouchableOpacity>
+        <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("console.recentLots")}</Text>
+        <TouchableOpacity onPress={() => router.push("/(console)/lots/")}><Text style={[styles.seeAll, { color: colors.primary }]}>{t("common.seeAll")}</Text></TouchableOpacity>
       </View>
       <View style={[styles.tableCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={[styles.tableHeader, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-          {["Réf", "Stade", "Bidons", "Agriculteurs"].map((h) => (
-            <Text key={h} style={[styles.tableHead, { color: colors.mutedForeground, flex: h === "Réf" ? 2 : 1 }]}>{h}</Text>
+          {[t("console.table.ref"), t("console.table.stage"), t("console.table.bidons"), t("console.table.farmers")].map((h) => (
+            <Text key={h} style={[styles.tableHead, { color: colors.mutedForeground, flex: h === t("console.table.ref") ? 2 : 1 }]}>{h}</Text>
           ))}
         </View>
         {recentLots.map((lot, i) => (
@@ -174,19 +180,19 @@ export default function ConsoleDashboard() {
         ))}
       </View>
 
-      {/* Document register overview */}
-      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Documents de collecte</Text>
+      {/* Documents */}
+      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("console.collectDocs")}</Text>
       <View style={[styles.tableCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={[styles.tableHeader, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-          {["Document", "Quantité", "Bidons", "Total FC"].map((h) => (
-            <Text key={h} style={[styles.tableHead, { color: colors.mutedForeground, flex: h === "Total FC" ? 1.4 : 1 }]}>{h}</Text>
+          {[t("console.table.document"), t("console.table.qty"), t("console.table.bidons"), t("console.table.totalFC")].map((h) => (
+            <Text key={h} style={[styles.tableHead, { color: colors.mutedForeground, flex: h === t("console.table.totalFC") ? 1.4 : 1 }]}>{h}</Text>
           ))}
         </View>
         <TouchableOpacity
           onPress={() => router.push("/(console)/registers" as any)}
           style={[styles.tableRow, { borderBottomWidth: 1, borderBottomColor: colors.border }]}
         >
-          <Text style={[styles.tableCell, { color: colors.foreground, flex: 1, fontFamily: "Inter_500Medium" }]}>Registres</Text>
+          <Text style={[styles.tableCell, { color: colors.foreground, flex: 1, fontFamily: "Inter_500Medium" }]}>{t("common.registers")}</Text>
           <Text style={[styles.tableCell, { color: colors.primary, flex: 1, fontFamily: "Inter_700Bold" }]}>{registers.length}</Text>
           <Text style={[styles.tableCell, { color: colors.foreground, flex: 1 }]}>{totalBidons}</Text>
           <Text style={[styles.tableCell, { color: colors.primary, flex: 1.4, fontFamily: "Inter_600SemiBold" }]}>{formatFC(totalFC)}</Text>
@@ -195,20 +201,19 @@ export default function ConsoleDashboard() {
           onPress={() => router.push("/(console)/reports" as any)}
           style={styles.tableRow}
         >
-          <Text style={[styles.tableCell, { color: colors.foreground, flex: 1, fontFamily: "Inter_500Medium" }]}>Rapports</Text>
+          <Text style={[styles.tableCell, { color: colors.foreground, flex: 1, fontFamily: "Inter_500Medium" }]}>{t("common.reports")}</Text>
           <Text style={[styles.tableCell, { color: colors.primary, flex: 1, fontFamily: "Inter_700Bold" }]}>{reports.length}</Text>
           <Text style={[styles.tableCell, { color: colors.foreground, flex: 1 }]}>{totalBidons}</Text>
           <Text style={[styles.tableCell, { color: colors.primary, flex: 1.4, fontFamily: "Inter_600SemiBold" }]}>{formatFC(totalFC)}</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Navigation — role-gated */}
+      {/* Navigation */}
       <Text style={[styles.sectionTitle, { color: colors.foreground, marginTop: 4 }]}>
-        Console — {user?.role ? ROLE_LABELS[user.role] : ""}
+        {t("nav.console")} — {roleLabel}
       </Text>
       <View style={styles.navGrid}>
 
-        {/* Registres — station operators and above */}
         <RoleGate permission="register.view">
           <Pressable
             onPress={() => router.push("/(console)/registers" as any)}
@@ -216,14 +221,13 @@ export default function ConsoleDashboard() {
           >
             <View style={[styles.navIcon, { backgroundColor: colors.amberLight }]}><Ionicons name="list-outline" size={20} color={colors.primary} /></View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.navLabel, { color: colors.foreground }]}>Registres des cerises</Text>
-              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{registers.length} registres · {totalBidons} bidons</Text>
+              <Text style={[styles.navLabel, { color: colors.foreground }]}>{t("console.nav.cherryRegisters")}</Text>
+              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{t("console.nav.cherryRegistersSub", { count: registers.length, bidons: totalBidons })}</Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
           </Pressable>
         </RoleGate>
 
-        {/* Rapports — station operators and above */}
         <RoleGate permission="report.view">
           <Pressable
             onPress={() => router.push("/(console)/reports" as any)}
@@ -231,14 +235,13 @@ export default function ConsoleDashboard() {
           >
             <View style={[styles.navIcon, { backgroundColor: colors.amberLight }]}><Ionicons name="folder-outline" size={20} color={colors.primary} /></View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.navLabel, { color: colors.foreground }]}>Rapports de livraison</Text>
-              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{reports.length} rapports de transport</Text>
+              <Text style={[styles.navLabel, { color: colors.foreground }]}>{t("console.nav.deliveryReports")}</Text>
+              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{t("console.nav.deliveryReportsSub", { count: reports.length })}</Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
           </Pressable>
         </RoleGate>
 
-        {/* Lots — all roles */}
         <RoleGate permission="lot.view">
           <Pressable
             onPress={() => router.push("/(console)/lots/" as any)}
@@ -246,14 +249,13 @@ export default function ConsoleDashboard() {
           >
             <View style={[styles.navIcon, { backgroundColor: colors.amberLight }]}><Ionicons name="layers-outline" size={20} color={colors.primary} /></View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.navLabel, { color: colors.foreground }]}>Explorateur de lots</Text>
-              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{lots.length} lots en traitement</Text>
+              <Text style={[styles.navLabel, { color: colors.foreground }]}>{t("console.nav.lotExplorer")}</Text>
+              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{t("console.nav.lotExplorerSub", { count: lots.length })}</Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
           </Pressable>
         </RoleGate>
 
-        {/* Réconciliation — only conflict resolvers */}
         <RoleGate permission="conflict.resolve">
           <Pressable
             onPress={() => router.push("/(console)/reconciliation" as any)}
@@ -263,70 +265,66 @@ export default function ConsoleDashboard() {
               <Ionicons name="git-compare-outline" size={20} color={conflictCount > 0 ? colors.danger : colors.primary} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.navLabel, { color: colors.foreground }]}>Réconciliation</Text>
+              <Text style={[styles.navLabel, { color: colors.foreground }]}>{t("console.nav.reconciliation")}</Text>
               <Text style={[styles.navSub, { color: conflictCount > 0 ? colors.danger : colors.mutedForeground }]}>
-                {conflictCount} conflit{conflictCount !== 1 ? "s" : ""} en attente
+                {t(conflictCount === 1 ? "console.nav.reconciliationSub" : "console.nav.reconciliationSub_plural", { count: conflictCount })}
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
           </Pressable>
         </RoleGate>
 
-        {/* Exportation EUDR — exporters and admins */}
         <RoleGate permission="export.eudr">
           <Pressable
-            onPress={() => showInfo("Module EUDR", "Le module d'exportation EUDR sera disponible prochainement.")}
+            onPress={() => showInfo(t("console.nav.eudrExport"), t("console.eudrInfo"))}
             style={({ pressed }) => [styles.navCard, { backgroundColor: colors.card, borderColor: colors.border, opacity: pressed ? 0.75 : 1 }]}
           >
             <View style={[styles.navIcon, { backgroundColor: "#eff6ff" }]}><Ionicons name="document-text-outline" size={20} color="#2563eb" /></View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.navLabel, { color: colors.foreground }]}>Exportation & EUDR</Text>
-              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>DDV · Déclarations de diligence raisonnable</Text>
+              <Text style={[styles.navLabel, { color: colors.foreground }]}>{t("console.nav.eudrExport")}</Text>
+              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{t("console.nav.eudrExportSub")}</Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
           </Pressable>
         </RoleGate>
 
-        {/* Certifications — certifiers, QC graders, admins */}
         <RoleGate permission="lot.certify">
           <Pressable
-            onPress={() => showInfo("Certifications", "Le module de certification Bio/Fair Trade sera disponible prochainement.")}
+            onPress={() => showInfo(t("console.nav.certifications"), t("console.certInfo"))}
             style={({ pressed }) => [styles.navCard, { backgroundColor: colors.card, borderColor: colors.border, opacity: pressed ? 0.75 : 1 }]}
           >
             <View style={[styles.navIcon, { backgroundColor: "#f0fdf4" }]}><Ionicons name="ribbon-outline" size={20} color="#16a34a" /></View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.navLabel, { color: colors.foreground }]}>Certifications</Text>
-              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>Bio · Fair Trade · Rainforest Alliance</Text>
+              <Text style={[styles.navLabel, { color: colors.foreground }]}>{t("console.nav.certifications")}</Text>
+              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{t("console.nav.certificationsSub")}</Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
           </Pressable>
         </RoleGate>
 
-        {/* Scores qualité — QC graders and above */}
         <RoleGate permission="lot.grade">
           <Pressable
-            onPress={() => showInfo("Contrôle qualité", "L'enregistrement des scores de tasse sera disponible prochainement.")}
+            onPress={() => showInfo(t("console.nav.qualityControl"), t("console.qcInfo"))}
             style={({ pressed }) => [styles.navCard, { backgroundColor: colors.card, borderColor: colors.border, opacity: pressed ? 0.75 : 1 }]}
           >
             <View style={[styles.navIcon, { backgroundColor: "#fef2f2" }]}><Ionicons name="checkmark-circle-outline" size={20} color="#dc2626" /></View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.navLabel, { color: colors.foreground }]}>Contrôle qualité</Text>
-              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>Scores de tasse · Audits · Défauts</Text>
+              <Text style={[styles.navLabel, { color: colors.foreground }]}>{t("console.nav.qualityControl")}</Text>
+              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{t("console.nav.qualityControlSub")}</Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
           </Pressable>
         </RoleGate>
 
-        {/* Gestion membres — admins only */}
         <RoleGate permission="admin.members">
           <Pressable
-            onPress={() => showInfo("Gestion des membres", "Le module d'administration des membres sera disponible prochainement.")}
+            onPress={() => showInfo(t("console.nav.members"), t("console.membersInfo"))}
             style={({ pressed }) => [styles.navCard, { backgroundColor: colors.card, borderColor: colors.border, opacity: pressed ? 0.75 : 1 }]}
           >
             <View style={[styles.navIcon, { backgroundColor: "#eff6ff" }]}><Ionicons name="people-outline" size={20} color="#1d4ed8" /></View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.navLabel, { color: colors.foreground }]}>Membres coopérative</Text>
-              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{farmers.length} agriculteurs inscrits</Text>
+              <Text style={[styles.navLabel, { color: colors.foreground }]}>{t("console.nav.members")}</Text>
+              <Text style={[styles.navSub, { color: colors.mutedForeground }]}>{t("console.nav.membersSub", { count: farmers.length })}</Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
           </Pressable>
