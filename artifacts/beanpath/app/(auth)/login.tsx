@@ -80,8 +80,7 @@ export default function LoginScreen() {
     if (!canSubmit || loading) return;
     setLoading(true);
     try {
-      await new Promise((r) => setTimeout(r, 900));
-      await signIn(effectiveRole, mode === "phone" ? { phone } : { email });
+      await signIn(effectiveRole, mode === "phone" ? { phone } : { email, password });
       const roleLabel = t(`roles.${effectiveRole}`, ROLE_LABELS[effectiveRole]);
       showSuccess(t("auth.loginSuccess"), roleLabel + " connecté(e)");
       const surface = ROLE_SURFACE[effectiveRole];

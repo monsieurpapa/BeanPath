@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Yves Zigashane\\\\Documents\\\\Projects\\\\BeanPath\" -Force)",
+      "Bash(Select-Object Name, FullName)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Yves Zigashane\\\\Documents\\\\Projects\\\\BeanPath\" -Force | Select-Object Name, @{Name=\"Type\"; Expression={if \\($_.PSIsContainer\\) {\"Directory\"} else {\"File\"}}} | Format-Table -AutoSize)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Yves Zigashane\\\\Documents\\\\Projects\\\\BeanPath\\\\artifacts\" -Recurse -Force | Where-Object {$_.PSIsContainer -or $_.Extension -in @\\('.json', '.tsx', '.ts', '.jsx', '.js', '.css', '.html'\\)} | Select-Object FullName, @{Name=\"Type\"; Expression={if \\($_.PSIsContainer\\) {\"Directory\"} else {$_.Extension}}} | Format-Table -AutoSize)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Yves Zigashane\\\\Documents\\\\Projects\\\\BeanPath\\\\lib\" -Recurse -Force | Where-Object {$_.PSIsContainer -or $_.Extension -in @\\('.json', '.tsx', '.ts', '.jsx', '.js', '.css', '.html'\\)} | Select-Object FullName, @{Name=\"Type\"; Expression={if \\($_.PSIsContainer\\) {\"Directory\"} else {$_.Extension}}} | Format-Table -AutoSize)",
+      "Bash(git -C \"C:\\\\Users\\\\Yves Zigashane\\\\Documents\\\\Projects\\\\BeanPath\" diff HEAD -- \"artifacts/beanpath/app/\\(auth\\)/welcome.tsx\")",
+      "Bash(node *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Yves Zigashane\\\\Documents\\\\Projects\\\\BeanPath\\\\artifacts\\\\beanpath\\\\app\" -Recurse -File)",
+      "Bash(Select-Object FullName)",
+      "Bash(Sort-Object FullName)",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\Yves Zigashane\\\\Documents\\\\Projects\\\\BeanPath\\\\artifacts\\\\beanpath\\\\app\" -File)",
+      "Bash(git checkout *)",
+      "Bash(git pull *)",
+      "Bash(git revert *)",
+      "Bash(git push *)",
+      "Bash(git fetch *)",
+      "Bash(git stash *)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(git commit -m ' *)",
+      "Bash(pnpm list *)",
+      "Bash(findstr /v \"KEY\\\\|SECRET\\\\|key\\\\|secret\")"
+    ]
+  }
+}
